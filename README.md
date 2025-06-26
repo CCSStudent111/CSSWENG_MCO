@@ -1,8 +1,13 @@
 run command for laravel
 
-php artisan migrate:fresh (setup tables for database)
+run command for laravel
+
+composer install (if php artisan command does not exist)
+
+create .env file copy .env.example (if .env file does not exist)
+
+php artisan key:generate (if key does not exist)
+
+php artisan migrate:fresh --seed (setup tables for database)
+
 php artisan serve (run localhost)
-
-other php commands
-
-php artisan route:list (view api (controller)) 
