@@ -3,8 +3,6 @@ MCO for CSSWENG
 
 run command for laravel
 
-run command for laravel
-
 composer install (if php artisan command does not exist)
 
 create .env file copy .env.example (if .env file does not exist)
