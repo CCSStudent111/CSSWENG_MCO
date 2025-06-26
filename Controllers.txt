@@ -90,6 +90,10 @@ DocumentPageController (General Document Page Management (for pages not associat
 Hospital/DocumentPage (Hospital Document Page Management same with DocumentPage Controller)
 User/DocumentPage (Employee Document Page Management same with DocumentPage Controller)
 
+DocumentTagController (Manage document tags)
+ - attach
+ - detach
+
 DocumentTypeController (CRUD/Document Type Management)
  - index 		
  - create 		
