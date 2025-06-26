@@ -18,6 +18,7 @@ class HospitalFactory extends Factory
     {
         return [
             'name' => $this->faker->company . ' Hospital', 
+            'branch' => $this->faker->city, 
             'deleted_at' => null,  
         ];
     }
