@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hospital;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreHospitalRequest;
+use App\Http\Requests\UpdateHospitalRequest;
+use App\Services\TrashService;
 
 class HospitalController extends Controller
 {
+    public function __construct(protected TrashService $trashService)
+    {  
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -26,7 +32,7 @@ class HospitalController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreHospitalRequest $request)
     {
         //
     }
@@ -50,7 +56,7 @@ class HospitalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Hospital $hospital)
+    public function update(UpdateHospitalRequest $request, Hospital $hospital)
     {
         //
     }
@@ -61,5 +67,23 @@ class HospitalController extends Controller
     public function destroy(Hospital $hospital)
     {
         //
+    }
+
+    
+    public function trash()
+    {
+        // Display a list of soft-deleted hospitals (trash).
+    }
+
+    
+    public function restore(int $id)
+    {
+        // Restore a soft-deleted hospital
+    }
+
+    
+    public function forceDelete(int $id)
+    {
+        // Permanently delete a soft-deleted hospital
     }
 }

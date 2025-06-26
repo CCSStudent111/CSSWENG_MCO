@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreDepartmentRequest;
+use App\Http\Requests\UpdateDepartmentRequest;
 
 class DepartmentController extends Controller
 {
@@ -26,7 +27,7 @@ class DepartmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreDepartmentRequest $request)
     {
         //
     }
@@ -50,7 +51,7 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Department $department)
+    public function update(UpdateDepartmentRequest $request, Department $department)
     {
         //
     }
@@ -61,5 +62,22 @@ class DepartmentController extends Controller
     public function destroy(Department $department)
     {
         //
+    }
+
+    public function trash()
+    {
+        // Display a list of soft-deleted documents (trash).
+    }
+
+    
+    public function restore(int $id)
+    {
+        // Restore a soft-deleted document
+    }
+
+    
+    public function forceDelete(int $id)
+    {
+        // Permanently delete a soft-deleted document
     }
 }

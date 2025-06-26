@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocumentType;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreDocumentTypeRequest;
+use App\Http\Requests\UpdateDocumentTypeRequest;
+use App\Services\TrashService;
 
 class DocumentTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function __construct(protected TrashService $trashService)
+    {  
+
+    }
     public function index()
     {
         //
@@ -26,7 +32,7 @@ class DocumentTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreDocumentTypeRequest $request)
     {
         //
     }
@@ -50,7 +56,7 @@ class DocumentTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, DocumentType $documentType)
+    public function update(UpdateDocumentTypeRequest $request, DocumentType $documentType)
     {
         //
     }
@@ -61,5 +67,22 @@ class DocumentTypeController extends Controller
     public function destroy(DocumentType $documentType)
     {
         //
+    }
+
+    public function trash()
+    {
+        // Display a list of soft-deleted document types (trash).
+    }
+
+    
+    public function restore(int $id)
+    {
+        // Restore a soft-deleted document type
+    }
+
+    
+    public function forceDelete(int $id)
+    {
+        // Permanently delete a soft-deleted document type
     }
 }

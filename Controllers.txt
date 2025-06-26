@@ -1,0 +1,185 @@
+POST/PUT/DELETE (Modify data)
+store 		— POST 		— Create resource
+update 		— PUT/PATCH 	— Update resource
+destroy		— DELETE 	— Soft-delete resource
+restore		— PUT/PATCH 	— Restore soft-deleted resource
+forceDelete	— DELETE 	— Permanently delete resource
+
+GET (Read-only) only include routes as needed based on the UI
+index 	— List resources
+show 	— Show single resource
+create 	— Show creation form 
+edit 	— Show edit form 
+trash 	— List soft-deleted resources
+
+
+Services (code reuse)
+
+TrashService (Controllers with SoftDeletes)
+ - getTrashed
+ - restore
+ - forceDelete
+ - validateModel
+
+Document (DocumentController, HospitalDocumentController, EmployeeDocumentController)
+ - create
+ - update
+ - attachTag
+ - detachTag
+ - destroy
+
+DocumentPage (DocumentPageController, HospitalDocumentPageController, EmployeeDocumentPageController)
+ - store	
+ - show		
+ - edit		
+ - destroy	
+
+can add services if want to separate logic from controller 
+
+List of Controllers
+AuthController (login/register)
+ - showRegister
+ - register
+ - showLogin
+ - login
+ - logout
+
+DepartmentController (CRUD/Department Management)
+ - index 		
+ - create 		
+ - store 		
+ - show 		
+ - edit 		
+ - update 		
+ - destroy 	
+ - trash 		
+ - restore 	
+ - forceDelete 	
+
+DepartmentDocumentTypeController (Manage Department Document Type Access)
+ - index
+ - attach	- attach document type 
+ - detach	- detach document type
+
+DocumentController (CRUD/General Document Management (for documents not associated with a specific employee or hospital))
+ - index 		
+ - create 		
+ - store 		
+ - show 		
+ - edit 		
+ - update 		
+ - destroy 
+ - attach	- attach tag 
+ - detach	- detach tag	
+ - trash 		
+ - restore 	
+ - forceDelete
+
+Hospital/Document (Hospital Document Management same with Document Controller)
+User/Document (Employee Document Management same with Document Controller)
+ 	
+
+DocumentPageController (General Document Page Management (for pages not associated with a specific employee or hospital))
+ - store	- upload new page
+ - show		- download page/view ui (optional)
+ - edit		- edit original_name (optional)
+ - destroy	- delete page
+
+* a single DocumentPageController may be used, as long as it adheres to the Single Responsibility Principle (Hospital/DocumentPage, User/DocumentPage).
+
+Hospital/DocumentPage (Hospital Document Page Management same with DocumentPage Controller)
+User/DocumentPage (Employee Document Page Management same with DocumentPage Controller)
+
+DocumentTypeController (CRUD/Document Type Management)
+ - index 		
+ - create 		
+ - store 		
+ - show 		
+ - edit 		
+ - update 		
+ - destroy 	
+ - trash 		
+ - restore 	
+ - forceDelete
+
+HospitalController (CURD/Hospital Management)
+ - index 		
+ - create 		
+ - store 		
+ - show 		
+ - edit 		
+ - update 		
+ - destroy 	
+ - trash 		
+ - restore 	
+ - forceDelete
+
+PasswordController (Reset/Recovery)
+ - showForgotPassword		- GET 	- show form
+ - sendResetLinkEmail 		- POST 	- send reset link to user’s email
+ - showResetPasswordForm 	- GET 	- show form to enter new password (via token)
+ - resetPassword 		- POST	- Validate and update the new password
+
+UserController (CRUD/Employee Management) Handles employee/user management by admins or profile editing for current users
+ - index 		
+ - create 		
+ - store 		
+ - show 		
+ - edit 		
+ - update 		
+ - destroy
+ - changePassword	- POST/PUT
+ - toggleAdmin		- PUT	- updating role
+ - toggleManager 	- PUT	- updating role
+
+HomeController (GET/routes) everyone
+ ....
+
+*custom functions can be changed or omitted depending on your coding preferences
+
+Requests (define validation rules for forms) https://laravel.com/docs/12.x/validation#available-validation-rules
+'first_name' => ['required', 'string', 'max:255']
+'middle_name' => ['nullable', 'string', 'max:255'],
+'last_name' => ['required', 'string', 'max:255'],
+
+
+create controller command : php artisan make:controller
+ - php artisan make:controller -r (create resource controller/CRUD controller)
+ - php artisan make:controller (blank)
+
+check define routes(controller) : php artisan route:list
+
+
+restart/migrate tables with temp data : php artisan php artisan migrate:fresh --seed
+link to storage/public : php artisan storage:link
+run localhost : php artisan serve
+
+
+test using blade if di pa kaya sa vue
+
+naming convention
+index 	- index.blade.php 	- Index.vue	- index.vue
+create 	- create.blade.php 	- Create.vue 	- create.vue
+show 	- show.blade.php 	- Show.vue	- show.vue
+edit 	- edit.blade.php 	- Edit.vue	- edit.vue
+trash 	- trash.blade.php 	- Trash.vue 	- trash.vue (optional)
+
+resources/
+└── views/
+    └── documents/
+        ├── index.blade.php     		// List all documents
+        ├── create.blade.php    		// Form to create a new document
+        ├── edit.blade.php      		// Form to edit an existing document
+        ├── show.blade.php      		// Show a single document's details
+        └── (optional) trash.blade.php  // List soft-deleted documents
+
+
+resources/
+└── js/
+    └── pages/
+        └── documents/
+            ├── Index.vue         // Lists documents 
+            ├── Create.vue        // Form to create a document
+            ├── Edit.vue          // Form to edit a document
+            ├── Show.vue          // Show document details
+            └── Trash.vue         // (Optional) Soft-deleted documents list

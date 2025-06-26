@@ -18,9 +18,15 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'department_id',
+        'is_admin',
+        'is_manager',
     ];
 
     /**
@@ -43,6 +49,28 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_manager' => 'boolean',
         ];
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'created_by');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
+    }
+
+    public function isManager(): bool
+    {
+        return $this->is_manager;
     }
 }

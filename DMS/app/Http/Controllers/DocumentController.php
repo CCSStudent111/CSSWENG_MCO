@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
-
+use Illuminate\Http\Request;
+use PhpParser\Comment\Doc;
+use App\Services\DocumentService;
+use App\Services\TrashService;
 class DocumentController extends Controller
 {
+    public function __construct(protected DocumentService $documentService, protected TrashService $trashService)
+    {  
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +36,7 @@ class DocumentController extends Controller
      */
     public function store(StoreDocumentRequest $request)
     {
-       // 
+        //
     }
 
     /**
@@ -62,5 +69,22 @@ class DocumentController extends Controller
     public function destroy(Document $document)
     {
         //
+    }
+
+    public function trash()
+    {
+        // Display a list of soft-deleted documents (trash).
+    }
+
+    
+    public function restore(int $id)
+    {
+        // Restore a soft-deleted document
+    }
+
+    
+    public function forceDelete(int $id)
+    {
+        // Permanently delete a soft-deleted document
     }
 }

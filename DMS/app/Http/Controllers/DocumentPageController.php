@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocumentPage;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreDocumentPageRequest;
+use App\Http\Requests\UpdateDocumentPageRequest;
+use App\Services\DocumentPageService;
 
 class DocumentPageController extends Controller
 {
+    public function __construct(protected DocumentPageService $service) {} 
     /**
      * Display a listing of the resource.
      */
@@ -26,9 +29,9 @@ class DocumentPageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreDocumentPageRequest $request)
     {
-        //
+        // upload a new page
     }
 
     /**
@@ -36,7 +39,7 @@ class DocumentPageController extends Controller
      */
     public function show(DocumentPage $documentPage)
     {
-        //
+        // download a page (optional)
     }
 
     /**
@@ -50,7 +53,7 @@ class DocumentPageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, DocumentPage $documentPage)
+    public function update(UpdateDocumentPageRequest $request, DocumentPage $documentPage)
     {
         //
     }
@@ -60,6 +63,6 @@ class DocumentPageController extends Controller
      */
     public function destroy(DocumentPage $documentPage)
     {
-        //
+        // delete a page
     }
 }
