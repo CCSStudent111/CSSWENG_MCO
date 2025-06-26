@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Hospital;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class HospitalController extends Controller
 {
@@ -12,7 +13,11 @@ class HospitalController extends Controller
      */
     public function index()
     {
-        //
+        $hospitals = Hospital::all();
+
+        return Inertia::render('Hospitals/Index', [
+            'hospitals' => $hospitals
+        ]);
     }
 
     /**

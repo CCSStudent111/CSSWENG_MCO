@@ -1,14 +1,15 @@
 <template>
     <v-app id="inspire">
-        <v-navigation-drawer v-model="drawer">
+        <v-app-bar class="elevation-1">
             
-        </v-navigation-drawer>
+                <v-btn icon>
+                    <v-icon size="32">mdi-account-circle</v-icon>
+                </v-btn>
 
-
-        <v-app-bar>
-            <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-
-            <v-app-bar-title>Application</v-app-bar-title>
+                <div class="d-flex flex-column">
+                    <span class="text-subtitle-2">Franz</span>
+                    <span class="text-caption text-grey">Admin</span>
+                </div>
         </v-app-bar>
 
         <v-main>
@@ -20,8 +21,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 
-const drawer = ref(true)
-const showUpload = ref(false)
 </script>
+
+
+<style scoped>
+
+</style>
