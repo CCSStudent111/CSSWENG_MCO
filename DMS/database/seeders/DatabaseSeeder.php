@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(HospitalSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(DepartmentDocumentTypeSeeder::class);
+        $this->call(DocumentSeeder::class);
     }
 }

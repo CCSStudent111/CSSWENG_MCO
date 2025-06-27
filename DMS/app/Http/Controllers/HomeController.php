@@ -8,7 +8,7 @@ class HomeController extends Controller
 {
     public function home()
     {
-        return Inertia::render('Home'); // vue/vuetify view
-        // return view('home'); // Blade view
+        // return Inertia::render('Home'); // vue/vuetify view
+        return view('home'); // Blade view
     }
 }
