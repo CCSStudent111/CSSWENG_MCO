@@ -5,15 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
+use App\Services\DocumentService;
+use App\Models\User;
+use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
+    public function __construct(protected DocumentService $documentService) {}
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        // $user = Auth::user()->load('department.documentTypes'); // uncomment when login implemented
+        $user = User::with('department.documentTypes')->find(1);
+        $document_ids = $user->department->documentTypes->pluck('id')->toArray();
+
+        $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $document_ids)
+            ->latest()->get();
+
+
+        return Inertia::render('Documents/Index', [
+            'documents'=> $documents,
+        ]);
     }
 
     /**
@@ -21,7 +35,13 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        //
+        // $user = Auth::user()->load('department.documentTypes');  // uncomment when login implemented
+        $user = User::with('department.documentTypes')->find(1);
+        $documentTypes = $user->department->documentTypes;
+
+        return Inertia::render('Documents/Create', [
+            'documentTypes'=> $documentTypes
+        ]);
     }
 
     /**
