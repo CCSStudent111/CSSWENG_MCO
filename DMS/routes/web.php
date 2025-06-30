@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentTypeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\DepartmentDocumentTypeController;
@@ -23,6 +24,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
 Route::resource('documents', DocumentController::class);
+Route::resource('document-types', DocumentTypeController::class);
 
 
 Route::prefix('departments/{department}/document-types')->group(function () {
