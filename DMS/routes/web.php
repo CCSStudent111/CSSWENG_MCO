@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\DepartmentDocumentTypeController;
 
+Route::get('/', [HomeController::class,'dashboard'])->name('dashboard');
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/register', 'showRegister')->name('register');
@@ -19,13 +20,12 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
-Route::prefix('departments/{department}/document-types')->group(function () {
-    Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
-    Route::post('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
-});
-
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
 Route::resource('documents', DocumentController::class);
 
-Route::get('/', [HomeController::class,'dashboard'])->name('dashboard');
+
+Route::prefix('departments/{department}/document-types')->group(function () {
+    Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
+    Route::post('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
+});
