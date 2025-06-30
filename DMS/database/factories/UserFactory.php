@@ -31,6 +31,8 @@ class UserFactory extends Factory
             'first_name' => fake()->firstName(),
             'middle_name' => fake()->optional()->lastName(),
             'last_name' => fake()->lastName(),
+            'suffix' => fake()->optional()->suffix(),
+            'date_of_birth' => fake()->date('Y-m-d'),
             'department_id' => Department::inRandomOrder()->first()->id,
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),

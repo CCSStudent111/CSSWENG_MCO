@@ -59,6 +59,7 @@
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
+
 const props = defineProps({
     documents: Array
 })
