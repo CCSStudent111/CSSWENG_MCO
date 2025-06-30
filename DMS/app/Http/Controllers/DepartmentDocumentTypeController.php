@@ -18,12 +18,14 @@ class DepartmentDocumentTypeController extends Controller
 
     public function attach(Department $department, DocumentType $type)
     {
-        // Attach a document type to a department
+        if(!$department->documentTypes()->where('document_type_id', $type->id)->exists()) 
+        {
+            $department->documentTypes()->attach($type->id);
+        }
     }
 
     public function detach(Department $department, DocumentType $type)
     {
-        // Detach a document type from a department
-        
+        $department->documentTypes()->detach($type->id);
     }
 }

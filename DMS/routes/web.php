@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DocumentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\DepartmentDocumentTypeController;
+
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/register', 'showRegister')->name('register');
@@ -15,6 +17,11 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login')->name('login.submit');
     
     Route::post('/logout', 'logout')->name('logout');
+});
+
+Route::prefix('departments/{department}/document-types')->group(function () {
+    Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
+    Route::post('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
 });
 
 Route::resource('hospitals', HospitalController::class);
