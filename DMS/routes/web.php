@@ -24,7 +24,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
 Route::resource('documents', DocumentController::class);
-Route::resource('document-types', DocumentTypeController::class);
+Route::resource('document-types', DocumentTypeController::class)->except(['show']);
 
 
 Route::prefix('departments/{department}/document-types')->group(function () {
