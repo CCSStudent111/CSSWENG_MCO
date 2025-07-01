@@ -98,7 +98,7 @@ class DocumentController extends Controller
 
     public function trash()
     {
-        $documents = $this->trashService->getTrashed(Document::class);
+        $documents = $this->trashService->getTrashed(Document::class, ['type', 'tags', 'creator', 'pages']);
 
         return Inertia::render('Documents/Trash', [
             'documents'=> $documents,

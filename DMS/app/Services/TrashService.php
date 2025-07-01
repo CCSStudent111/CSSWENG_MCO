@@ -24,11 +24,11 @@ class TrashService
         }
     }
     
-    public function getTrashed(string $model)
+    public function getTrashed(string $model, array $with = [])
     {
         $this->validateModel($model);
         return $model::onlyTrashed()
-            ->with(['type', 'tags', 'creator']) // will edit this part 
+            ->with($with) // will edit this part 
             ->get();
     }
 
