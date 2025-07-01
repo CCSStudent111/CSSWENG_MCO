@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Hospital;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Inertia\Inertia;
 
 class HospitalController extends Controller
@@ -15,7 +16,7 @@ class HospitalController extends Controller
     {
         $hospitals = Hospital::all();
 
-        return Inertia::render('Hospitals/Index', [
+        return Inertia::render("Hospitals/Index", [
             'hospitals' => $hospitals
         ]);
     }
@@ -25,7 +26,7 @@ class HospitalController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("Hospitals/Create");
     }
 
     /**
@@ -33,7 +34,14 @@ class HospitalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'branch' => 'required|string|max:255',
+        ]);
+
+        Hospital::create($validated);
+
+        return redirect()->route('hospitals.index')->with('success', 'Hospital created successfully.');
     }
 
     /**
@@ -41,7 +49,9 @@ class HospitalController extends Controller
      */
     public function show(Hospital $hospital)
     {
-        
+        return Inertia::render("Hospitals/Show", [
+            'hospital' => $hospital
+        ]);
     }
 
     /**
@@ -49,7 +59,9 @@ class HospitalController extends Controller
      */
     public function edit(Hospital $hospital)
     {
-        //
+        return Inertia::render("Hospitals/Edit", [
+            'hospital' => $hospital
+        ]);
     }
 
     /**
@@ -57,7 +69,14 @@ class HospitalController extends Controller
      */
     public function update(Request $request, Hospital $hospital)
     {
-        //
+        $validated = $request->validate([
+            'name'=> 'required/string/max:255',
+            'branch'=> 'required/string/max:255',
+        ]);
+
+        $hospital->update($validated);
+
+        return redirect()->route('hospitals.index')->with('success', 'Hospital updated successfully.');
     }
 
     /**
@@ -65,6 +84,33 @@ class HospitalController extends Controller
      */
     public function destroy(Hospital $hospital)
     {
-        //
+        $hospital->delete();
+
+        return redirect()->route('hospitals.index')->with('success', 'Hospital deleted successfully.');
+    }
+
+    public function trashed()
+    {
+        $trashedHospitals = Hospital::onlyTrashed()->get();
+
+        return Inertia::render("Hospitals/Trashed", [
+            'trashedHospitals' => $trashedHospitals
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $hospital = Hospital::withTrashed()->findOrFail($id);
+        $hospital->restore();
+
+        return redirect()->route('hospitals.index')->with('success', 'Hospital restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $hospital = Hospital::withTrashed()->findOrFail($id);
+        $hospital->forceDelete();
+
+        return redirect()->route('hospitals.index')->with('success', 'Hospital permanently deleted.');
     }
 }
