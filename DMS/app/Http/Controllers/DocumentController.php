@@ -6,12 +6,14 @@ use App\Models\Document;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Services\DocumentService;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use App\Services\TrashService;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
-    public function __construct(protected DocumentService $documentService) {}
+    public function __construct(protected DocumentService $documentService, protected TrashService $trashService) {}
     /**
      * Display a listing of the resource.
      */
@@ -85,6 +87,33 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        $document->delete();
+        return redirect()->route('documents.index');
+    }
+
+
+    public function trash()
+    {
+        $documents = $this->trashService->getTrashed(Document::class);
+
+        return Inertia::render('Documents/Trash', [
+            'documents'=> $documents,
+        ]);
+    }
+
+    public function restore(Document $document)
+    {
+        $this->trashService->restore(Document::class, $document->id);
+
+        return redirect()->route('documents.trash');
+    }
+
+    public function forceDelete(Document $document)
+    {
+        $folderPath = "{$document->type->name}/{$document->id}";
+        Storage::disk('public')->deleteDirectory($folderPath);
+
+        $this->trashService->forceDelete(Document::class, $document->id);
+        return redirect()->route('documents.trash');
     }
 }

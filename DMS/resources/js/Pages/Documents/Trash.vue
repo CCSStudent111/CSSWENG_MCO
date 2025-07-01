@@ -1,20 +1,15 @@
-<!-- LAST UPDATED BY: FRANZ -->
-
 <template>
     <AppLayout>
-        <div class="custom-title mb-4">Manage Documents</div>
+        <div class="custom-title mb-4">Trashed Documents</div>
+
         <div class="d-flex mb-4 justify-end gap-2">
-            <Link :href="route('documents.trash')">
-            <v-btn color="error" variant="flat" size="small">
-                <v-icon start>mdi-delete</v-icon>Trash
-            </v-btn>
-            </Link>
-            <Link :href="route('documents.create')">
+            <Link :href="route('documents.index')">
             <v-btn color="primary" variant="flat" size="small">
-                <v-icon start>mdi-upload</v-icon>Upload Document
+                <v-icon start>mdi-arrow-left</v-icon>Back to Documents
             </v-btn>
             </Link>
         </div>
+
         <v-table density="comfortable">
             <thead>
                 <tr>
@@ -24,7 +19,7 @@
                     <th class="text-left">Tags</th>
                     <th class="text-left">Issued At</th>
                     <th class="text-left">Created By</th>
-                    <th class="text-left">Action</th>
+                    <th class="text-left">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,21 +34,20 @@
                             {{ tag.name }}
                         </v-chip>
                     </td>
+
                     <td>{{ dayjs(document.issued_at).format('MM/DD/YYYY') }}</td>
-                    <td>{{ document.creator.username }}</td>
+                    <td>{{ document.creator?.username ?? 'Unknown' }}</td>
+
                     <td>
-                        <v-btn icon size="small" variant="text" aria-label="View">
-                            <v-icon>mdi-eye</v-icon>
+                        <v-btn icon size="small" color="success" variant="text" aria-label="Restore"
+                            @click="restoreDocument(document.id)">
+                            <v-icon>mdi-restore</v-icon>
                         </v-btn>
 
-                        <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
-                            <v-icon>mdi-pencil</v-icon>
+                        <v-btn icon size="small" color="error" variant="text" aria-label="Delete Permanently"
+                            @click="forceDeleteDocument(document.id)">
+                            <v-icon>mdi-delete-forever</v-icon>
                         </v-btn>
-
-                        <v-btn icon size="small" color="error" variant="text" aria-label="Delete" @click="deleteDocument(document.id)">
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-
                     </td>
                 </tr>
             </tbody>
@@ -70,15 +64,21 @@ const props = defineProps({
     documents: Array
 })
 
-function deleteDocument(id) {
-  if (confirm('Are you sure you want to delete this document?')) {
-    router.delete(route('documents.destroy', id), {
-      preserveScroll: true,
-      onSuccess: () => console.log(`Document ${id} deleted`)
+function restoreDocument(id) {
+    router.put(route('documents.restore', id), {}, {
+        preserveScroll: true,
+        onSuccess: () => console.log('Restored')
     })
-  }
 }
 
+function forceDeleteDocument(id) {
+    if (confirm('Are you sure you want to permanently delete this document?')) {
+        router.delete(route('documents.forceDelete', id), {
+            preserveScroll: true,
+            onSuccess: () => console.log('Deleted')
+        })
+    }
+}
 </script>
 
 <style scoped>
