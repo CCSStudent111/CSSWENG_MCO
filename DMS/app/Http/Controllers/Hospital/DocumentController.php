@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Hospital;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\StoreHospitalDocumentRequest;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Document;
+use App\Models\User;
 use App\Services\DocumentService;
 use App\Services\TrashService;
+use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
-    public function __construct(protected DocumentService $documentService, protected TrashService $trashService)
-    {  
-
-    }
+    public function __construct(protected DocumentService $documentService, protected TrashService $trashService) {}
     /**
      * Display a listing of the resource.
      */
@@ -26,17 +27,34 @@ class DocumentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Hospital $hospital)
+    public function create()
     {
-        //
+        $user = User::with('department.documentTypes')->find(1);
+        $hospitals = Hospital::all();
+        $documentTypes = $user->department->documentTypes()->where('is_hospital', true)->get()->values();
+
+        return Inertia::render('Hospitals/Documents/Create', [
+            'hospitals' => $hospitals,
+            'documentTypes' => $documentTypes   
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Hospital $hospital)
+    public function store(StoreHospitalDocumentRequest $request, Hospital $hospital)
     {
-        //
+        $validated = $request->validated();
+        $validated['created_by'] = 1;
+
+        $hospitalId = $validated['hospital_id'];
+        unset($validated['hospital_id']);
+
+        $document = $this->documentService->create($validated);
+
+        Hospital::findOrFail($hospitalId)->documents()->attach($document->id);
+
+        return redirect()->route('hospitals.index');
     }
 
     /**
