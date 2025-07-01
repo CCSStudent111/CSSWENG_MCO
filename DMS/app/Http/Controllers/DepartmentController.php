@@ -34,7 +34,6 @@ class DepartmentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'branch' => 'required|string|max:255',
         ]);
 
         Department::create($validated);
@@ -69,7 +68,6 @@ class DepartmentController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'branch' => 'required|string|max:255',
         ]);
 
         $department->update($validated);
