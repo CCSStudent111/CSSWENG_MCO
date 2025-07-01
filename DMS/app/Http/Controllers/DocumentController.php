@@ -63,7 +63,11 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        //
+        $document->load(['type', 'tags', 'creator', 'pages']);
+
+        return Inertia::render('Documents/Show', [
+            'document' => $document
+        ]);
     }
 
     /**

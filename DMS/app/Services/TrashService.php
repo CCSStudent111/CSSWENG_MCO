@@ -28,7 +28,7 @@ class TrashService
     {
         $this->validateModel($model);
         return $model::onlyTrashed()
-            ->with(['type', 'tags', 'creator'])
+            ->with(['type', 'tags', 'creator']) // will edit this part 
             ->get();
     }
 

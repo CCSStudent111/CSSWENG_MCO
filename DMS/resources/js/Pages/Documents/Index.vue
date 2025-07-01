@@ -42,15 +42,18 @@
                     <td>{{ dayjs(document.issued_at).format('MM/DD/YYYY') }}</td>
                     <td>{{ document.creator.username }}</td>
                     <td>
-                        <v-btn icon size="small" variant="text" aria-label="View">
-                            <v-icon>mdi-eye</v-icon>
-                        </v-btn>
+                        <Link :href="route('documents.show', document.id)">
+                            <v-btn icon size="small" variant="text" aria-label="View">
+                                <v-icon>mdi-eye</v-icon>
+                            </v-btn>
+                        </Link>
 
                         <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
                             <v-icon>mdi-pencil</v-icon>
                         </v-btn>
 
-                        <v-btn icon size="small" color="error" variant="text" aria-label="Delete" @click="deleteDocument(document.id)">
+                        <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
+                            @click="deleteDocument(document.id)">
                             <v-icon>mdi-delete</v-icon>
                         </v-btn>
 
@@ -71,12 +74,12 @@ const props = defineProps({
 })
 
 function deleteDocument(id) {
-  if (confirm('Are you sure you want to delete this document?')) {
-    router.delete(route('documents.destroy', id), {
-      preserveScroll: true,
-      onSuccess: () => console.log(`Document ${id} deleted`)
-    })
-  }
+    if (confirm('Are you sure you want to delete this document?')) {
+        router.delete(route('documents.destroy', id), {
+            preserveScroll: true,
+            onSuccess: () => console.log(`Document ${id} deleted`)
+        })
+    }
 }
 
 </script>
