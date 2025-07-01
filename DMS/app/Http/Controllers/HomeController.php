@@ -6,9 +6,8 @@ use Inertia\Inertia;
 
 class HomeController extends Controller
 {
-    public function home()
+    public function dashboard()
     {
-        // return Inertia::render('Home'); // vue/vuetify view
-        return view('home'); // Blade view
+        return Inertia::render('Dashboard'); 
     }
 }
