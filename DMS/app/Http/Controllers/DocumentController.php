@@ -98,7 +98,12 @@ class DocumentController extends Controller
 
     public function trash()
     {
-        $documents = $this->trashService->getTrashed(Document::class, ['type', 'tags', 'creator', 'pages']);
+        $documents = $this->trashService
+            ->getTrashed(Document::class, ['type', 'tags', 'creator', 'pages'])
+            ->whereHas('type', function ($query) {
+                $query->where('is_hospital', false);
+            })
+            ->get();
 
         return Inertia::render('Documents/Trash', [
             'documents'=> $documents,

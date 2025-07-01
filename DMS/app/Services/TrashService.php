@@ -27,9 +27,7 @@ class TrashService
     public function getTrashed(string $model, array $with = [])
     {
         $this->validateModel($model);
-        return $model::onlyTrashed()
-            ->with($with) // will edit this part 
-            ->get();
+        return $model::onlyTrashed()->with($with);
     }
 
     public function restore(string $model, int $id)
