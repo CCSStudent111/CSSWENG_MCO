@@ -22,7 +22,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::resource('hospital-documents', \App\Http\Controllers\Hospital\DocumentController::class)
-    ->parameters(['hospital-documents' => 'document']);
+    ->parameters(['hospital-documents' => 'document'])->only('store', 'create');
 
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);

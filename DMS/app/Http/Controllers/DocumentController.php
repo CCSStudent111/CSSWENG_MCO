@@ -19,9 +19,9 @@ class DocumentController extends Controller
     {
         // $user = Auth::user()->load('department.documentTypes'); // uncomment when login implemented
         $user = User::with('department.documentTypes')->find(1);
-        $document_ids = $user->department->documentTypes->pluck('id')->toArray();
+        $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
-        $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $document_ids)
+        $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
             ->latest()->get();
 
 

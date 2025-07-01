@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Hospital;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\StoreHospitalDocumentRequest;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Document;
@@ -41,7 +42,7 @@ class DocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDocumentRequest $request, Hospital $hospital)
+    public function store(StoreHospitalDocumentRequest $request, Hospital $hospital)
     {
         $validated = $request->validated();
         $validated['created_by'] = 1;

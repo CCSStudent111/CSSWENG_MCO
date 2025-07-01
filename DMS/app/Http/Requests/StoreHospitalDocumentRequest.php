@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDocumentRequest extends FormRequest
+class StoreHospitalDocumentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,6 +30,7 @@ class StoreDocumentRequest extends FormRequest
             'pages' => ['nullable', 'array'],
             'pages.*' => ['file'], 
             'issued_at' => ['nullable', 'date'],
+            'hospital_id' => 'required|exists:hospitals,id'
         ];
     }
 }

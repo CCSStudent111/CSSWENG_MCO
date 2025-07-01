@@ -41,7 +41,7 @@ class HospitalController extends Controller
      */
     public function show(Hospital $hospital)
     {
-        //
+        
     }
 
     /**
