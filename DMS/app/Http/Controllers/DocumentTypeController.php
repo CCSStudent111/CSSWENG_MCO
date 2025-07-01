@@ -60,7 +60,6 @@ class DocumentTypeController extends Controller
     public function update(UpdateDocumentTypeRequest $request, DocumentType $documentType)
     {
         $documentType->update($request->validated());
-
         return redirect()->route('document-types.index');
     }
 

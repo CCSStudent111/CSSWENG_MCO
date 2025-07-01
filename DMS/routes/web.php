@@ -21,6 +21,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
+Route::resource('hospital-documents', \App\Http\Controllers\Hospital\DocumentController::class)
+    ->parameters(['hospital-documents' => 'document'])->only('store', 'create');
+
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
 Route::resource('documents', DocumentController::class);
@@ -29,5 +32,5 @@ Route::resource('document-types', DocumentTypeController::class)->except(['show'
 
 Route::prefix('departments/{department}/document-types')->group(function () {
     Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
-    Route::post('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
+    Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
 });
