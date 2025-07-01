@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('document_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('is_hospital')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

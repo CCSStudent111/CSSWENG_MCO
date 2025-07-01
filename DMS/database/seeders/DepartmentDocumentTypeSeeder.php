@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Department;
 use App\Models\DocumentType;
+
 class DepartmentDocumentTypeSeeder extends Seeder
 {
     /**
@@ -14,11 +15,18 @@ class DepartmentDocumentTypeSeeder extends Seeder
     public function run(): void
     {
         $departments = Department::all();
-        $documentTypes = DocumentType::all();
+
+        $hospitalTypeIds = DocumentType::where('is_hospital', true)->pluck('id');
+        $generalTypes = DocumentType::where('is_hospital', false)->get();
 
         foreach ($departments as $department) {
-            $randomDocumentTypes = $documentTypes->random(rand(1, 3))->pluck('id');
-            $department->documentTypes()->attach($randomDocumentTypes);
+            $randomGeneralTypeIds = $generalTypes->random(rand(1, min(3, $generalTypes->count())))->pluck('id');
+
+            // Merge both hospital and general types
+            $allTypeIds = $hospitalTypeIds->merge($randomGeneralTypeIds)->unique();
+
+            // Attach to department
+            $department->documentTypes()->sync($allTypeIds);
         }
     }
 }

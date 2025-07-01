@@ -3,7 +3,13 @@
 <template>
   <AppLayout>
     <div class="custom-title mb-4">Manage Hospitals</div>
-
+    <div class="d-flex mb-4 justify-end">
+            <Link :href="route('hospital-documents.create')">
+                <v-btn color="primary" variant="flat" size="small">
+                    <v-icon start>mdi-upload</v-icon>Upload Document
+                </v-btn>
+            </Link>
+        </div>
     <v-table density="comfortable">
       <thead>
         <tr>
@@ -44,6 +50,7 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { Link } from '@inertiajs/vue3'
 import dayjs from 'dayjs'
 const props = defineProps({
   hospitals: Array

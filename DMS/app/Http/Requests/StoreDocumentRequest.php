@@ -11,7 +11,7 @@ class StoreDocumentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,15 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'summary' => ['required', 'string'],
+            'document_type_id' => ['required', 'exists:document_types,id'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string', 'max:50'],
+            'pages' => ['nullable', 'array'],
+            'pages.*' => ['file'], 
+            'issued_at' => ['nullable', 'date'],
+            'hospital_id' => 'required|exists:hospitals,id'
         ];
     }
 }
