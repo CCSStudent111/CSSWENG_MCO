@@ -70,8 +70,8 @@ class HospitalController extends Controller
     public function update(Request $request, Hospital $hospital)
     {
         $validated = $request->validate([
-            'name'=> 'required/string/max:255',
-            'branch'=> 'required/string/max:255',
+            'name'=> 'required|string|max:255',
+            'branch'=> 'required|string|max:255',
         ]);
 
         $hospital->update($validated);
