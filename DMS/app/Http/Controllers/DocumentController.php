@@ -19,9 +19,9 @@ class DocumentController extends Controller
     {
         // $user = Auth::user()->load('department.documentTypes'); // uncomment when login implemented
         $user = User::with('department.documentTypes')->find(1);
-        $document_ids = $user->department->documentTypes->pluck('id')->toArray();
+        $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
-        $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $document_ids)
+        $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
             ->latest()->get();
 
 
@@ -37,7 +37,7 @@ class DocumentController extends Controller
     {
         // $user = Auth::user()->load('department.documentTypes');  // uncomment when login implemented
         $user = User::with('department.documentTypes')->find(1);
-        $documentTypes = $user->department->documentTypes;
+        $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
 
         return Inertia::render('Documents/Create', [
             'documentTypes'=> $documentTypes
@@ -49,7 +49,11 @@ class DocumentController extends Controller
      */
     public function store(StoreDocumentRequest $request)
     {
-       // 
+        $validated = $request->validated();
+        $validated['created_by'] = 1;
+
+        $document = $this->documentService->create($validated);
+        return redirect()->route('documents.index');
     }
 
     /**

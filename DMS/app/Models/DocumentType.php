@@ -10,7 +10,7 @@ class DocumentType extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'is_hospital'];
 
     public function documents()
     {

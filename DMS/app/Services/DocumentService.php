@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Document;
 use App\Models\Tag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+
 class DocumentService
 {
     /**
@@ -15,48 +17,40 @@ class DocumentService
         //
     }
 
+    private function attachTags(Document $document, array $tags)
+    {
+        $tagIds = collect($tags)
+            ->map(fn($name) => trim($name))
+            ->filter()
+            ->map(fn($name) => Tag::firstOrCreate(["name" => $name])->id)
+            ->all();
+
+        $document->tags()->sync($tagIds);
+    }
+
+    private function storeFiles(Document $document, array $files)
+    {
+        foreach ($files as $file) {
+            $path = $file->store("{$document->type->name}/{$document->id}", 'public');
+
+            $document->pages()->create([
+                'file_path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+            ]);
+        }
+    }
+
+
     public function create(array $data)
     {
-        DB::beginTransaction();
+        return DB::transaction(function () use ($data) {
+            $document = Document::create((array) $data);
 
-        try {
-            $document = Document::create([
-                'name' => $data['name'],
-                'summary' => $data['summary'],
-                'document_type_id' => $data['document_type_id'],
-                'created_by' => $data['created_by'] ?? 1,
-            ]);
+            $this->attachTags($document, $data['tags']);
+            $this->storeFiles($document, $data['pages']);
 
-            // Tags
-            $tagIds = [];
-            foreach ($data['tags'] ?? [] as $tagName) {
-                $trimmed = trim($tagName);
-                if ($trimmed !== '') {
-                    $tag = Tag::firstOrCreate(['name' => $trimmed]);
-                    $tagIds[] = $tag->id;
-                }
-            }
-            $document->tags()->sync($tagIds);
-
-            // Files
-            if (!empty($data['pages'])) {
-                foreach ($data['pages'] as $file) {
-                    $path = $file->store("{$document->type->name}/{$document->id}", 'public');
-
-                    $document->pages()->create([
-                        'file_path' => $path,
-                        'document_name' => $file->getClientOriginalName(),
-                    ]);
-                }
-            }
-
-            DB::commit();
             return $document;
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        });
     }
 
     public function update(Document $document, array $data)
@@ -68,6 +62,4 @@ class DocumentService
     {
         // Soft delete the document
     }
-
-
 }
