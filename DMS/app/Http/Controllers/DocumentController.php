@@ -105,6 +105,14 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
+    public function showLogs(Document $document)
+    {
+        // $documents->load(['logs' ......])
+        return Inertia::render('Documents/Logs', [
+            'document' => $document,
+        ]);
+    }
+
 
     public function trash()
     {

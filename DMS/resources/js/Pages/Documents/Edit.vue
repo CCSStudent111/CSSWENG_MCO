@@ -1,7 +1,7 @@
 <template>
     <AppLayout>
         <!-- Title -->
-        <div class="custom-title mb-6">Editing Document {{ document.name }}</div>
+        <div class="custom-title mb-6">Editing Document "{{ document.name }}"</div>
 
         <!-- Name -->
         <v-text-field v-model="form.name" label="Document Name" variant="outlined" density="comfortable"

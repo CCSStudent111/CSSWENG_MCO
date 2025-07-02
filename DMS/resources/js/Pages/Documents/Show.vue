@@ -3,11 +3,20 @@
         <!-- Header -->
         <div class="d-flex align-center justify-between custom-title">
             <h1 class="text-h4 font-weight-bold mb-2">Document "{{ document.name }}"</h1>
-            <Link :href="route('documents.edit', document.id)">
-                <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
-                    Edit
-                </v-btn>
-            </Link>
+
+            <div class="d-flex gap-2">
+                <Link :href="route('documents.logs', document.id)"> 
+                    <v-btn color="secondary" size="small" variant="flat" prepend-icon="mdi-history">
+                        Logs
+                    </v-btn>
+                </Link>
+
+                <Link :href="route('documents.edit', document.id)">
+                    <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
+                        Edit
+                    </v-btn>
+                </Link>
+            </div>
         </div>
 
         <div class="d-flex align-center text-grey-darken-1 mb-1" style="font-size: 0.9rem;">
