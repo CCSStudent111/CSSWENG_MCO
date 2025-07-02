@@ -5,3 +5,7 @@
 <script setup>
 
 </script>
+
+<style scope>
+/* css styles here */
+</style>

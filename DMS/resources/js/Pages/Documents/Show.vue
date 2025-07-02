@@ -3,9 +3,11 @@
         <!-- Header -->
         <div class="d-flex align-center justify-between custom-title">
             <h1 class="text-h4 font-weight-bold mb-2">Document "{{ document.name }}"</h1>
-            <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
-                Edit
-            </v-btn>
+            <Link :href="route('documents.edit', document.id)">
+                <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
+                    Edit
+                </v-btn>
+            </Link>
         </div>
 
         <div class="d-flex align-center text-grey-darken-1 mb-1" style="font-size: 0.9rem;">
@@ -61,6 +63,7 @@
 
 
 <script setup>
+import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 

@@ -75,7 +75,15 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        //
+        $user = User::with('department.documentTypes')->find(1);
+        $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get()->values();
+
+        $document->load(['type', 'tags', 'creator', 'pages']);
+
+        return Inertia::render('Documents/Edit', [
+            'document' => $document,
+            'documentTypes'=> $documentTypes
+        ]);
     }
 
     /**
@@ -83,7 +91,9 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
-        //
+        $this->documentService->update($document, $request->validated());
+
+        return redirect()->route('documents.show', $document->id);
     }
 
     /**

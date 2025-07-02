@@ -55,11 +55,12 @@ class DocumentService
 
     public function update(Document $document, array $data)
     {
-        // Update and return the document
-    }
+        return DB::transaction(function () use ($document, $data) {
+            $document->update((array) $data);
 
-    public function destroy(Document $document)
-    {
-        // Soft delete the document
+            $this->attachTags($document, $data['tags']);
+
+            return $document;
+        });
     }
 }
