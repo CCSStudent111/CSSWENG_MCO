@@ -1,10 +1,11 @@
 <template>
     <AppLayout>
-        <div class="custom-title mb-4">Logs for "{{ document.name }}"</div>
+        <div class="custom-title mb-4">All Document Logs</div>
 
         <v-table density="comfortable">
             <thead>
                 <tr>
+                    <th class="text-left">Document</th>
                     <th class="text-left">Description</th>
                     <th class="text-left">Changes</th>
                     <th class="text-left">Updated By</th>
@@ -14,6 +15,7 @@
             </thead>
             <tbody>
                 <tr v-for="(log, index) in logs" :key="index" :class="index % 2 === 0 ? 'bg-grey-lighten-4' : ''">
+                    <td>{{ log.document?.name ?? 'N/A' }}</td>
                     <td>{{ log.description }}</td>
                     <td>
                         <div v-if="log.changes.attributes">
@@ -60,7 +62,6 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 
 const props = defineProps({
-    document: Object,
     logs: Array
 })
 

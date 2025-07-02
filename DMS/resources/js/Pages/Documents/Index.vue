@@ -4,6 +4,11 @@
     <AppLayout>
         <div class="custom-title mb-4">Manage Documents</div>
         <div class="d-flex mb-4 justify-end gap-2">
+            <Link :href="route('documents.all-logs')">
+            <v-btn color="secondary" variant="flat" size="small">
+                <v-icon start>mdi-history</v-icon>Logs
+            </v-btn>
+            </Link>
             <Link :href="route('documents.trash')">
             <v-btn color="error" variant="flat" size="small">
                 <v-icon start>mdi-delete</v-icon>Trash

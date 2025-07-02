@@ -7,6 +7,7 @@ use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Services\DocumentService;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\Models\Activity;
 use App\Models\User;
 use App\Services\TrashService;
 use Inertia\Inertia;
@@ -28,7 +29,7 @@ class DocumentController extends Controller
 
 
         return Inertia::render('Documents/Index', [
-            'documents'=> $documents,
+            'documents' => $documents,
         ]);
     }
 
@@ -42,7 +43,7 @@ class DocumentController extends Controller
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
 
         return Inertia::render('Documents/Create', [
-            'documentTypes'=> $documentTypes
+            'documentTypes' => $documentTypes
         ]);
     }
 
@@ -82,7 +83,7 @@ class DocumentController extends Controller
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,
-            'documentTypes'=> $documentTypes
+            'documentTypes' => $documentTypes
         ]);
     }
 
@@ -105,7 +106,28 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function showLogs(Document $document)
+    public function logs()
+    {
+        $logs = Activity::where('subject_type', Document::class)
+            ->with('subject', 'causer')
+            ->latest()
+            ->get()
+            ->map(function ($activity) {
+                return [
+                    'description' => $activity->description,
+                    'changes' => $activity->properties->toArray(),
+                    'causer' => $activity->causer,
+                    'document' => $activity->subject,
+                    'date' => $activity->created_at,
+                ];
+            });
+
+        return Inertia::render('Documents/AllLogs', [
+            'logs' => $logs,
+        ]);
+    }
+
+    public function documentLogs(Document $document)
     {
         $document->load('activities.causer');
         return Inertia::render('Documents/Logs', [
@@ -132,7 +154,7 @@ class DocumentController extends Controller
             ->get();
 
         return Inertia::render('Documents/Trash', [
-            'documents'=> $documents,
+            'documents' => $documents,
         ]);
     }
 

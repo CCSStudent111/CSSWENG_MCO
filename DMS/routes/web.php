@@ -34,7 +34,9 @@ Route::put('documents/{document}/restore', [DocumentController::class, 'restore'
 Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])
     ->withTrashed()
     ->name('documents.forceDelete');
-Route::get('documents/{document}/logs', [DocumentController::class, 'showLogs'])->name('documents.logs');
+Route::get('documents/logs', [DocumentController::class,'logs'])->name('documents.all-logs');
+Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
+
 Route::resource('documents', DocumentController::class);
 
 Route::resource('document-types', DocumentTypeController::class)->except(['show']);
