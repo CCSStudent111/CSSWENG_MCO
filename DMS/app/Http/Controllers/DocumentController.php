@@ -107,9 +107,17 @@ class DocumentController extends Controller
 
     public function showLogs(Document $document)
     {
-        // $documents->load(['logs' ......])
+        $document->load('activities.causer');
         return Inertia::render('Documents/Logs', [
             'document' => $document,
+            'logs' => $document->activities->map(function ($activity) {
+                return [
+                    'description' => $activity->description,
+                    'changes' => $activity->properties->toArray(),
+                    'causer' => $activity->causer,
+                    'date' => $activity->created_at,
+                ];
+            }),
         ]);
     }
 

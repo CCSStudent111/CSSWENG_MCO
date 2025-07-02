@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
 
 class Document extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'name',
@@ -19,7 +22,14 @@ class Document extends Model
     ];
 
     protected $dates = ['issued_at'];
-
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('document')
+            ->logOnly(['name', 'summary', 'document_type_id', 'issued_at'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
     public function type()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id');
@@ -49,4 +59,10 @@ class Document extends Model
     {
         return $this->belongsToMany(Hospital::class, 'hospital_documents');
     }
+
+
+    public function activities()
+    {
+        return $this->morphMany(Activity::class, 'subject');
+    } 
 }
