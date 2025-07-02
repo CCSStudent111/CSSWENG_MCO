@@ -6,12 +6,15 @@ use App\Models\Document;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Services\DocumentService;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\Models\Activity;
 use App\Models\User;
+use App\Services\TrashService;
 use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
-    public function __construct(protected DocumentService $documentService) {}
+    public function __construct(protected DocumentService $documentService, protected TrashService $trashService) {}
     /**
      * Display a listing of the resource.
      */
@@ -26,7 +29,7 @@ class DocumentController extends Controller
 
 
         return Inertia::render('Documents/Index', [
-            'documents'=> $documents,
+            'documents' => $documents,
         ]);
     }
 
@@ -40,7 +43,7 @@ class DocumentController extends Controller
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
 
         return Inertia::render('Documents/Create', [
-            'documentTypes'=> $documentTypes
+            'documentTypes' => $documentTypes
         ]);
     }
 
@@ -61,7 +64,11 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        //
+        $document->load(['type', 'tags', 'creator', 'pages']);
+
+        return Inertia::render('Documents/Show', [
+            'document' => $document
+        ]);
     }
 
     /**
@@ -69,7 +76,15 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        //
+        $user = User::with('department.documentTypes')->find(1);
+        $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get()->values();
+
+        $document->load(['type', 'tags', 'creator', 'pages']);
+
+        return Inertia::render('Documents/Edit', [
+            'document' => $document,
+            'documentTypes' => $documentTypes
+        ]);
     }
 
     /**
@@ -77,7 +92,9 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
-        //
+        $this->documentService->update($document, $request->validated());
+
+        return redirect()->route('documents.show', $document->id);
     }
 
     /**
@@ -85,6 +102,90 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        $document->delete();
+        return redirect()->route('documents.index');
+    }
+
+    public function logs()
+    {
+        $logs = Activity::where('subject_type', Document::class)
+            ->with([
+                'causer',
+                'subject' => function ($query) {
+                    $query->withTrashed(); 
+                }
+            ])
+            ->latest()
+            ->get()
+            ->map(function ($activity) {
+                $subject = $activity->subject;
+
+                return [
+                    'description' => $activity->description,
+                    'changes' => $activity->properties->toArray(),
+                    'causer' => $activity->causer,
+                    'document' => [
+                        'id' => $subject->id ?? null,
+                        'name' => $subject->name
+                            ?? $activity->properties['old']['name']
+                            ?? $activity->properties['attributes']['name']
+                            ?? 'N/A',
+                    ],
+                    'date' => $activity->created_at,
+                ];
+            });
+
+        return Inertia::render('Documents/AllLogs', [
+            'logs' => $logs,
+        ]);
+    }
+
+    public function documentLogs(Document $document)
+    {
+        $document->load(['activities' => function ($query) {
+            $query->latest();
+        }, 'activities.causer']);
+        return Inertia::render('Documents/Logs', [
+            'document' => $document,
+            'logs' => $document->activities->map(function ($activity) {
+                return [
+                    'description' => $activity->description,
+                    'changes' => $activity->properties->toArray(),
+                    'causer' => $activity->causer,
+                    'date' => $activity->created_at,
+                ];
+            }),
+        ]);
+    }
+
+
+    public function trash()
+    {
+        $documents = $this->trashService
+            ->getTrashed(Document::class, ['type', 'tags', 'creator', 'pages'])
+            ->whereHas('type', function ($query) {
+                $query->where('is_hospital', false);
+            })
+            ->get();
+
+        return Inertia::render('Documents/Trash', [
+            'documents' => $documents,
+        ]);
+    }
+
+    public function restore(Document $document)
+    {
+        $this->trashService->restore(Document::class, $document->id);
+
+        return redirect()->route('documents.trash');
+    }
+
+    public function forceDelete(Document $document)
+    {
+        $folderPath = "{$document->type->name}/{$document->id}";
+        Storage::disk('public')->deleteDirectory($folderPath);
+
+        $this->trashService->forceDelete(Document::class, $document->id);
+        return redirect()->route('documents.trash');
     }
 }
