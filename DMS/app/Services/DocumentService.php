@@ -46,7 +46,10 @@ class DocumentService
         return DB::transaction(function () use ($data) {
             $document = Document::create((array) $data);
 
-            $this->attachTags($document, $data['tags']);
+            if (!empty($data['tags'])) {
+                $this->attachTags($document, $data['tags']);
+            }
+
             $this->storeFiles($document, $data['pages']);
 
             return $document;
@@ -58,8 +61,10 @@ class DocumentService
         return DB::transaction(function () use ($document, $data) {
             $document->update((array) $data);
 
-            $this->attachTags($document, $data['tags']);
-
+            if (!empty($data['tags'])) {
+                $this->attachTags($document, $data['tags']);
+            }
+            
             return $document;
         });
     }
