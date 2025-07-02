@@ -1,4 +1,21 @@
 # CSSWENG_MCO
+
+*new*
+## About
+The **Document Management System** (hereby called DMS) is a software used to manage, store, organize and track electronic documents that is captured through the use of a document scanner. 
+This version of DMS is created using the following:
+
+**Backend**
+- Laravel (v.11)
+- PHP (v 8.2.12)
+- JavaScript
+
+**Frontend**
+- Vuetify (v 3.8.11)
+- CSS
+
+
+*old* 
 MCO for CSSWENG 
 
 run command for laravel
