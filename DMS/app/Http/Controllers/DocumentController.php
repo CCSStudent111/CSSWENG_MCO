@@ -109,15 +109,28 @@ class DocumentController extends Controller
     public function logs()
     {
         $logs = Activity::where('subject_type', Document::class)
-            ->with('subject', 'causer')
+            ->with([
+                'causer',
+                'subject' => function ($query) {
+                    $query->withTrashed(); 
+                }
+            ])
             ->latest()
             ->get()
             ->map(function ($activity) {
+                $subject = $activity->subject;
+
                 return [
                     'description' => $activity->description,
                     'changes' => $activity->properties->toArray(),
                     'causer' => $activity->causer,
-                    'document' => $activity->subject,
+                    'document' => [
+                        'id' => $subject->id ?? null,
+                        'name' => $subject->name
+                            ?? $activity->properties['old']['name']
+                            ?? $activity->properties['attributes']['name']
+                            ?? 'N/A',
+                    ],
                     'date' => $activity->created_at,
                 ];
             });
@@ -130,9 +143,8 @@ class DocumentController extends Controller
     public function documentLogs(Document $document)
     {
         $document->load(['activities' => function ($query) {
-            $query->latest(); 
+            $query->latest();
         }, 'activities.causer']);
-        
         return Inertia::render('Documents/Logs', [
             'document' => $document,
             'logs' => $document->activities->map(function ($activity) {
