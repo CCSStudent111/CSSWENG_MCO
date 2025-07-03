@@ -60,6 +60,6 @@ class DocumentPageController extends Controller
      */
     public function destroy(DocumentPage $documentPage)
     {
-        //
+        $documentPage->delete();
     }
 }
