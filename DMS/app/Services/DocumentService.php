@@ -62,7 +62,10 @@ class DocumentService
             $document->update((array) $data);
 
             $this->attachTags($document, $data['tags'] ?? []);
-            $this->storeFiles($document, $data['pages']);
+
+            if(!empty($data['pages'])) {
+                $this->storeFiles($document, $data['pages']);
+            }
             
             return $document;
         });
