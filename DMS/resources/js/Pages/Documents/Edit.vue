@@ -33,6 +33,9 @@
             placeholder="Enter tags and press Enter" hide-selected hide-no-data variant="outlined"
             class="mb-6 field-wide" />
 
+        <v-file-input v-model="form.pages" label="Add Pages" multiple show-size prepend-icon="mdi-paperclip"
+            class="mb-6 field-wide" />
+
         <!-- Save Button -->
         <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-content-save" @click="submit">
             Save
@@ -55,19 +58,33 @@ const form = reactive({
     document_type_id: props.document.type?.id ?? null,
     issued_at: props.document.issued_at ?? '',
     summary: props.document.summary ?? '',
-    tags: props.document.tags?.map(tag => tag.name) ?? []
+    tags: props.document.tags?.map(tag => tag.name) ?? [],
+    pages: []
 })
 
 function submit() {
-    const payload = {
-        name: form.name,
-        summary: form.summary,
-        document_type_id: form.document_type_id,
-        issued_at: form.issued_at,
-        tags: form.tags
-    }
+    const formData = new FormData()
 
-    router.put(route('documents.update', props.document.id), payload)
+    formData.append('name', form.name)
+    formData.append('summary', form.summary)
+    formData.append('document_type_id', form.document_type_id)
+    formData.append('issued_at', form.issued_at)
+
+    formData.append('_method', 'PUT')
+
+    form.tags.forEach(tag => {
+        formData.append('tags[]', tag)
+    })
+
+    form.pages.forEach(file => {
+        formData.append('pages[]', file)
+    })
+
+    router.post(route('documents.update', props.document.id), formData, {
+        forceFormData: true,
+        onSuccess: () => {
+        }
+    })
 }
 </script>
 
