@@ -61,9 +61,7 @@ class DocumentService
         return DB::transaction(function () use ($document, $data) {
             $document->update((array) $data);
 
-            if (!empty($data['tags'])) {
-                $this->attachTags($document, $data['tags']);
-            }
+            $this->attachTags($document, $data['tags'] ?? []);
             
             return $document;
         });

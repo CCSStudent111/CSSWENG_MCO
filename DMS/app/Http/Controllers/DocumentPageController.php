@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DocumentPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentPageController extends Controller
 {
@@ -28,7 +29,7 @@ class DocumentPageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    
     }
 
     /**
@@ -52,7 +53,7 @@ class DocumentPageController extends Controller
      */
     public function update(Request $request, DocumentPage $documentPage)
     {
-        //
+        
     }
 
     /**
@@ -60,6 +61,6 @@ class DocumentPageController extends Controller
      */
     public function destroy(DocumentPage $documentPage)
     {
-        $documentPage->delete();
+        
     }
 }
