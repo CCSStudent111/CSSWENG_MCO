@@ -7,8 +7,11 @@ use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Services\DocumentService;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
+use App\Models\Tag;
 use App\Models\User;
+use App\Models\Hospital;
 use App\Services\TrashService;
 use Inertia\Inertia;
 
@@ -188,4 +191,58 @@ class DocumentController extends Controller
         $this->trashService->forceDelete(Document::class, $document->id);
         return redirect()->route('documents.trash');
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $type = $request->input('type');
+
+        $results = [];
+
+        switch ($type) {
+            case 'document_name':
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->where('name', 'like', '%' . $query . '%')
+                    ->get();
+                break;
+
+            case 'tag':
+                $tagNames = is_array($query) ? $query : explode(',', $query);
+                $tagNames = array_map('trim', $tagNames);
+
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->whereHas('tags', function ($q) use ($tagNames) {
+                        $q->whereIn('name', $tagNames);
+                    }, '=', count($tagNames))
+                    ->get();
+                break;
+
+            case 'document_type':
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->whereHas('type', function ($q) use ($query) {
+                        $q->where('name', 'like', '%' . $query . '%');
+                    })
+                    ->get();
+                break;
+
+            case 'hospital':
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->whereHas('hospitals', function ($q) use ($query) {
+                        $q->where('name', 'like', '%' . $query . '%');
+                    })
+                    ->get();
+                break;
+
+            case 'user':
+                $results = User::where(function ($q) use ($query) {
+                    $q->where('first_name', 'like', '%' . $query . '%')
+                        ->orWhere('last_name', 'like', '%' . $query . '%');
+                    })
+                    ->get();
+                break;
+        }
+
+        return response()->json($results);
+    }
+
 }
