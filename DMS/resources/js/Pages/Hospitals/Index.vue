@@ -4,7 +4,7 @@
   <AppLayout>
     <div class="custom-title mb-4">Manage Hospitals</div>
     <div class="d-flex mb-4 justify-end">
-      <Link :href="route('hospital-documents.create')">
+     <Link :href="route('hospitals.create')">
       <v-btn color="primary" variant="flat" size="small">
         Add A Hospital
       </v-btn>
@@ -41,6 +41,7 @@
           <th class="text-left">Hospital ID</th>
           <th class="text-left">Name</th>
           <th class="text-left">Branch</th>
+          <th class="text-left">Type</th>
           <th class="text-left">Date Added</th>
           <th class="text-left">Last Updated</th>
           <th class="text-left">Action</th>
@@ -52,6 +53,7 @@
           <td>{{ hospital.id }}</td>
           <td>{{ hospital.name }}</td>
           <td>{{ hospital.branch }}</td>
+          <td>{{ hospital.type }}</td>
           <td>{{ dayjs(hospital.created_at).format('MM/DD/YYYY') }}</td>
           <td>{{ dayjs(hospital.updated_at).format('MM/DD/YYYY') }}</td>
           <td>
@@ -68,8 +70,9 @@
             </Link>
 
             
-            <v-btn icon size="small" color="error" variant="text" aria-label="Delete" 
-            @click="deleteHospital(hospital.id)"><v-icon>mdi-delete</v-icon>
+            <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
+            @click="openDeleteDialog(hospital)">
+            <v-icon>mdi-delete</v-icon>
             </v-btn>
           </td>
         </tr>
@@ -84,6 +87,28 @@
       ></v-pagination>
       <span class="ml-4">Page {{ page }} of {{ pageCount }}</span>
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <v-dialog v-model="confirmDeleteDialog" max-width="400">
+      <v-card>
+        <v-card-title>Confirm Delete</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete
+          <strong v-if="hospitalToDelete">{{ hospitalToDelete.name }}</strong>?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="secondary" variant="text" @click="confirmDeleteDialog = false">Cancel</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <Link :href="route('hospitals.trashed')">
+      <v-btn color="secondary" variant="outlined" size="small" class="ml-2">
+        View Trashed Hospitals
+      </v-btn>
+    </Link>
+
   </AppLayout>
 </template>
 
@@ -102,10 +127,19 @@ const entries = ref(10)
 const entriesOptions = [5, 10, 25, 50, 100]
 const search = ref('')
 const page = ref(1)
+const confirmDeleteDialog = ref(false)
+const hospitalToDelete = ref(null)
 
-function deleteHospital(id){
-  if (confirm('Are you sure you want to delete this hospital?')) {
-    router.delete(route('hospitals.destroy', id))
+function openDeleteDialog(hospital) {
+  hospitalToDelete.value = hospital
+  confirmDeleteDialog.value = true
+}
+
+function confirmDelete() {
+  if (hospitalToDelete.value) {
+    router.delete(route('hospitals.destroy', hospitalToDelete.value.id))
+    confirmDeleteDialog.value = false
+    hospitalToDelete.value = null
   }
 }
 
