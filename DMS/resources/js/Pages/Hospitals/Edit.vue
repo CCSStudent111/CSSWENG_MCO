@@ -16,7 +16,13 @@
         density="compact"
         class="mb-3"
       ></v-text-field>
-        <v-btn type="submit" color="primary" variant="flat">Save Changes</v-btn>
+      <v-text-field
+        v-model="form.type"
+        label="Type"
+        required
+        density="compact"
+        class="mb-3"
+      /><v-btn type="submit" color="primary" variant="flat">Save Changes</v-btn>
         <Link :href="route('hospitals.index')">
         <v-btn class="ml-2" color="secondary" variant="text">Cancel</v-btn>
         </Link>
@@ -36,7 +42,8 @@ const props = defineProps({
 
 const form = ref({
   name: props.hospital?.name ?? '',
-  branch: props.hospital?.branch ?? ''
+  branch: props.hospital?.branch ?? '',
+  type: props.hospital?.type ?? ''
 })
 
 function submit() {

@@ -37,6 +37,7 @@ class HospitalController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'branch' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
         ]);
 
         Hospital::create($validated);
@@ -72,6 +73,7 @@ class HospitalController extends Controller
         $validated = $request->validate([
             'name'=> 'required|string|max:255',
             'branch'=> 'required|string|max:255',
+            'type' => 'required|string|max:255',
         ]);
 
         $hospital->update($validated);
@@ -93,17 +95,17 @@ class HospitalController extends Controller
     {
         $trashedHospitals = Hospital::onlyTrashed()->get();
 
-        return Inertia::render("Hospitals/Trashed", [
-            'trashedHospitals' => $trashedHospitals
+        return Inertia::render('Hospitals/Trashed', [
+            'hospitals' => $trashedHospitals
         ]);
     }
 
     public function restore($id)
     {
-        $hospital = Hospital::withTrashed()->findOrFail($id);
+        $hospital = Hospital::onlyTrashed()->findOrFail($id);
         $hospital->restore();
 
-        return redirect()->route('hospitals.index')->with('success', 'Hospital restored successfully.');
+        return redirect()->route('hospitals.trashed')->with('success', 'Hospital restored successfully.');
     }
 
     public function forceDelete($id)
