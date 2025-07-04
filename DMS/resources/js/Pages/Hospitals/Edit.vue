@@ -16,12 +16,14 @@
         density="compact"
         class="mb-3"
       ></v-text-field>
-      <v-text-field
-        v-model="form.type"
+      <v-select
+        v-model="hospital.type"
+        :items="typeOptions"
         label="Type"
         required
         density="compact"
         class="mb-3"
+        clearable
       /><v-btn type="submit" color="primary" variant="flat">Save Changes</v-btn>
         <Link :href="route('hospitals.index')">
         <v-btn class="ml-2" color="secondary" variant="text">Cancel</v-btn>

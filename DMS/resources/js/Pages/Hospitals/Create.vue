@@ -16,12 +16,14 @@
                 density="compact"
                 class="mb-3"
             ></v-text-field>
-            <v-text-field
+            <v-select
                 v-model="hospital.type"
+                :items="typeOptions"
                 label="Type"
                 required
                 density="compact"
                 class="mb-3"
+                clearable
             />
             <v-btn
                 type="submit"
@@ -62,6 +64,14 @@ const hospital = ref({
     branch: '',
     type: ''
 });
+
+const typeOptions = [
+    'Hospital',
+    'Clinic',
+    'Diagnosis',
+    'Medical Center',
+    'Specialty'
+];
 
 const confirmDialog = ref(false);
 

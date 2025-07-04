@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DepartmentController extends Controller
 {
@@ -12,11 +13,11 @@ class DepartmentController extends Controller
      */
     public function index()
     {   
-        $departments = Department::all();
+         $departments = Department::withTrashed()->get();
 
-        return view('departments.index', [
-            'departments' => $departments,
-        ]);
+    return Inertia::render('Departments/Index', [
+        'departments' => $departments
+    ]);
     }
 
     /**
@@ -24,7 +25,7 @@ class DepartmentController extends Controller
      */
     public function create()
     {
-        return view('departments.create');
+        return Inertia::render('Departments/Create');
     }
 
     /**
@@ -33,7 +34,7 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:departments,name',
         ]);
 
         Department::create($validated);
@@ -46,7 +47,7 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        return view('departments.show', [
+        return Inertia::render('Departments/Show', [
             'department' => $department,
         ]);
     }
@@ -56,7 +57,7 @@ class DepartmentController extends Controller
      */
     public function edit(Department $department)
     {
-       return view('departments.edit', [
+        return Inertia::render('Departments/Edit', [
             'department' => $department,
         ]);
     }
@@ -64,7 +65,7 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Department $department)
+     public function update(Request $request, Department $department)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -83,5 +84,28 @@ class DepartmentController extends Controller
         $department->delete();
 
         return redirect()->route('departments.index')->with('success', 'Department deleted successfully.');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($id)
+    {
+        $department = Department::withTrashed()->find($id);
+
+        if ($department) {
+            $department->restore();
+            return redirect()->route('departments.index')->with('success', 'Department restored successfully.');
+        }
+
+        return redirect()->route('departments.index')->with('error', 'Department not found.');
+    }
+
+    public function forceDelete($id)
+    {
+        $department = Department::withTrashed()->findOrFail($id);
+        $department->forceDelete();
+
+        return redirect()->route('departments.index')->with('success', 'Department permanently deleted.');
     }
 }

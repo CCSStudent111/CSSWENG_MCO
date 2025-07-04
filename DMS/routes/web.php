@@ -32,7 +32,7 @@ Route::resource('hospital-documents', \App\Http\Controllers\Hospital\DocumentCon
 
 Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
 Route::post('departments/{id}/restore', [DepartmentController::class, 'restore'])->name('departments.restore');
-
+Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('departments.forceDelete');
 
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
