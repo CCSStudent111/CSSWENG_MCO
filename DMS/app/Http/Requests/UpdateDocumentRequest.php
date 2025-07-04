@@ -28,6 +28,8 @@ class UpdateDocumentRequest extends FormRequest
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
             'issued_at' => ['nullable', 'date'],
+            'pages' => ['nullable', 'array'],
+            'pages.*' => ['file'], 
         ];
     }
 }
