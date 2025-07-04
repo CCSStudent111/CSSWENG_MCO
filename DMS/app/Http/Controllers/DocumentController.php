@@ -202,7 +202,7 @@ class DocumentController extends Controller
         switch ($type) {
             case 'document_name':
                 $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
-                    ->where('name', 'like', '%' . $query . '%')
+                    ->where('name', 'REGEXP', $query)
                     ->get();
                 break;
 
@@ -234,10 +234,7 @@ class DocumentController extends Controller
                 break;
 
             case 'user':
-                $results = User::where(function ($q) use ($query) {
-                    $q->where('first_name', 'like', '%' . $query . '%')
-                        ->orWhere('last_name', 'like', '%' . $query . '%');
-                    })
+                $results = User::whereRaw("CONCAT(first_name, ' ', last_name) REGEXP ?", [$query])
                     ->get();
                 break;
         }
