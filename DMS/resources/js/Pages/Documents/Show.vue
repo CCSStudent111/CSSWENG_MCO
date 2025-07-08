@@ -1,6 +1,7 @@
 <template>
-    <AppLayout>
-        <!-- Header -->
+    <!-- <AppLayout>
+        
+         Header 
         <div class="d-flex align-center justify-between custom-title">
             <h1 class="text-h4 font-weight-bold mb-2">Document "{{ document.name }}"</h1>
 
@@ -24,26 +25,26 @@
             Issued at: {{ dayjs(document.issued_at).format('MMMM D, YYYY') }}
         </div>
 
-        <!-- Type -->
+         Type 
         <div class="d-flex align-center text-grey-darken-1 mb-1" style="font-size: 0.9rem;">
             <v-icon class="me-1" size="18" color="grey">mdi-file-document-outline</v-icon>
             Type: {{ document.type?.name ?? 'N/A' }}
         </div>
 
-        <!-- Created By -->
+         Created By 
         <div class="d-flex align-center text-grey-darken-1" style="font-size: 0.9rem;">
             <v-icon class="me-1" size="18" color="grey">mdi-account</v-icon>
             Created by: {{ document.creator?.username ?? 'Unknown' }}
         </div>
         <v-divider class="mb-6" />
 
-        <!-- Summary Section -->
+         Summary Section 
         <section class="mb-6">
             <h2 class="text-subtitle-1 font-weight-medium mb-2">Summary</h2>
             <p class="text-body-1 text-grey-darken-2" style="white-space: pre-line;">{{ document.summary }}</p>
         </section>
 
-        <!-- Tags -->
+         Tags 
         <section class="mb-6">
             <h2 class="text-subtitle-1 font-weight-medium mb-2">Tags</h2>
             <div class="d-flex flex-wrap">
@@ -54,7 +55,7 @@
             </div>
         </section>
 
-        <!-- Pages -->
+         Pages 
         <section v-if="document.pages?.length" class="mb-6">
             <h2 class="text-subtitle-1 font-weight-medium mb-2">Attached Pages</h2>
             <v-list density="compact" nav>
@@ -64,17 +65,73 @@
                         <template #prepend>
                             <v-icon color="primary">mdi-file-document-outline</v-icon>
                         </template>
-                        <v-list-item-title>{{ page.original_name }}</v-list-item-title>
-                    </v-list-item>
-                </a>
-            </v-list>
-        </section>
+<v-list-item-title>{{ page.original_name }}</v-list-item-title>
+</v-list-item>
+</a>
+</v-list>
+</section>
+</AppLayout> -->
+    <AppLayout>
+        <div class="create-page-wrapper mt-2">
+            <v-row class="fill-height">
+                <v-col cols="7">
+                    <v-card class="fill-height pa-2 elevation-3">
+                        <v-card-title>Attached Pages</v-card-title>
+                        <v-card-text>
+                            <v-list v-if="document.pages?.length" density="compact" nav>
+                                <v-list-item v-for="page in document.pages" :key="page.id"
+                                    :href="`/storage/${page.file_path}`" target="_blank" rounded link>
+                                    <template #prepend>
+                                        <v-icon color="primary">mdi-file-document-outline</v-icon>
+                                    </template>
+                                    <v-list-item-title>{{ page.original_name }}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                            <div v-else class="text-grey">No pages attached.</div>
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+                <v-col cols="5">
+                    <v-card class="fill-height pa-2 elevation-3">
+                        <v-card-title>Document Details</v-card-title>
+                        <v-card-text>
+                            <v-text-field label="Document Name" :model-value="document.name" readonly disabled
+                                density="compact" variant="outlined" class="mb-4"/>
+
+                            <v-text-field label="Document Type" :model-value="document.type?.name || 'N/A'" readonly
+                                disabled density="compact" variant="outlined" class="mb-4" />
+
+                            <v-textarea label="Summary" :model-value="document.summary" readonly disabled
+                                density="compact" variant="outlined" rows="4" class="mb-4" />
+
+                            <v-text-field label="Issued At"
+                                :model-value="document.issued_at ? dayjs(document.issued_at).format('MMMM D, YYYY') : 'N/A'"
+                                readonly disabled density="compact" variant="outlined"/>
+
+
+                            <div class="mb-4">
+                                <label class="v-label v-label--active">Tags</label>
+                                <div class="d-flex flex-wrap mt-1">
+                                    <v-chip v-for="tag in document.tags" :key="tag.id" color="grey-lighten-3"
+                                        size="small" label variant="flat" class="me-2 mb-2">
+                                        {{ tag.name }}
+                                    </v-chip>
+                                    <span v-if="!document.tags?.length" class="text-grey">No tags</span>
+                                </div>
+                            </div>
+
+                            <v-text-field label="Created By" :model-value="document.creator?.username ?? 'Unknown'"
+                                readonly disabled density="compact" variant="outlined" />
+                        </v-card-text>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
     </AppLayout>
 </template>
 
 
 <script setup>
-import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 
@@ -85,8 +142,8 @@ const props = defineProps({
 </script>
 
 <style scoped>
-.custom-title {
-    font-size: 2.5rem;
-    font-weight: bold;
+.create-page-wrapper {
+    height: calc(100vh - 100px);
 }
 </style>
+

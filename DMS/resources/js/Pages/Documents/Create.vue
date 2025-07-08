@@ -19,9 +19,14 @@
                     </v-col>
                     <v-col cols="5">
                         <v-card class="fill-height pa-2 elevation-3">
-                            <v-card-title>
-                                Document Details
-                            </v-card-title>
+                            <div class="d-flex align-center justify-space-between" style="gap: 16px;">
+                                <v-card-title style="padding-top: 0; padding-bottom: 0; margin: 0;">
+                                    Document Details
+                                </v-card-title>
+                                <!-- <v-select class="mt-3" v-model="category" :items="['Hospital', 'Employee', 'General']"
+                                    dense density="compact" variant="outlined" style="max-width: 150px"
+                                    label="Category" /> -->
+                            </div>
                             <v-card-text>
                                 <v-text-field v-model="form.name" label="Document Name"
                                     :error-messages="form.errors.name" required density="compact" variant="outlined" />
@@ -53,7 +58,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm } from '@inertiajs/vue3'
-import { watch } from 'vue'
 
 const props = defineProps({
     documentTypes: Array,

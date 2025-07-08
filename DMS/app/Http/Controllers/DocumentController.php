@@ -9,6 +9,7 @@ use App\Services\DocumentService;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
 use App\Models\User;
+use App\Models\Hospital;
 use App\Services\TrashService;
 use Inertia\Inertia;
 
@@ -41,9 +42,14 @@ class DocumentController extends Controller
         // $user = Auth::user()->load('department.documentTypes');  // uncomment when login implemented
         $user = User::with('department.documentTypes')->find(1);
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
+        // $hospitalDocumentTypes = $user->department->documentTypes->where('is_hospital', true)->values();
+        
+        // $users = User::all();
+        // $hospitals = Hospital::all();
 
         return Inertia::render('Documents/Create', [
-            'documentTypes' => $documentTypes
+            'documentTypes' => $documentTypes,
+            // 'hospitalDocumentTypes' => $hospitalDocumentTypes,
         ]);
     }
 
