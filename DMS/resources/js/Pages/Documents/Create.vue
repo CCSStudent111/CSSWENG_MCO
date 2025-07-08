@@ -1,4 +1,4 @@
-LAST UPDATED BY: FRANZ
+<!-- LAST UPDATED BY: FRANZ  -->
 
 <template>
     <AppLayout>
@@ -12,9 +12,8 @@ LAST UPDATED BY: FRANZ
                             </v-card-title>
                             <v-card-text>
                                 <v-file-upload v-model="form.pages" label="Upload Files" multiple show-size
-                                    prepend-icon="mdi-paperclip" :error-messages="form.errors.pages" required
-                                    show-remove />
-                                <!-- no removing page -->
+                                    prepend-icon="mdi-paperclip" :error-messages="form.errors.pages" required clearable>
+                                </v-file-upload>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -54,6 +53,7 @@ LAST UPDATED BY: FRANZ
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm } from '@inertiajs/vue3'
+import { watch } from 'vue'
 
 const props = defineProps({
     documentTypes: Array,
