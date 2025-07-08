@@ -35,8 +35,8 @@
                                     required density="compact" variant="outlined" />
                                 <v-textarea v-model="form.summary" label="Summary" :error-messages="form.errors.summary"
                                     required density="compact" variant="outlined" />
-                                <v-combobox v-model="form.tags" :items="[]" chips clearable multiple label="Tags"
-                                    placeholder="Enter tags and press Enter" hide-selected hide-no-data
+                                <v-combobox v-model="form.tags" :items="[]" chips multiple closable-chips clearable
+                                    label="Tags" placeholder="Enter tags and press Enter" hide-selected hide-no-data
                                     :error-messages="form.errors.tags" density="compact" variant="outlined" />
                                 <v-text-field v-model="form.issued_at" label="Issued At" type="date" clearable
                                     :error-messages="form.errors.issued_at" density="compact" variant="outlined" />
