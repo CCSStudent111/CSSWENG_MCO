@@ -5,16 +5,16 @@
             <h1 class="text-h4 font-weight-bold mb-2">Document "{{ document.name }}"</h1>
 
             <div class="d-flex gap-2">
-                <Link :href="route('documents.logs', document.id)"> 
-                    <v-btn color="secondary" size="small" variant="flat" prepend-icon="mdi-history">
-                        Logs
-                    </v-btn>
+                <Link :href="route('documents.logs', document.id)">
+                <v-btn color="secondary" size="small" variant="flat" prepend-icon="mdi-history">
+                    Logs
+                </v-btn>
                 </Link>
 
                 <Link :href="route('documents.edit', document.id)">
-                    <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
-                        Edit
-                    </v-btn>
+                <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
+                    Edit
+                </v-btn>
                 </Link>
             </div>
         </div>
@@ -58,13 +58,15 @@
         <section v-if="document.pages?.length" class="mb-6">
             <h2 class="text-subtitle-1 font-weight-medium mb-2">Attached Pages</h2>
             <v-list density="compact" nav>
-                <v-list-item v-for="page in document.pages" :key="page.id" :href="`/storage/${page.file_path}`"
-                    target="_blank" class="rounded-lg">
-                    <template #prepend>
-                        <v-icon color="primary">mdi-file-document-outline</v-icon>
-                    </template>
-                    <v-list-item-title>{{ page.original_name }}</v-list-item-title>
-                </v-list-item>
+                <a v-for="page in document.pages" :key="page.id" :href="`/storage/${page.file_path}`" target="_blank"
+                    class="v-list-item rounded-lg" style="display: block;">
+                    <v-list-item>
+                        <template #prepend>
+                            <v-icon color="primary">mdi-file-document-outline</v-icon>
+                        </template>
+                        <v-list-item-title>{{ page.original_name }}</v-list-item-title>
+                    </v-list-item>
+                </a>
             </v-list>
         </section>
     </AppLayout>

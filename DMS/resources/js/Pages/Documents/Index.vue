@@ -86,7 +86,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
+import { Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 
@@ -95,16 +95,17 @@ const entriesOptions = [5, 10, 25, 50, 100]
 const search = ref('')
 const page = ref(1)
 
+const form = useForm()
+
 
 const props = defineProps({
     documents: Array
 })
 
 function deleteDocument(id) {
-    if (confirm('Are you sure you want to delete this document?')) {
-        router.delete(route('documents.destroy', id), {
-            preserveScroll: true,
-            onSuccess: () => console.log(`Document ${id} deleted`)
+    if (confirm('Delete this document?')) {
+        form.delete(route('documents.destroy', id), {
+            preserveScroll: true
         })
     }
 }
@@ -135,18 +136,21 @@ watch(entries, () => { page.value = 1 })
     font-size: 2.5rem;
     font-weight: bold;
 }
+
 .controls-row {
-  width: 100%;
-  max-width: 100%;
+    width: 100%;
+    max-width: 100%;
 }
+
 .custom-entries {
-  min-width: 140px;
-  max-width: 180px;
-  height: 40px; 
-  align-items: center;
+    min-width: 140px;
+    max-width: 180px;
+    height: 40px;
+    align-items: center;
 }
+
 .custom-search {
-  width: 100%;
-  height: 40px; 
+    width: 100%;
+    height: 40px;
 }
 </style>

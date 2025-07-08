@@ -55,6 +55,8 @@ class DocumentController extends Controller
         $validated = $request->validated();
         $validated['created_by'] = 1;
 
+        $validated['pages'] = $request->file('pages') ?? [];
+
         $document = $this->documentService->create($validated);
         return redirect()->route('documents.index');
     }
@@ -106,7 +108,7 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function logs()
+    public function logs()// change to view user associated document types, add pagination to logs view
     {
         $logs = Activity::where('subject_type', Document::class)
             ->with([
