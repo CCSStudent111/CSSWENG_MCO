@@ -8,7 +8,6 @@
 
             <v-textarea v-model="form.summary" label="Summary" required />
 
-
             <v-select v-model="form.document_type_id" :items="documentTypes" item-title="name" item-value="id"
                 label="Document Type" required />
                 
@@ -20,7 +19,12 @@
             <v-file-input v-model="form.pages" label="Upload Files" multiple show-size
                 prepend-icon="mdi-paperclip" />
 
-            <v-btn type="submit" color="primary" class="mt-4">Submit</v-btn>
+            <div class="d-flex mt-4" style="gap: 12px;">
+                <v-btn type="submit" color="primary">Submit</v-btn>
+                <Link :href="route('documents.index')">
+                    <v-btn color="secondary" variant="text">Cancel</v-btn>
+                </Link>
+            </div>
         </v-form>
     </AppLayout>
 </template>
@@ -28,7 +32,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm } from '@inertiajs/vue3'
-import { router } from '@inertiajs/vue3'
+import { router, Link } from '@inertiajs/vue3'
 
 const props = defineProps({
     documentTypes: Array,
