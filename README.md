@@ -25,7 +25,7 @@
 2. Download and install **XAMPP 8.2.12**.
     - This automatically provides **PHP 8.2.12** as well.
 
-> **Note:** Only install PHP separately if you are not using XAMPP. The included PHP version should match your project's requirements.
+> **Note:** Only install PHP separately if you are not using XAMPP. 
 
 ---
 
@@ -41,10 +41,9 @@
 
 ## Step 3: Enable PHP Extensions
 
-- Open your `php.ini` (found in `C:\xampp\php\php.ini`).
-- Remove the leading `;` (uncomment) to enable these lines:
+> **Note:** If you are using **XAMPP**, these extensions are usually enabled by default.  
+> If you installed PHP manually (not using XAMPP), open your `php.ini` and make sure the following lines are **uncommented** (no leading `;`):
 
-    ```
     extension=curl
     extension=fileinfo
     extension=gettext
@@ -53,9 +52,9 @@
     extension=mysqli
     extension=pdo_mysql
     extension=pdo_sqlite
-    ```
 
----
+- For XAMPP users, you can double-check by searching these lines in `C:\xampp\php\php.ini`.
+- For manual PHP installations, edit `php.ini` as needed and restart your web server or PHP process after saving.
 
 ## Step 4: Install Composer
 
@@ -63,7 +62,7 @@
 
 ---
 
-## Step 5: Install Laravel 11 Installer Globally
+## Step 5: Install Laravel 11 Installer
 
 Open **CMD** or **PowerShell** and run:
 ```sh
