@@ -1,72 +1,188 @@
-<h1 align="center">CSSWENG_MCO</h1>
+# Document Management System
 
-## About
-The **Document Management System** (hereby called DMS) is a software used to manage, store, organize and track electronic documents that is captured through the use of a document scanner.\
-This version of DMS is created using the following:
+> **Note:** These instructions are for a **fresh Windows installation** (not tested for MacOS or Linux).
 
-**Backend**
-- Laravel (v.11)
-- PHP (v 8.2.12)
-- JavaScript
+---
 
-**Frontend**
-- Vuetify (v 3.8.11)
-- CSS
+## Prerequisites
 
-## Getting Started / Installation
-To get started, you may need to have the following installed on your machine:
-- [Composer](https://getcomposer.org/), a dependency manager for PHP,
-- [Laravel](https://laravel.com/docs/12.x/installation)(at least v.11 or newer),
-- [PHP](https://www.php.net/manual/en/install.php)(at least v.8.2 or newer).
+**Required versions:**
+- [XAMPP 8.2.12 (includes PHP 8.2.12)](https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/xampp-windows-x64-8.2.12-0-VS16-installer.exe)
+  - **Note:** PHP is bundled with XAMPP, so you do *not* need to install PHP separately.
+  - PHP version must match XAMPP's version (required: **PHP 8.2.12**)
+- [Composer 2.7+](https://getcomposer.org/Composer-Setup.exe)
+- [Laravel 11](https://laravel.com/docs/11.x/installation) (installed globally via Composer)
+- [Git](https://git-scm.com/download/win)
+- [Notepad++](https://notepad-plus-plus.org/downloads/)
+- [7-Zip](https://www.7-zip.org/download.html) (or any zip extractor, e.g., WinRAR)
+- [Node.js (includes npm)](https://nodejs.org/) *(any current stable version is fine)*
 
-/*Optional:*
-- For self-hosting, download [XAMPP](https://www.apachefriends.org/download.html).
+---
 
-/After installing the aforementioned software:
-###  Using the Command Prompt
-For the user to check: **(a)** if the software is installed correctly, and/or **(b)** to check the version, type either of this to the command prompt (hereby called *cmd*):\
-`composer --version`
-or
-`php -v`
+## Step 1: Install Prerequisite Software
 
-/After that, you need to create an **.env** file. To streamline this process, if you are using VSCode and have access in the DMS repository:
-1. Type `composer install` in the terminal (**NOTE: only use this command if the `php artisan` command does not exist**), it will generate an **.env** file, specifically `.env.example`.
-2. If `.env` file doesn't exist, copy the contents of `.env.example` and create your own `.env` file.
-3. If the key doesn't exist, type `php artisan key:generate`. It will generate a key in the `.env` file.
-4. 
+1. Install **Git**, **7-Zip**, **Notepad++**, and **Node.js (npm)**.
+2. Download and install **XAMPP 8.2.12**.
+    - This automatically provides **PHP 8.2.12** as well.
 
+> **Note:** Only install PHP separately if you are not using XAMPP. The included PHP version should match your project's requirements.
 
+---
 
+## Step 2: Set Up PHP Path
 
+- XAMPP does **not** automatically add PHP to your system `PATH`.
+- Open **System Environment Variables** and add the XAMPP PHP folder (e.g., `C:\xampp\php`) to your `PATH`.
+    - *Skip this step if you already have PHP installed elsewhere and available in PATH.*
 
-*Side Note:* If your PHP is a fresh install:
-- create a file called *php.ini*,
-- remove *;extensions=fileinfo*\
-In the off-change that the user gets a error when creating/downloading a Laravel Project (error 28), **disable IPv6**. To disable *IPv6*:
-1. Open the **Control Panel**,
-2. Open **Network and Internet**,
-3. Open **Network and Sharing Center**,
-4. Click **Change Adapter Setting**,
-5. Right-click your connection and go to **Properties**, and
-6. Uncheck the box next to Internet Protocol Version 6 (TCP/IPv6) to disable it.
+> **Tip:** If PHP is only for this project, just add XAMPP's PHP to `PATH`.
 
+---
 
+## Step 3: Enable PHP Extensions
 
+- Open your `php.ini` (found in `C:\xampp\php\php.ini`).
+- Remove the leading `;` (uncomment) to enable these lines:
 
+    ```
+    extension=curl
+    extension=fileinfo
+    extension=gettext
+    extension=mbstring
+    extension=exif
+    extension=mysqli
+    extension=pdo_mysql
+    extension=pdo_sqlite
+    ```
 
-*old*\
-MCO for CSSWENG 
+---
 
-run command for laravel
+## Step 4: Install Composer
 
-composer install (if php artisan command does not exist)
+- Download and run [Composer-Setup.exe (2.7+)](https://getcomposer.org/download/).
 
-create .env file copy .env.example (if .env file does not exist)
+---
 
-php artisan key:generate (if key does not exist)
+## Step 5: Install Laravel 11 Installer Globally
 
-php artisan migrate:fresh --seed (setup tables for database)
+Open **CMD** or **PowerShell** and run:
+```sh
+composer global require laravel/installer
+```
+- Make sure that running `laravel -v` outputs version **11.x.x**
 
-php artisan serve (run localhost)
+---
 
-if frontend vue run npm run dev with php artisan serve
+## Step 6: Verify Installations
+
+Check that everything is installed correctly:
+
+```sh
+npm -v
+composer -v
+laravel -v
+php -v
+```
+- Composer should be **2.7+**
+- Laravel should be **11.x**
+- PHP should be **8.2.12**
+
+---
+
+## Step 7: Clone the Project
+
+- Clone the project using Git:
+    ```sh
+    git clone <repository-url>
+    ```
+- Enter the project directory:
+    ```sh
+    cd DMS
+    ```
+- Create a new `.env` file by copying the provided `.env.example`:
+    ```sh
+    copy .env.example .env
+    ```
+    *(or use `cp .env.example .env` in Git Bash)*
+
+---
+
+## Step 8: Install PHP Dependencies
+
+```sh
+composer install
+```
+
+---
+
+## Step 9: Generate Application Key
+
+```sh
+php artisan key:generate
+```
+> Run only if the key does not exist in `.env`.
+
+---
+
+## Step 10: Start XAMPP Services
+
+- Open **XAMPP Control Panel** and start **Apache** and **MySQL**.
+
+---
+
+## Step 11: Run Database Migrations & Seeders
+
+You only need **one** of these, usually the last for a fresh database:
+```sh
+php artisan migrate
+php artisan migrate:fresh
+php artisan migrate:fresh --seed
+```
+
+---
+
+## Step 12: Serve the Application
+
+```sh
+php artisan serve
+```
+- Open [http://localhost:8000](http://localhost:8000) in your browser.
+
+---
+
+## Step 13: Run the Frontend (Vue)
+
+In a **separate terminal**, run:
+```sh
+npm install
+npm run dev
+```
+*(Keep `php artisan serve` running)*
+
+---
+
+## Optional: Increase File Upload Size (XAMPP)
+
+To increase upload/file size limits:
+
+- Open `php.ini` and set these values:
+    ```
+    memory_limit = 512M
+    post_max_size = 100M
+    upload_max_filesize = 100M
+    ```
+- Restart Apache after making changes.
+
+---
+
+## Troubleshooting
+
+- If you get database connection errors, double-check your `.env` database credentials.
+- Ensure MySQL is running in XAMPP.
+- Run `composer install` if dependencies are missing after clone.
+- If XAMPP errors, open **Task Manager**, end any `mysqld.exe` processes, and restart MySQL from XAMPP.
+- For "port in use" errors, see which app is using the port (`netstat -ano | findstr :3306`) and end the process.
+
+---
+
+**Happy coding!**
