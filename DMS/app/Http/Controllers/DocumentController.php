@@ -193,98 +193,82 @@ class DocumentController extends Controller
     }
 
     public function search(Request $request)
-    {
-        $query = $request->input('query');
-        $type = $request->input('type');
+{
+    $query = $request->input('query');
+    $type = $request->input('type');
+    $matchType = $request->input('match_type', 'all');
+    $perPage = $request->input('per_page', 10);
 
-        $results = [];
+    $results = Document::with(['tags', 'hospitals', 'creator', 'type']);
 
-        switch ($type) {
-            case 'document_name':
-                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
-                    ->where('name', 'REGEXP', $query)
-                    ->get();
-                break;
+    switch ($type) {
+        case 'document_name':
+            $results = $results->where('name', 'LIKE', "%{$query}%");
+            break;
 
-            case 'tag':
-                $tagPatterns = is_array($query) ? $query : explode(',', $query);
-                $tagPatterns = array_map('trim', $tagPatterns);
-                $matchType = $request->input('match_type', 'all');
-
-                $results = Document::with(['tags', 'hospitals', 'creator', 'type']);
-
-                if (empty($tagPatterns[0])) {
-                    $results = $results->doesntHave('tags');
-                } else {
-                    $results = $results->whereHas('tags', function ($q) use ($tagPatterns, $matchType) {
-                        $q->where(function ($subQuery) use ($tagPatterns, $matchType) {
-                            foreach ($tagPatterns as $pattern) {
-                                if ($matchType === 'any') {
-                                    $subQuery->orWhere('name', 'REGEXP', $pattern);
-                                } else {
-                                    $subQuery->where('name', 'REGEXP', $pattern);
-                                }
+        case 'tag':
+            $tagPatterns = is_array($query) ? $query : explode(',', $query);
+            $tagPatterns = array_map('trim', $tagPatterns);
+            if (empty($tagPatterns[0])) {
+                $results = $results->doesntHave('tags');
+            } else {
+                $results = $results->whereHas('tags', function ($q) use ($tagPatterns, $matchType) {
+                    $q->where(function ($sub) use ($tagPatterns, $matchType) {
+                        foreach ($tagPatterns as $pattern) {
+                            if ($matchType === 'any') {
+                                $sub->orWhere('name', 'LIKE', "%{$pattern}%");
+                            } else {
+                                $sub->where('name', 'LIKE', "%{$pattern}%");
                             }
-                        });
+                        }
                     });
-                }
+                });
+            }
+            break;
 
-                $results = $results->get();
-                break;
+        case 'document_type':
+            $results = $results->whereHas('type', function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            });
+            break;
 
+        case 'hospital':
+            $results = $results->whereHas('hospitals', function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            });
+            break;
 
-            case 'document_type':
-                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
-                    ->whereHas('type', function ($q) use ($query) {
-                        $q->where('name', 'REGEXP', $query);
-                    })
-                    ->get();
-                break;
+        case 'tag+type':
+            $tags = $request->input('tags', []);
+            $docType = $request->input('document_type');
 
-            case 'hospital':
-                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
-                    ->whereHas('hospitals', function ($q) use ($query) {
-                        $q->where('name', 'REGEXP', $query);
-                    })
-                    ->get();
-                break;
+            $results = $results->whereHas('type', function ($q) use ($docType) {
+                $q->where('name', 'LIKE', "%{$docType}%");
+            });
 
-            case 'user':
-                $results = User::whereRaw("CONCAT(first_name, ' ', last_name) REGEXP ?", [$query])
-                    ->get();
-                break;
-
-            case 'tag+type':
-                $tags = $request->input('tags', []);
-                $docType = $request->input('document_type');
-                $matchType = $request->input('match_type', 'all');
-
-                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
-                    ->whereHas('type', function ($q) use ($docType) {
-                        $q->where('name', 'REGEXP', $docType);
-                    });
-
-                if (empty($tags) || (count($tags) === 1 && trim($tags[0]) === '')) {
-                    $results = $results->doesntHave('tags');
-                } else {
-                    $results = $results->whereHas('tags', function ($q) use ($tags, $matchType) {
-                        $q->where(function ($subQuery) use ($tags, $matchType) {
-                            foreach ($tags as $pattern) {
-                                if ($matchType === 'any') {
-                                    $subQuery->orWhere('name', 'REGEXP', $pattern);
-                                } else {
-                                    $subQuery->where('name', 'REGEXP', $pattern);
-                                }
+            if (empty($tags) || (count($tags) === 1 && trim($tags[0]) === '')) {
+                $results = $results->doesntHave('tags');
+            } else {
+                $results = $results->whereHas('tags', function ($q) use ($tags, $matchType) {
+                    $q->where(function ($subQuery) use ($tags, $matchType) {
+                        foreach ($tags as $pattern) {
+                            if ($matchType === 'any') {
+                                $subQuery->orWhere('name', 'LIKE', "%{$pattern}%");
+                            } else {
+                                $subQuery->where('name', 'LIKE', "%{$pattern}%");
                             }
-                        });
+                        }
                     });
-                }
+                });
+            }
+            break;
 
-                $results = $results->get();
-                break;
-        }
-
-        return response()->json($results);
+        default:
+            return response()->json(['error' => 'Invalid search type'], 400);
     }
+
+    return response()->json($results->paginate($perPage));
+}
+
 
 }
