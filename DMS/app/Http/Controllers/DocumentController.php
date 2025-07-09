@@ -23,6 +23,7 @@ class DocumentController extends Controller
     {
         // $user = Auth::user()->load('department.documentTypes'); // uncomment when login implemented
         $user = User::with('department.documentTypes')->find(1);
+        $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get();
         $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
         $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
@@ -31,6 +32,7 @@ class DocumentController extends Controller
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
+            'documentTypes' => $documentTypes,
         ]);
     }
 

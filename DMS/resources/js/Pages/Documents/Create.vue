@@ -40,6 +40,7 @@
                                     :error-messages="form.errors.tags" density="compact" variant="outlined" />
                                 <v-text-field v-model="form.issued_at" label="Issued At" type="date" clearable
                                     :error-messages="form.errors.issued_at" density="compact" variant="outlined" />
+                                
                                 <div class="d-flex justify-end">
                                     <v-btn type="submit" color="primary" class="mt-2" :loading="form.processing"
                                         density="compact">

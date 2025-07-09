@@ -22,8 +22,11 @@
         </div>
         <div class="controls-row mb-4">
             <div class="d-flex" style="gap: 16px;">
-                <v-select v-model="entries" :items="entriesOptions" label="Show entries" class="custom-entries"
-                    density="compact" hide-details variant="outlined" style="width: 160px; flex-shrink: 0;"></v-select>
+                <v-select v-model="selectedType" :items="props.documentTypes" item-title="name" item-value="id"
+                    label="Filter by Type" clearable density="compact" class="custom-entries" hide-details
+                    variant="outlined" style="width: 1600px; flex-shrink: 0;" />
+                <v-select v-model="entries" :items="entriesOptions" label="Show entries" class="narrow-select"
+                    density="compact" hide-details variant="outlined"></v-select>
 
                 <v-text-field v-model="search" label="Search Documents" prepend-inner-icon="mdi-magnify" clearable
                     density="compact" class="custom-search" style="flex: 1 1 0;"></v-text-field>
@@ -94,13 +97,15 @@ const entries = ref(10)
 const entriesOptions = [5, 10, 25, 50, 100]
 const search = ref('')
 const page = ref(1)
-
-const form = useForm()
+const selectedType = ref(null)
 
 
 const props = defineProps({
-    documents: Array
+    documents: Array,
+    documentTypes: Array,
 })
+
+
 
 function deleteDocument(id) {
     if (confirm('Delete this document?')) {
@@ -111,11 +116,17 @@ function deleteDocument(id) {
 }
 
 const filteredDocuments = computed(() =>
-    props.documents.filter(doc =>
-        doc.name.toLowerCase().includes(search.value.toLowerCase()) ||
-        doc.type.name.toLowerCase().includes(search.value.toLowerCase()) ||
-        String(doc.id).includes(search.value)
-    )
+    props.documents.filter(doc => {
+        const matchesSearch =
+            doc.name.toLowerCase().includes(search.value.toLowerCase()) ||
+            doc.type.name.toLowerCase().includes(search.value.toLowerCase()) ||
+            String(doc.id).includes(search.value)
+
+        const matchesType =
+            !selectedType.value || doc.type.id === selectedType.value
+
+        return matchesSearch && matchesType
+    })
 )
 
 const pageCount = computed(() =>
@@ -127,7 +138,9 @@ const paginatedDocuments = computed(() => {
     return filteredDocuments.value.slice(start, start + entries.value)
 })
 
-watch(entries, () => { page.value = 1 })
+watch([entries, selectedType], () => {
+  page.value = 1
+})
 
 </script>
 
@@ -143,7 +156,7 @@ watch(entries, () => { page.value = 1 })
 }
 
 .custom-entries {
-    min-width: 140px;
+    min-width: 100px;
     max-width: 180px;
     height: 40px;
     align-items: center;
@@ -152,5 +165,10 @@ watch(entries, () => { page.value = 1 })
 .custom-search {
     width: 100%;
     height: 40px;
+}
+
+.narrow-select {
+  max-width: 90px !important;
+  min-width: 90px !important;
 }
 </style>
