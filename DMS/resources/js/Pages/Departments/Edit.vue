@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <div class="custom-title mb-4">Edit Department</div>
-    <v-form @submit.prevent="submit">
+    <v-form v-if="department" @submit.prevent="submit">
       <v-text-field
         v-model="form.name"
         label="Department Name"
@@ -15,23 +15,29 @@
         <v-btn class="ml-2" color="secondary" variant="text">Cancel</v-btn>
       </Link>
     </v-form>
+    <div v-else>
+      <v-alert type="error" text>
+        Department not found or data not loaded.
+      </v-alert>
+    </div>
   </AppLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { router, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { useForm, Link } from '@inertiajs/vue3'
 
 const props = defineProps({
   department: Object
 })
 
-const form = ref({
-  name: props.department?.name ?? ''
+const department = props.department ?? {}
+
+const form = useForm({
+  name: department.name || ''
 })
 
 function submit() {
-  router.put(route('departments.update', props.department.id), form.value)
+  form.put(route('departments.update', department.id))
 }
 </script>

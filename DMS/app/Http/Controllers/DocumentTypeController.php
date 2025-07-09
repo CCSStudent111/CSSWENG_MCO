@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreDocumentTypeRequest;
-use App\Http\Requests\UpdateDocumentTypeRequest;
 use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,7 +13,7 @@ class DocumentTypeController extends Controller
      */
     public function index()
     {
-        $documentTypes = DocumentType::all();
+        $documentTypes = DocumentType::withTrashed()->get();
 
         return Inertia::render('DocumentTypes/Index', [
             'documentTypes' => $documentTypes
@@ -33,16 +31,16 @@ class DocumentTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreDocumentTypeRequest $request)
+    public function store(Request $request)
     {
-        DocumentType::create($request->validated());
-        return redirect()->route('document-types.index');
-    }
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:document_types,name',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(DocumentType $documentType) {}
+        DocumentType::create($validated);
+
+        return redirect()->route('documentTypes.index')->with('success', 'Document type created successfully.');
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -57,18 +55,50 @@ class DocumentTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDocumentTypeRequest $request, DocumentType $documentType)
+    public function update(Request $request, DocumentType $documentType)
     {
-        $documentType->update($request->validated());
-        return redirect()->route('document-types.index');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:document_types,name,' . $documentType->id,
+        ]);
+
+        $documentType->update($validated);
+
+        return redirect()->route('documentTypes.index')->with('success', 'Document type updated successfully.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (soft delete).
      */
     public function destroy(DocumentType $documentType)
     {
         $documentType->delete();
-        return redirect()->route('document-types.index');
+
+        return redirect()->route('documentTypes.index')->with('success', 'Document type deleted successfully.');
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($id)
+    {
+        $documentType = DocumentType::withTrashed()->find($id);
+
+        if ($documentType) {
+            $documentType->restore();
+            return redirect()->route('documentTypes.index')->with('success', 'Document type restored successfully.');
+        }
+
+        return redirect()->route('documentTypes.index')->with('error', 'Document type not found.');
+    }
+
+    /**
+     * Permanently delete the specified resource from storage.
+     */
+    public function forceDelete($id)
+    {
+        $documentType = DocumentType::withTrashed()->findOrFail($id);
+        $documentType->forceDelete();
+
+        return redirect()->route('documentTypes.index')->with('success', 'Document type permanently deleted.');
     }
 }

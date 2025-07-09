@@ -34,10 +34,15 @@ Route::get('departments', [DepartmentController::class, 'index'])->name('departm
 Route::post('departments/{id}/restore', [DepartmentController::class, 'restore'])->name('departments.restore');
 Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('departments.forceDelete');
 
+Route::get('documentTypes', [DocumentTypeController::class, 'index'])->name('documentTypes.index');
+Route::post('documentTypes/{id}/restore', [DocumentTypeController::class, 'restore'])->name('documentTypes.restore');
+Route::delete('documentTypes/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
+
+
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
 Route::resource('documents', DocumentController::class);
-Route::resource('document-types', DocumentTypeController::class)->except(['show']);
+Route::resource('documentTypes', DocumentTypeController::class)->except(['show']);
 Route::resource('departments', DepartmentController::class);
 
 Route::prefix('departments/{department}/document-types')->group(function () {
