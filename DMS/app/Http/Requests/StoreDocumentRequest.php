@@ -27,7 +27,7 @@ class StoreDocumentRequest extends FormRequest
             'document_type_id' => ['required', 'exists:document_types,id'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
-            'pages' => ['nullable', 'array'],
+            'pages' => ['required', 'array'],
             'pages.*' => ['file'], 
             'issued_at' => ['nullable', 'date'],
         ];
