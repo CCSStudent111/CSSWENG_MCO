@@ -33,6 +33,16 @@
                             <v-text-field label="Created By" :model-value="document.creator?.username ?? 'Unknown'"
                                 readonly disabled density="compact" variant="outlined" />
                         </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer />
+                            <Link :href="route('documents.show', props.document.id)">
+                            <v-btn color="secondary" variant="outlined" class="me-2">
+                                Back
+                            </v-btn>
+                            </Link>
+                            <v-btn color="primary" variant="outlined" @click="submit" :loading="form.processing">Save</v-btn>
+                        </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>
@@ -42,7 +52,7 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, Link } from '@inertiajs/vue3'
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -60,7 +70,22 @@ const form = useForm({
     pages: [],
 })
 
+const submit = () => {
+    form.transform(data => {
+        data._method = 'PUT'
+        return data
+    }).submit('post', route('documents.update', props.document.id), {
+        forceFormData: true,
+        onError: errors => {
+            console.error('Validation errors:', errors)
+        }
+    })
+}
+
 </script>
+
+
+
 
 <style scoped>
 .create-page-wrapper {
