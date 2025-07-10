@@ -66,6 +66,16 @@ class DocumentPolicy
 
     public function viewPending(User $user, Document $document): bool
     {
-        return $user->role === "Manager" && $user->department_id === $document->creator->department_id;
+        return $user->isManager() && $user->department_id === $document->creator->department_id;
+    }
+
+    public function approve(User $user, Document $document)
+    {
+        return $user->isManager() && $user->department_id === $document->creator->department_id;
+    }
+
+    public function reject(User $user, Document $document)
+    {
+        return $user->isManager() && $user->department_id === $document->creator->department_id;
     }
 }

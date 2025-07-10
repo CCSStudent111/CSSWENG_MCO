@@ -132,14 +132,18 @@
                         </v-card-text>
 
                         <v-card-actions class="justify-end">
-                            
-                            <v-btn v-if="document.status === 'pending'">
-                                REJECT
+
+                            <v-btn v-if="document.status === 'pending'" color="red" variant="flat" size="small"
+                                prepend-icon="mdi-close" @click="rejectDocument">
+                                Reject
                             </v-btn>
-                            <v-btn v-if="document.status === 'pending'">
-                                APPROVE
+
+                            <v-btn v-if="document.status === 'pending'" color="green" variant="flat" size="small"
+                                prepend-icon="mdi-check" @click="approveDocument">
+                                Approve
                             </v-btn>
-                            
+
+
                             <Link :href="route('documents.edit', props.document.id)">
                             <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
                                 Edit Document
@@ -157,16 +161,29 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 
 const props = defineProps({
     document: Object
 })
 
+const approveDocument = () => {
+  if (confirm('Are you sure you want to approve this document?')) {
+    router.post(route('documents.approve', props.document.id))
+  }
+}
+
+const rejectDocument = () => {
+  if (confirm('Are you sure you want to reject and delete this document?')) {
+    router.delete(route('documents.reject', props.document.id))
+  }
+}
 </script>
 
 <style scoped>
 .create-page-wrapper {
     height: calc(100vh - 100px);
 }
+
+
 </style>

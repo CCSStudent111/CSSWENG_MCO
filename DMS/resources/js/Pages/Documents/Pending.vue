@@ -42,11 +42,6 @@
                             <v-icon>mdi-pencil</v-icon>
                         </v-btn>
                         </Link>
-
-                        <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
-                            @click="deleteDocument(document.id)">
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
                     </td>
                 </tr>
             </tbody>

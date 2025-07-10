@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateDocumentRequest;
 use App\Services\DocumentService;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\User;
 use App\Models\Hospital;
 use App\Services\TrashService;
@@ -15,6 +16,7 @@ use Inertia\Inertia;
 
 class DocumentController extends Controller
 {
+    use AuthorizesRequests;
     public function __construct(protected DocumentService $documentService, protected TrashService $trashService) {}
     /**
      * Display a listing of the resource.
@@ -219,6 +221,34 @@ class DocumentController extends Controller
         ]);
     }
 
-    // approve document
-    // reject document
+    public function approve(Document $document)
+    {
+        // $document->load('type', 'creator');
+
+        // $this->authorize('approve', $document); policy not working
+
+        $manager = User::find(1); 
+
+        $document->update([
+            'status' => 'approved',
+            'approved_by' => $manager->id,
+            'approved_at' => now(),
+        ]);
+
+        return redirect()->route('documents.pending');
+    }
+
+
+    public function reject(Document $document)
+    {
+        // $document->load('type', 'creator');
+        // $this->authorize('reject', $document); policy not working
+
+        $folderPath = "{$document->type->name}/{$document->id}";
+        Storage::disk('public')->deleteDirectory($folderPath);
+
+        $document->forceDelete();
+
+        return redirect()->route('documents.pending');
+    }
 }
