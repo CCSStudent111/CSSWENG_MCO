@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('summary');
+            $table->text('summary')->nullable();
             $table->foreignId('document_type_id')->constrained('document_types')->onDelete('restrict');
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('issued_at')->nullable();       

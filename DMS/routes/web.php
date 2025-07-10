@@ -5,12 +5,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\DocumentPageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\DepartmentDocumentTypeController;
 use App\Http\Controllers\DepartmentController;
 
-Route::get('/', [HomeController::class,'dashboard'])->name('dashboard');
+Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/register', 'showRegister')->name('register');
@@ -18,7 +19,7 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::get('/login', 'showLogin')->name('login');
     Route::post('/login', 'login')->name('login.submit');
-    
+
     Route::post('/logout', 'logout')->name('logout');
 });
 
@@ -41,6 +42,17 @@ Route::delete('documentTypes/{id}/force-delete', [DocumentTypeController::class,
 
 Route::resource('hospitals', HospitalController::class);
 Route::resource('users', UserController::class);
+
+Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
+Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])
+    ->withTrashed()
+    ->name('documents.restore');
+Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])
+    ->withTrashed()
+    ->name('documents.forceDelete');
+Route::get('documents/logs', [DocumentController::class,'logs'])->name('documents.all-logs');
+Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
+
 Route::resource('documents', DocumentController::class);
 Route::resource('documentTypes', DocumentTypeController::class)->except(['show']);
 Route::resource('departments', DepartmentController::class);

@@ -1,29 +1,55 @@
-<!-- LAST UPDATED BY: FRANZ -->
+<!-- LAST UPDATED BY: FRANZ  -->
 
 <template>
     <AppLayout>
         <v-form @submit.prevent="submit">
-
-            <v-text-field v-model="form.name" label="Document Name" required />
-
-            <v-textarea v-model="form.summary" label="Summary" required />
-
-            <v-select v-model="form.document_type_id" :items="documentTypes" item-title="name" item-value="id"
-                label="Document Type" required />
-                
-            <v-text-field v-model="form.issued_at" label="Issued At" type="date" clearable />
-
-            <v-combobox v-model="form.tags" :items="[]" chips clearable multiple label="Tags"
-                placeholder="Enter tags and press Enter" hide-selected hide-no-data />
-
-            <v-file-input v-model="form.pages" label="Upload Files" multiple show-size
-                prepend-icon="mdi-paperclip" />
-
-            <div class="d-flex mt-4" style="gap: 12px;">
-                <v-btn type="submit" color="primary">Submit</v-btn>
-                <Link :href="route('documents.index')">
-                    <v-btn color="secondary" variant="text">Cancel</v-btn>
-                </Link>
+            <div class="create-page-wrapper mt-2">
+                <v-row class="fill-height">
+                    <v-col cols="7">
+                        <v-card class="fill-height pa-2 elevation-3">
+                            <v-card-title>
+                                Upload Document
+                            </v-card-title>
+                            <v-card-text>
+                                <v-file-upload v-model="form.pages" label="Upload Files" multiple show-size
+                                    prepend-icon="mdi-paperclip" :error-messages="form.errors.pages" required clearable>
+                                </v-file-upload>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="5">
+                        <v-card class="fill-height pa-2 elevation-3">
+                            <div class="d-flex align-center justify-space-between" style="gap: 16px;">
+                                <v-card-title style="padding-top: 0; padding-bottom: 0; margin: 0;">
+                                    Document Details
+                                </v-card-title>
+                                <!-- <v-select class="mt-3" v-model="category" :items="['Hospital', 'Employee', 'General']"
+                                    dense density="compact" variant="outlined" style="max-width: 150px"
+                                    label="Category" /> -->
+                            </div>
+                            <v-card-text>
+                                <v-text-field v-model="form.name" label="Document Name"
+                                    :error-messages="form.errors.name" required density="compact" variant="outlined" />
+                                <v-select v-model="form.document_type_id" :items="documentTypes" item-title="name"
+                                    item-value="id" label="Document Type" :error-messages="form.errors.document_type_id"
+                                    required density="compact" variant="outlined" />
+                                <v-textarea v-model="form.summary" label="Summary" :error-messages="form.errors.summary"
+                                    required density="compact" variant="outlined" />
+                                <v-combobox v-model="form.tags" :items="[]" chips multiple closable-chips clearable
+                                    label="Tags" placeholder="Enter tags and press Enter" hide-selected hide-no-data
+                                    :error-messages="form.errors.tags" density="compact" variant="outlined" />
+                                <v-text-field v-model="form.issued_at" label="Issued At" type="date" clearable
+                                    :error-messages="form.errors.issued_at" density="compact" variant="outlined" />
+                                <div class="d-flex justify-end">
+                                    <v-btn type="submit" color="primary" class="mt-2" :loading="form.processing"
+                                        density="compact">
+                                        add document
+                                    </v-btn>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </div>
         </v-form>
     </AppLayout>
@@ -32,7 +58,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm } from '@inertiajs/vue3'
-import { router, Link } from '@inertiajs/vue3'
 
 const props = defineProps({
     documentTypes: Array,
@@ -48,26 +73,15 @@ const form = useForm({
 })
 
 const submit = () => {
-    const formData = new FormData()
-
-    formData.append('name', form.name)
-    formData.append('summary', form.summary)
-    formData.append('document_type_id', form.document_type_id)
-    formData.append('issued_at', form.issued_at)
-
-    // Append tags
-    form.tags.forEach(tag => formData.append('tags[]', tag))
-
-    // Append files
-    form.pages.forEach(file => formData.append('pages[]', file))
-
-    router.post(route('documents.store'), formData, {
+    form.post(route('documents.store'), {
         forceFormData: true,
-        onSuccess: () => {
-            form.reset()
-        },
+        onSuccess: () => form.reset(),
     })
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.create-page-wrapper {
+    height: calc(100vh - 100px);
+}
+</style>

@@ -47,8 +47,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'username' => ['required', 'email'],
+            'password' => ['required', 'string'],
         ]);
 
         if (Auth::attempt($credentials)) {
@@ -58,7 +58,7 @@ class AuthController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'message' => 'The provided email or password is incorrect.',
+            'message' => 'The provided username or password is incorrect.',
         ]);
     }
     public function logout(Request $request)
