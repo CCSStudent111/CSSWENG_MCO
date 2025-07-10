@@ -212,7 +212,7 @@ class DocumentController extends Controller
             ->where('status', 'pending')
             ->get()
             ->filter(function ($document) use ($manager) {
-                return $manager->can('viewPending', $document); // DocumentPolicy@viewPending
+                return $manager->can('viewPending', $document); 
             })
             ->values();
 
@@ -225,7 +225,7 @@ class DocumentController extends Controller
     {
         // $document->load('type', 'creator');
 
-        // $this->authorize('approve', $document); policy not working
+        // $this->authorize('approve', $document); need user login
 
         $manager = User::find(1); 
 
@@ -242,7 +242,7 @@ class DocumentController extends Controller
     public function reject(Document $document)
     {
         // $document->load('type', 'creator');
-        // $this->authorize('reject', $document); policy not working
+        // $this->authorize('reject', $document); need user login
 
         $folderPath = "{$document->type->name}/{$document->id}";
         Storage::disk('public')->deleteDirectory($folderPath);
