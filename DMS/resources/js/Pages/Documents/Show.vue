@@ -96,7 +96,7 @@
                         <v-card-title>Document Details</v-card-title>
                         <v-card-text>
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled
-                                density="compact" variant="outlined" class="mb-4"/>
+                                density="compact" variant="outlined" class="mb-4" />
 
                             <v-text-field label="Document Type" :model-value="document.type?.name || 'N/A'" readonly
                                 disabled density="compact" variant="outlined" class="mb-4" />
@@ -106,7 +106,7 @@
 
                             <v-text-field label="Issued At"
                                 :model-value="document.issued_at ? dayjs(document.issued_at).format('MMMM D, YYYY') : 'N/A'"
-                                readonly disabled density="compact" variant="outlined"/>
+                                readonly disabled density="compact" variant="outlined" />
 
 
                             <div class="mb-4">
@@ -123,6 +123,14 @@
                             <v-text-field label="Created By" :model-value="document.creator?.username ?? 'Unknown'"
                                 readonly disabled density="compact" variant="outlined" />
                         </v-card-text>
+                        
+                        <v-card-actions class="justify-end">
+                            <Link :href="route('documents.edit', props.document.id)">
+                            <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
+                                Edit Document
+                            </v-btn>
+                            </Link>
+                        </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>
@@ -134,6 +142,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
+import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
     document: Object
@@ -146,4 +155,3 @@ const props = defineProps({
     height: calc(100vh - 100px);
 }
 </style>
-

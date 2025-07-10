@@ -21,12 +21,23 @@
             </Link>
         </div>
         <div class="controls-row mb-4">
-            <div class="d-flex" style="gap: 16px;">
-                <v-select v-model="entries" :items="entriesOptions" label="Show entries" class="custom-entries"
-                    density="compact" hide-details variant="outlined" style="width: 160px; flex-shrink: 0;"></v-select>
+            <div class="d-flex mb-4" style="gap: 16px;">
+                <v-select v-model="selectedType" :items="props.documentTypes" item-title="name" item-value="id"
+                    label="Filter by Type" clearable density="compact" class="custom-entries" hide-details
+                    variant="outlined" style="width: 1600px; flex-shrink: 0;" />
+
+                <v-select v-model="entries" :items="entriesOptions" label="Show entries" class="narrow-select"
+                    density="compact" hide-details variant="outlined"></v-select>
 
                 <v-text-field v-model="search" label="Search Documents" prepend-inner-icon="mdi-magnify" clearable
                     density="compact" class="custom-search" style="flex: 1 1 0;"></v-text-field>
+            </div>
+            <div class="d-flex" style="gap: 16px;">
+                <v-text-field v-model="startDate" label="Start Date" type="date" density="compact" hide-details
+                    variant="outlined" style="max-width: 170px" />
+
+                <v-text-field v-model="endDate" label="End Date" type="date" density="compact" hide-details
+                    variant="outlined" style="max-width: 170px" />
             </div>
         </div>
         <v-table density="comfortable">
@@ -89,18 +100,27 @@ import { ref, computed, watch } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+dayjs.extend(isSameOrAfter)
+dayjs.extend(isSameOrBefore)
 
 const entries = ref(10)
 const entriesOptions = [5, 10, 25, 50, 100]
 const search = ref('')
 const page = ref(1)
+const selectedType = ref(null)
+const startDate = ref('')
+const endDate = ref('')
 
-const form = useForm()
-
+const form = useForm({})
 
 const props = defineProps({
-    documents: Array
+    documents: Array,
+    documentTypes: Array,
 })
+
+
 
 function deleteDocument(id) {
     if (confirm('Delete this document?')) {
@@ -110,13 +130,41 @@ function deleteDocument(id) {
     }
 }
 
-const filteredDocuments = computed(() =>
-    props.documents.filter(doc =>
-        doc.name.toLowerCase().includes(search.value.toLowerCase()) ||
-        doc.type.name.toLowerCase().includes(search.value.toLowerCase()) ||
-        String(doc.id).includes(search.value)
-    )
-)
+const filteredDocuments = computed(() => {
+    return props.documents.filter(doc => {
+        const issuedAt = dayjs(doc.issued_at)
+
+        console.log({
+            issued_at: doc.issued_at,
+            issuedAtValid: issuedAt.isValid(),
+            startDate: startDate.value,
+            endDate: endDate.value,
+        })
+
+        const matchesSearch =
+            doc.name.toLowerCase().includes(search.value.toLowerCase()) ||
+            doc.type.name.toLowerCase().includes(search.value.toLowerCase()) ||
+            String(doc.id).includes(search.value)
+
+        const matchesType =
+            !selectedType.value || doc.type.id === selectedType.value
+
+        let matchesStartDate = true
+        let matchesEndDate = true
+
+        if (startDate.value) {
+            const start = dayjs(startDate.value)
+            matchesStartDate = start.isValid() && issuedAt.isSameOrAfter(start, 'day')
+        }
+
+        if (endDate.value) {
+            const end = dayjs(endDate.value)
+            matchesEndDate = end.isValid() && issuedAt.isSameOrBefore(end, 'day')
+        }
+
+        return matchesSearch && matchesType && matchesStartDate && matchesEndDate
+    })
+})
 
 const pageCount = computed(() =>
     Math.ceil(filteredDocuments.value.length / entries.value)
@@ -127,7 +175,9 @@ const paginatedDocuments = computed(() => {
     return filteredDocuments.value.slice(start, start + entries.value)
 })
 
-watch(entries, () => { page.value = 1 })
+watch([entries, selectedType, startDate, endDate, search], () => {
+    page.value = 1
+})
 
 </script>
 
@@ -143,7 +193,7 @@ watch(entries, () => { page.value = 1 })
 }
 
 .custom-entries {
-    min-width: 140px;
+    min-width: 100px;
     max-width: 180px;
     height: 40px;
     align-items: center;
@@ -152,5 +202,10 @@ watch(entries, () => { page.value = 1 })
 .custom-search {
     width: 100%;
     height: 40px;
+}
+
+.narrow-select {
+    max-width: 90px !important;
+    min-width: 90px !important;
 }
 </style>
