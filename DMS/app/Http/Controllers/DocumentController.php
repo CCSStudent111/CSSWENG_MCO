@@ -27,7 +27,7 @@ class DocumentController extends Controller
         $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
         $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
-            ->latest()->get();
+            ->latest('issued_at')->get();
 
 
         return Inertia::render('Documents/Index', [
