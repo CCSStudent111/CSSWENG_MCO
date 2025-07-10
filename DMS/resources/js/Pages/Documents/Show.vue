@@ -95,6 +95,9 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title>Document Details</v-card-title>
                         <v-card-text>
+                            <v-text-field label="Status" :model-value="document.status" readonly disabled
+                                density="compact" variant="outlined" class="mb-4" />
+
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled
                                 density="compact" variant="outlined" class="mb-4" />
 
@@ -122,14 +125,25 @@
 
                             <v-text-field label="Created By" :model-value="document.creator?.username ?? 'Unknown'"
                                 readonly disabled density="compact" variant="outlined" />
+
+                            <v-text-field v-if="document.status === 'approved'" label="Approved By"
+                                :model-value="document.approver?.username ?? 'Unknown'" readonly disabled
+                                density="compact" variant="outlined" class="mb-4" />
                         </v-card-text>
-                        
+
                         <v-card-actions class="justify-end">
                             <Link :href="route('documents.edit', props.document.id)">
                             <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
                                 Edit Document
                             </v-btn>
                             </Link>
+
+                            <v-btn v-if="document.status === 'pending'">
+                                REJECT
+                            </v-btn>
+                            <v-btn v-if="document.status === 'pending'">
+                                APPROVE
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -143,6 +157,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 import { Link } from '@inertiajs/vue3'
+import { document } from 'postcss'
 
 const props = defineProps({
     document: Object

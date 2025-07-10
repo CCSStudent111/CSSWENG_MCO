@@ -13,9 +13,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->admin()->create();
-        User::factory()->count(2)->manager()->admin()->create();
         User::factory()->manager()->create();
-        User::factory()->count(4)->create();
+        User::factory()->create();
     }
 }

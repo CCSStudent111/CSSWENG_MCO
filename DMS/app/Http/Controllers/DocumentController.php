@@ -27,8 +27,8 @@ class DocumentController extends Controller
         $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
         $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
+            ->where('status', 'approved')
             ->latest('issued_at')->get();
-
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
@@ -45,7 +45,7 @@ class DocumentController extends Controller
         $user = User::with('department.documentTypes')->find(1);
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
         // $hospitalDocumentTypes = $user->department->documentTypes->where('is_hospital', true)->values();
-        
+
         // $users = User::all();
         // $hospitals = Hospital::all();
 
@@ -74,7 +74,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        $document->load(['type', 'tags', 'creator', 'pages']);
+        $document->load(['type', 'tags', 'creator', 'pages', 'approver']);
 
         return Inertia::render('Documents/Show', [
             'document' => $document
@@ -116,13 +116,13 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function logs()// change to view user associated document types, add pagination to logs view
+    public function logs() // change to view user associated document types, add pagination to logs view
     {
         $logs = Activity::where('subject_type', Document::class)
             ->with([
                 'causer',
                 'subject' => function ($query) {
-                    $query->withTrashed(); 
+                    $query->withTrashed();
                 }
             ])
             ->latest()
@@ -156,7 +156,7 @@ class DocumentController extends Controller
             $query->latest();
         }, 'activities.causer']);
 
-        
+
         return Inertia::render('Documents/Logs', [
             'document' => $document,
             'logs' => $document->activities->map(function ($activity) {
@@ -199,5 +199,22 @@ class DocumentController extends Controller
 
         $this->trashService->forceDelete(Document::class, $document->id);
         return redirect()->route('documents.trash');
+    }
+
+    public function pending()
+    {
+        $manager = User::with('department')->find(1);
+
+        $documents = Document::with(['type', 'tags', 'creator'])
+            ->where('status', 'pending')
+            ->get()
+            ->filter(function ($document) use ($manager) {
+                return $manager->can('viewPending', $document); // DocumentPolicy@viewPending
+            })
+            ->values();
+
+        return Inertia::render('Documents/Pending', [
+            'documents' => $documents,
+        ]);
     }
 }
