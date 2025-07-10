@@ -65,7 +65,8 @@ class DocumentController extends Controller
 
         $validated['pages'] = $request->file('pages') ?? [];
 
-        $document = $this->documentService->create($validated);
+        $this->documentService->create($validated);
+
         return redirect()->route('documents.index');
     }
 
@@ -217,4 +218,7 @@ class DocumentController extends Controller
             'documents' => $documents,
         ]);
     }
+
+    // approve document
+    // reject document
 }

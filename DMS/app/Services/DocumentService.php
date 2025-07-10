@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Document;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,6 +45,13 @@ class DocumentService
     public function create(array $data)
     {
         return DB::transaction(function () use ($data) {
+            $user = User::find($data['created_by']);
+
+            if ($user && $user->isManager()) {
+                $data['status'] = 'approved';
+                $data['approved_by'] = $user->id;
+            } 
+
             $document = Document::create((array) $data);
 
             if (!empty($data['tags'])) {
@@ -63,10 +71,10 @@ class DocumentService
 
             $this->attachTags($document, $data['tags'] ?? []);
 
-            if(!empty($data['pages'])) {
+            if (!empty($data['pages'])) {
                 $this->storeFiles($document, $data['pages']);
             }
-            
+
             return $document;
         });
     }

@@ -132,18 +132,19 @@
                         </v-card-text>
 
                         <v-card-actions class="justify-end">
-                            <Link :href="route('documents.edit', props.document.id)">
-                            <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
-                                Edit Document
-                            </v-btn>
-                            </Link>
-
+                            
                             <v-btn v-if="document.status === 'pending'">
                                 REJECT
                             </v-btn>
                             <v-btn v-if="document.status === 'pending'">
                                 APPROVE
                             </v-btn>
+                            
+                            <Link :href="route('documents.edit', props.document.id)">
+                            <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
+                                Edit Document
+                            </v-btn>
+                            </Link>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -157,7 +158,6 @@
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 import { Link } from '@inertiajs/vue3'
-import { document } from 'postcss'
 
 const props = defineProps({
     document: Object
