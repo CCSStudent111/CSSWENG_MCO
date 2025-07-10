@@ -95,7 +95,7 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title>Document Details</v-card-title>
                         <v-card-text>
-                            <v-text-field label="Status" :model-value="document.status" readonly disabled
+                            <v-text-field v-if="document.status === 'pending'" label="Status" :model-value="document.status" readonly disabled
                                 density="compact" variant="outlined" class="mb-4" />
 
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled

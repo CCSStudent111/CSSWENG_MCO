@@ -44,7 +44,7 @@ class DocumentController extends Controller
     public function create()
     {
         // $user = Auth::user()->load('department.documentTypes');  // uncomment when login implemented
-        $user = User::with('department.documentTypes')->find(1);
+        $user = User::with('department.documentTypes')->find(2);
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
         // $hospitalDocumentTypes = $user->department->documentTypes->where('is_hospital', true)->values();
 
@@ -63,7 +63,7 @@ class DocumentController extends Controller
     public function store(StoreDocumentRequest $request)
     {
         $validated = $request->validated();
-        $validated['created_by'] = 1;
+        $validated['created_by'] = 2;
 
         $validated['pages'] = $request->file('pages') ?? [];
 
