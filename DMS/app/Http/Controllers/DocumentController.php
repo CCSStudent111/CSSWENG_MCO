@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Hospital;
 use App\Services\TrashService;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class DocumentController extends Controller
 {
@@ -23,8 +24,7 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        // $user = Auth::user()->load('department.documentTypes'); // uncomment when login implemented
-        $user = User::with('department.documentTypes')->find(1);
+        $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get();
         $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
@@ -43,8 +43,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        // $user = Auth::user()->load('department.documentTypes');  // uncomment when login implemented
-        $user = User::with('department.documentTypes')->find(2);
+        $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
         // $hospitalDocumentTypes = $user->department->documentTypes->where('is_hospital', true)->values();
 
@@ -63,7 +62,7 @@ class DocumentController extends Controller
     public function store(StoreDocumentRequest $request)
     {
         $validated = $request->validated();
-        $validated['created_by'] = 2;
+        $validated['created_by'] = auth()->id();
 
         $validated['pages'] = $request->file('pages') ?? [];
 
@@ -89,7 +88,7 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        $user = User::with('department.documentTypes')->find(1);
+        $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get()->values();
 
         $document->load(['type', 'tags', 'creator', 'pages']);
@@ -206,7 +205,7 @@ class DocumentController extends Controller
 
     public function pending()
     {
-        $manager = User::with('department')->find(1);
+        $manager = auth()->user()->load('department');
 
         $documents = Document::with(['type', 'tags', 'creator'])
             ->where('status', 'pending')
@@ -223,11 +222,10 @@ class DocumentController extends Controller
 
     public function approve(Document $document)
     {
-        // $document->load('type', 'creator');
+        $document->load('type', 'creator');
 
-        // $this->authorize('approve', $document); need user login
-
-        $manager = User::find(1); 
+        $this->authorize('approve', $document); 
+        $manager = auth()->user();
 
         $document->update([
             'status' => 'approved',
@@ -241,8 +239,8 @@ class DocumentController extends Controller
 
     public function reject(Document $document)
     {
-        // $document->load('type', 'creator');
-        // $this->authorize('reject', $document); need user login
+        $document->load('type', 'creator');
+        $this->authorize('reject', $document); 
 
         $folderPath = "{$document->type->name}/{$document->id}";
         Storage::disk('public')->deleteDirectory($folderPath);
