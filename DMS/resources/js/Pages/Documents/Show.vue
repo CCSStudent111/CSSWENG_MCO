@@ -95,6 +95,9 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title>Document Details</v-card-title>
                         <v-card-text>
+                            <v-text-field v-if="document.status === 'pending'" label="Status" :model-value="document.status" readonly disabled
+                                density="compact" variant="outlined" class="mb-4" />
+
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled
                                 density="compact" variant="outlined" class="mb-4" />
 
@@ -122,9 +125,25 @@
 
                             <v-text-field label="Created By" :model-value="document.creator?.username ?? 'Unknown'"
                                 readonly disabled density="compact" variant="outlined" />
+
+                            <v-text-field v-if="document.status === 'approved'" label="Approved By"
+                                :model-value="document.approver?.username ?? 'Unknown'" readonly disabled
+                                density="compact" variant="outlined" class="mb-4" />
                         </v-card-text>
-                        
+
                         <v-card-actions class="justify-end">
+
+                            <v-btn v-if="document.status === 'pending'" color="red" variant="flat" size="small"
+                                prepend-icon="mdi-close" @click="rejectDocument">
+                                Reject
+                            </v-btn>
+
+                            <v-btn v-if="document.status === 'pending'" color="green" variant="flat" size="small"
+                                prepend-icon="mdi-check" @click="approveDocument">
+                                Approve
+                            </v-btn>
+
+
                             <Link :href="route('documents.edit', props.document.id)">
                             <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
                                 Edit Document
@@ -142,16 +161,29 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 
 const props = defineProps({
     document: Object
 })
 
+const approveDocument = () => {
+  if (confirm('Are you sure you want to approve this document?')) {
+    router.post(route('documents.approve', props.document.id))
+  }
+}
+
+const rejectDocument = () => {
+  if (confirm('Are you sure you want to reject and delete this document?')) {
+    router.delete(route('documents.reject', props.document.id))
+  }
+}
 </script>
 
 <style scoped>
 .create-page-wrapper {
     height: calc(100vh - 100px);
 }
+
+
 </style>

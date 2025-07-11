@@ -45,9 +45,13 @@ Route::put('documents/{document}/restore', [DocumentController::class, 'restore'
 Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])
     ->withTrashed()
     ->name('documents.forceDelete');
-Route::get('documents/logs', [DocumentController::class,'logs'])->name('documents.all-logs');
+Route::get('documents/logs', [DocumentController::class, 'logs'])->name('documents.all-logs');
 Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
 
+Route::get('/documents/pending', [DocumentController::class, 'pending'])
+    ->name('documents.pending');
+Route::post('/documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
+Route::delete('/documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
 Route::resource('documents', DocumentController::class);
 
 Route::resource('document-types', DocumentTypeController::class)->except(['show']);
@@ -57,5 +61,3 @@ Route::prefix('departments/{department}/document-types')->group(function () {
     Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
     Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
 });
-
-
