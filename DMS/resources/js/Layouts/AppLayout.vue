@@ -1,15 +1,17 @@
 <template>
     <v-app id="inspire">
         <v-app-bar class="elevation-1">
-            
+
+            <Link :href="route('profile.index')" class="d-flex align-center">
                 <v-btn icon>
                     <v-icon size="32">mdi-account-circle</v-icon>
                 </v-btn>
+            </Link>
 
-                <div class="d-flex flex-column">
-                    <span class="text-subtitle-2">Franz</span>
-                    <span class="text-caption text-grey">Admin</span>
-                </div>
+            <div class="d-flex flex-column">
+                <span class="text-subtitle-2">{{ user?.username }}</span>
+                <span class="text-caption text-grey">{{ user?.department?.name }}</span>
+            </div>
         </v-app-bar>
 
         <v-main>
@@ -21,10 +23,11 @@
 </template>
 
 <script setup>
+import { usePage, Link } from '@inertiajs/vue3';
 
+const page = usePage();
+const user = page.props.auth.user;
 </script>
 
 
-<style scoped>
-
-</style>
+<style scoped></style>

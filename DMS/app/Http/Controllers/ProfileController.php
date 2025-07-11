@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
@@ -14,7 +15,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render("Profile/Index");
     }
 
     /**
