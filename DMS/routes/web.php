@@ -63,7 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('document-types', DocumentTypeController::class)->except(['show']);
 
     // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Department ↔ Document Type Linking

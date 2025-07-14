@@ -19,6 +19,11 @@ class ProfileController extends Controller
         $this->profileService = $profileService;
     }
 
+    public function index()
+    {
+        return Inertia::render("Profile/Index");
+    }
+
     public function edit()
     {
         return Inertia::render('Profile/Edit', [
