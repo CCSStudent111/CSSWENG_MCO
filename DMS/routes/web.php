@@ -43,6 +43,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Users
     Route::resource('users', UserController::class);
+    Route::put('/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('users.toggleAdmin');
+    Route::put('/users/{user}/toggle-manager', [UserController::class, 'toggleManager'])->name('users.toggleManager');
 
     // Documents
     Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
@@ -61,7 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('document-types', DocumentTypeController::class)->except(['show']);
 
     // Profile
-    Route::resource('profile', ProfileController::class);
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Department ↔ Document Type Linking
     Route::prefix('departments/{department}/document-types')->group(function () {

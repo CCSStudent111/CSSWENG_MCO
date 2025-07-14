@@ -249,4 +249,100 @@ class DocumentController extends Controller
 
         return redirect()->route('documents.pending');
     }
+  
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $type = $request->input('type');
+
+        $results = [];
+
+        switch ($type) {
+            case 'document_name':
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->where('name', 'REGEXP', $query)
+                    ->get();
+                break;
+
+            case 'tag':
+                $tagPatterns = is_array($query) ? $query : explode(',', $query);
+                $tagPatterns = array_map('trim', $tagPatterns);
+                $matchType = $request->input('match_type', 'all');
+
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type']);
+
+                if (empty($tagPatterns[0])) {
+                    $results = $results->doesntHave('tags');
+                } else {
+                    $results = $results->whereHas('tags', function ($q) use ($tagPatterns, $matchType) {
+                        $q->where(function ($subQuery) use ($tagPatterns, $matchType) {
+                            foreach ($tagPatterns as $pattern) {
+                                if ($matchType === 'any') {
+                                    $subQuery->orWhere('name', 'REGEXP', $pattern);
+                                } else {
+                                    $subQuery->where('name', 'REGEXP', $pattern);
+                                }
+                            }
+                        });
+                    });
+                }
+
+                $results = $results->get();
+                break;
+
+
+            case 'document_type':
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->whereHas('type', function ($q) use ($query) {
+                        $q->where('name', 'REGEXP', $query);
+                    })
+                    ->get();
+                break;
+
+            case 'hospital':
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->whereHas('hospitals', function ($q) use ($query) {
+                        $q->where('name', 'REGEXP', $query);
+                    })
+                    ->get();
+                break;
+
+            case 'user':
+                $results = User::whereRaw("CONCAT(first_name, ' ', last_name) REGEXP ?", [$query])
+                    ->get();
+                break;
+
+            case 'tag+type':
+                $tags = $request->input('tags', []);
+                $docType = $request->input('document_type');
+                $matchType = $request->input('match_type', 'all');
+
+                $results = Document::with(['tags', 'hospitals', 'creator', 'type'])
+                    ->whereHas('type', function ($q) use ($docType) {
+                        $q->where('name', 'REGEXP', $docType);
+                    });
+
+                if (empty($tags) || (count($tags) === 1 && trim($tags[0]) === '')) {
+                    $results = $results->doesntHave('tags');
+                } else {
+                    $results = $results->whereHas('tags', function ($q) use ($tags, $matchType) {
+                        $q->where(function ($subQuery) use ($tags, $matchType) {
+                            foreach ($tags as $pattern) {
+                                if ($matchType === 'any') {
+                                    $subQuery->orWhere('name', 'REGEXP', $pattern);
+                                } else {
+                                    $subQuery->where('name', 'REGEXP', $pattern);
+                                }
+                            }
+                        });
+                    });
+                }
+
+                $results = $results->get();
+                break;
+        }
+
+        return response()->json($results);
+    }
 }
+

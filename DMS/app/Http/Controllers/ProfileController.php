@@ -7,62 +7,29 @@ use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Services\ProfileService;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected ProfileService $profileService;
+
+    public function __construct(ProfileService $profileService)
     {
-        return Inertia::render("Profile/Index");
+        $this->profileService = $profileService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function edit()
     {
-        //
+        return Inertia::render('Profile/Edit', [
+            'user' => Auth::user()->load('department'),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreProfileRequest $request)
+    public function update(UpdateUserRequest $request)
     {
-        //
-    }
+        $this->profileService->update(Auth::user(), $request->validated());
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+        return redirect()->back()->with('success', 'Profile updated.');
     }
 }
