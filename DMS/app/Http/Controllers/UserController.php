@@ -6,6 +6,8 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Department;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -98,10 +100,15 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (!auth()->user()->is_admin) {
+            abort(403, 'Only admins can delete users.');
+        }
+
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('users.index')->with('success', 'User deleted.');
     }
+
 
     public function toggleAdmin(User $user)
     {
