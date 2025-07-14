@@ -3,14 +3,18 @@
         <v-app-bar class="elevation-1">
 
             <Link :href="route('profile.index')" class="d-flex align-center">
-                <v-btn icon>
-                    <v-icon size="32">mdi-account-circle</v-icon>
-                </v-btn>
+            <v-btn icon>
+                <v-icon size="32">mdi-account-circle</v-icon>
+            </v-btn>
             </Link>
 
             <div class="d-flex flex-column">
                 <span class="text-subtitle-2">{{ user?.username }}</span>
-                <span class="text-caption text-grey">{{ user?.department?.name }}</span>
+                <span class="text-caption text-grey">
+                    {{ user?.department?.name }}
+                    <template v-if="user?.role === 'Manager'"> | Manager</template>
+                    <template v-if="user?.is_admin"> | Admin</template>
+                </span>
             </div>
         </v-app-bar>
 

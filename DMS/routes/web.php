@@ -14,13 +14,16 @@ use App\Http\Controllers\DepartmentController;
 
 
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/register', 'showRegister')->name('register');
-    Route::post('/register', 'register')->name('register.submit');
-    
-    Route::get('/login', 'showLogin')->name('login');
-    Route::post('/login', 'login')->name('login.submit');
-    
-    Route::post('/logout', 'logout')->name('logout');
+    Route::middleware('guest')->group(function () {
+        Route::get('/register', 'showRegister')->name('register');
+        Route::post('/register', 'register')->name('register.submit');
+
+        Route::get('/login', 'showLogin')->name('login');
+        Route::post('/login', 'login')->name('login.submit');
+    });
+
+
+    Route::post('/logout', 'logout')->middleware('auth')->name('logout');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -65,4 +68,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
         Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
     });
+});
+
+Route::get('/phpinfo', function () {
+    phpinfo();
 });
