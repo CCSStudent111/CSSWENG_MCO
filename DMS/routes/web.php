@@ -69,3 +69,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
     });
 });
+
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
