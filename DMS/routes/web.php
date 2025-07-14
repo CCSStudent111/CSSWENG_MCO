@@ -37,9 +37,7 @@ Route::delete('documents/{document}/force-delete', [DocumentController::class, '
 Route::get('documents/logs', [DocumentController::class,'logs'])->name('documents.all-logs');
 Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
 
-Route::get('/documents/search', [DocumentController::class, 'search'])->name('documents.search');
 Route::resource('documents', DocumentController::class);
-
 
 Route::resource('document-types', DocumentTypeController::class)->except(['show']);
 
