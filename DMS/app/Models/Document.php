@@ -18,7 +18,11 @@ class Document extends Model
         'summary',
         'document_type_id',
         'created_by',
+        'approved_by',
         'issued_at',
+        'status',
+        'approved_at',
+        'rejected_at',
     ];
 
     protected $dates = ['issued_at'];
@@ -50,6 +54,12 @@ class Document extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+
     public function employees()
     {
         return $this->belongsToMany(User::class, 'employee_documents', 'document_id', 'employee_id');
@@ -64,5 +74,20 @@ class Document extends Model
     public function activities()
     {
         return $this->morphMany(Activity::class, 'subject');
-    } 
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
+    }
 }

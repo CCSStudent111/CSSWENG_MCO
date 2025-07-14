@@ -7,32 +7,34 @@ use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Services\DocumentService;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
-use App\Models\Tag;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\User;
 use App\Models\Hospital;
 use App\Services\TrashService;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class DocumentController extends Controller
 {
+    use AuthorizesRequests;
     public function __construct(protected DocumentService $documentService, protected TrashService $trashService) {}
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // $user = Auth::user()->load('department.documentTypes'); // uncomment when login implemented
-        $user = User::with('department.documentTypes')->find(1);
+        $user = auth()->user()->load('department.documentTypes');
+        $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get();
         $documentTypesIds = $user->department->documentTypes()->where('is_hospital', false)->pluck('id');
 
         $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
-            ->latest()->get();
-
+            ->where('status', 'approved')
+            ->latest('issued_at')->get();
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
+            'documentTypes' => $documentTypes,
         ]);
     }
 
@@ -41,12 +43,16 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        // $user = Auth::user()->load('department.documentTypes');  // uncomment when login implemented
-        $user = User::with('department.documentTypes')->find(1);
+        $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
+        // $hospitalDocumentTypes = $user->department->documentTypes->where('is_hospital', true)->values();
+
+        // $users = User::all();
+        // $hospitals = Hospital::all();
 
         return Inertia::render('Documents/Create', [
-            'documentTypes' => $documentTypes
+            'documentTypes' => $documentTypes,
+            // 'hospitalDocumentTypes' => $hospitalDocumentTypes,
         ]);
     }
 
@@ -56,9 +62,12 @@ class DocumentController extends Controller
     public function store(StoreDocumentRequest $request)
     {
         $validated = $request->validated();
-        $validated['created_by'] = 1;
+        $validated['created_by'] = auth()->id();
 
-        $document = $this->documentService->create($validated);
+        $validated['pages'] = $request->file('pages') ?? [];
+
+        $this->documentService->create($validated);
+
         return redirect()->route('documents.index');
     }
 
@@ -67,7 +76,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        $document->load(['type', 'tags', 'creator', 'pages']);
+        $document->load(['type', 'tags', 'creator', 'pages', 'approver']);
 
         return Inertia::render('Documents/Show', [
             'document' => $document
@@ -79,7 +88,7 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        $user = User::with('department.documentTypes')->find(1);
+        $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get()->values();
 
         $document->load(['type', 'tags', 'creator', 'pages']);
@@ -109,13 +118,13 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function logs()
+    public function logs() // change to view user associated document types, add pagination to logs view
     {
         $logs = Activity::where('subject_type', Document::class)
             ->with([
                 'causer',
                 'subject' => function ($query) {
-                    $query->withTrashed(); 
+                    $query->withTrashed();
                 }
             ])
             ->latest()
@@ -148,6 +157,8 @@ class DocumentController extends Controller
         $document->load(['activities' => function ($query) {
             $query->latest();
         }, 'activities.causer']);
+
+
         return Inertia::render('Documents/Logs', [
             'document' => $document,
             'logs' => $document->activities->map(function ($activity) {
@@ -192,6 +203,53 @@ class DocumentController extends Controller
         return redirect()->route('documents.trash');
     }
 
+    public function pending()
+    {
+        $manager = auth()->user()->load('department');
+
+        $documents = Document::with(['type', 'tags', 'creator'])
+            ->where('status', 'pending')
+            ->get()
+            ->filter(function ($document) use ($manager) {
+                return $manager->can('viewPending', $document); 
+            })
+            ->values();
+
+        return Inertia::render('Documents/Pending', [
+            'documents' => $documents,
+        ]);
+    }
+
+    public function approve(Document $document)
+    {
+        $document->load('type', 'creator');
+
+        $this->authorize('approve', $document); 
+        $manager = auth()->user();
+
+        $document->update([
+            'status' => 'approved',
+            'approved_by' => $manager->id,
+            'approved_at' => now(),
+        ]);
+
+        return redirect()->route('documents.pending');
+    }
+
+
+    public function reject(Document $document)
+    {
+        $document->load('type', 'creator');
+        $this->authorize('reject', $document); 
+
+        $folderPath = "{$document->type->name}/{$document->id}";
+        Storage::disk('public')->deleteDirectory($folderPath);
+
+        $document->forceDelete();
+
+        return redirect()->route('documents.pending');
+    }
+  
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -286,5 +344,5 @@ class DocumentController extends Controller
 
         return response()->json($results);
     }
-
 }
+

@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document_logs', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('hospitals', function (Blueprint $table) {
+            $table->string('type')->nullable(); // Add after 'branch' if you want
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document_logs');
+        Schema::table('hospitals', function (Blueprint $table) {
+            $table->dropColumn('type');
+        });
     }
 };

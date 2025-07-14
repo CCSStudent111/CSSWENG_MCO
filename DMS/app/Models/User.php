@@ -27,8 +27,8 @@ class User extends Authenticatable
         'suffix',
         'date_of_birth',
         'department_id',
+        'role',
         'is_admin',
-        'is_manager',
     ];
 
     /**

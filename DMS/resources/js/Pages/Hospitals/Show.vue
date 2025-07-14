@@ -20,6 +20,9 @@
                   <v-list-item-title><strong>Branch:</strong> {{ hospital.branch }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
+                  <v-list-item-title><strong>Type:</strong> {{ hospital.type }}</v-list-item-title>
+                </v-list-item>
+                <v-list-item>
                   <v-list-item-title>
                     <strong>Date Added:</strong> {{ dayjs(hospital.created_at).format('MM/DD/YYYY') }}
                   </v-list-item-title>

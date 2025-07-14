@@ -19,6 +19,7 @@ class HospitalFactory extends Factory
         return [
             'name' => $this->faker->company . ' Hospital', 
             'branch' => $this->faker->city, 
+            'type' => $this->faker->randomElement(['Hospital', 'Clinic', 'Diagnosis', 'Medical Center', 'Specialty']),
             'deleted_at' => null,  
         ];
     }

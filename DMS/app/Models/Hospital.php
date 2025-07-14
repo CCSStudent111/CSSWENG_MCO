@@ -12,13 +12,13 @@ class Hospital extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
-    protected $fillable = ['name', 'branch'];
+    protected $fillable = ['name', 'branch', 'type'];
     protected static $recordEvents = ['created', 'updated', 'deleted', 'restored'];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'branch'])
+            ->logOnly(['name', 'branch', 'type']) 
             ->useLogName('hospital')
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "Hospital was {$eventName}");
