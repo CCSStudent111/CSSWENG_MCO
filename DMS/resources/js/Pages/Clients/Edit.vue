@@ -1,10 +1,10 @@
 <template>
   <AppLayout>
-    <div class="custom-title mb-4">Edit Hospital</div>
+    <div class="custom-title mb-4">Edit Client</div>
     <v-form @submit.prevent="submit">
       <v-text-field
         v-model="form.name"
-        label="Hospital Name"
+        label="Client Name"
         required
         density="compact"
         class="mb-3"
@@ -16,8 +16,15 @@
         density="compact"
         class="mb-3"
       ></v-text-field>
+      <v-text-field
+        v-model="form.address"
+        label="Address"
+        required
+        density="compact"
+        class="mb-3"
+      ></v-text-field>
       <v-select
-        v-model="hospital.type"
+        v-model="client.type"
         :items="typeOptions"
         label="Type"
         required
@@ -25,7 +32,7 @@
         class="mb-3"
         clearable
       /><v-btn type="submit" color="primary" variant="flat">Save Changes</v-btn>
-        <Link :href="route('hospitals.index')">
+        <Link :href="route('clients.index')">
         <v-btn class="ml-2" color="secondary" variant="text">Cancel</v-btn>
         </Link>
     </v-form>
@@ -39,17 +46,18 @@ import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 const props = defineProps({
-  hospital: Object
+  client: Object
 })
 
 const form = ref({
-  name: props.hospital?.name ?? '',
-  branch: props.hospital?.branch ?? '',
-  type: props.hospital?.type ?? ''
+  name: props.client?.name ?? '',
+  branch: props.client?.branch ?? '',
+  address: props.client?.address ?? '',
+  type: props.client?.type ?? ''
 })
 
 function submit() {
-  router.put(route('hospitals.update', props.hospital.id), form.value)
+  router.put(route('clients.update', props.client.id), form.value)
 }
 </script>
 

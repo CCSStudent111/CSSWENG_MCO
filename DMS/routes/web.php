@@ -7,7 +7,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\DocumentPageController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DepartmentDocumentTypeController;
 use App\Http\Controllers\DepartmentController;
 
@@ -23,12 +23,12 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
-Route::get('hospitals/trashed', [HospitalController::class, 'trashed'])->name('hospitals.trashed');
-Route::post('hospitals/{id}/restore', [HospitalController::class, 'restore'])->name('hospitals.restore');
-Route::delete('hospitals/{id}/force-delete', [HospitalController::class, 'forceDelete'])->name('hospitals.forceDelete');
+Route::get('clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
+Route::post('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
+Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
 
-Route::resource('hospital-documents', \App\Http\Controllers\Hospital\DocumentController::class)
-    ->parameters(['hospital-documents' => 'document'])->only('store', 'create');
+Route::resource('client-documents', \App\Http\Controllers\Client\DocumentController::class)
+    ->parameters(['client-documents' => 'document'])->only('store', 'create');
 
 
 Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
@@ -40,7 +40,7 @@ Route::post('documentTypes/{id}/restore', [DocumentTypeController::class, 'resto
 Route::delete('documentTypes/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
 
 
-Route::resource('hospitals', HospitalController::class);
+Route::resource('clients', ClientController::class);
 Route::resource('users', UserController::class);
 
 Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');

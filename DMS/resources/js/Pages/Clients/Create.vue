@@ -1,23 +1,30 @@
 <template>
     <AppLayout>
-        <div class="custom-title mb-4">Create Hospital</div>
+        <div class="custom-title mb-4">Create Client</div>
         <v-form @submit.prevent="openConfirm">
             <v-text-field
-                label="Hospital Name"
-                v-model="hospital.name"
+                label="Client Name"
+                v-model="client.name"
                 required
                 density="compact"
                 class="mb-3"
             ></v-text-field>
             <v-text-field
                 label="Branch"
-                v-model="hospital.branch"
+                v-model="client.branch"
+                required
+                density="compact"
+                class="mb-3"
+            ></v-text-field>
+             <v-text-field
+                label="Address"
+                v-model="client.address"
                 required
                 density="compact"
                 class="mb-3"
             ></v-text-field>
             <v-select
-                v-model="hospital.type"
+                v-model="client.type"
                 :items="typeOptions"
                 label="Type"
                 required
@@ -29,11 +36,11 @@
                 type="submit"
                 color="primary"
                 variant="flat"
-                :disabled="!hospital.name || !hospital.branch || !hospital.type"
+                :disabled="!client.name || !client.branch || !client.type"
             >
-                Create Hospital
+                Create Client
             </v-btn>
-            <Link :href="route('hospitals.index')">
+            <Link :href="route('clients.index')">
                 <v-btn class="ml-2" color="secondary" variant="text">Cancel</v-btn>
             </Link>
         </v-form>
@@ -42,7 +49,7 @@
             <v-card>
                 <v-card-title>Confirm Add</v-card-title>
                 <v-card-text>
-                    Are you sure you want to add this hospital?
+                    Are you sure you want to add this client?
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -59,14 +66,15 @@ import { ref } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
-const hospital = ref({
+const client = ref({
     name: '',
     branch: '',
+    address:'',
     type: ''
 });
 
 const typeOptions = [
-    'Hospital',
+    'Client',
     'Clinic',
     'Diagnosis',
     'Medical Center',
@@ -81,6 +89,6 @@ function openConfirm() {
 
 function submit() {
     confirmDialog.value = false;
-    router.post('/hospitals', hospital.value);
+    router.post('/clients', client.value);
 }
 </script>

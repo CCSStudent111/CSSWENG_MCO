@@ -1,30 +1,32 @@
 <template>
   <AppLayout>
-    <div class="custom-title mb-4">Trashed Hospitals</div>
+    <div class="custom-title mb-4">Trashed Clients</div>
     <v-table density="comfortable">
       <thead>
         <tr>
-          <th class="text-left">Hospital ID</th>
+          <th class="text-left">Client ID</th>
           <th class="text-left">Name</th>
           <th class="text-left">Branch</th>
+          <th class="text-left">Address</th>
           <th class="text-left">Type</th>
           <th class="text-left">Deleted At</th>
           <th class="text-left">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="hospital in hospitals" :key="hospital.id">
-          <td>{{ hospital.id }}</td>
-          <td>{{ hospital.name }}</td>
-          <td>{{ hospital.branch }}</td>
-          <td>{{ hospital.type }}</td>
-          <td>{{ dayjs(hospital.deleted_at).format('MM/DD/YYYY') }}</td>
+        <tr v-for="client in clients" :key="client.id">
+          <td>{{ client.id }}</td>
+          <td>{{ client.name }}</td>
+          <td>{{ client.branch }}</td>
+          <td>{{ client.address }}</td>
+          <td>{{ client.type }}</td>
+          <td>{{ dayjs(client.deleted_at).format('MM/DD/YYYY') }}</td>
           <td>
             <v-btn
               color="success"
               variant="text"
               size="small"
-              @click="openRestoreDialog(hospital)"
+              @click="openRestoreDialog(client)"
             >
               Restore
             </v-btn>
@@ -32,7 +34,7 @@
               color="error"
               variant="text"
               size="small"
-              @click="openForceDeleteDialog(hospital)"
+              @click="openForceDeleteDialog(client)"
             >
               Delete Permanently
             </v-btn>
@@ -40,7 +42,7 @@
         </tr>
       </tbody>
     </v-table>
-    <Link :href="route('hospitals.index')">
+    <Link :href="route('clients.index')">
       <v-btn class="mt-4" color="primary" variant="flat">Back to List</v-btn>
     </Link>
 
@@ -49,12 +51,12 @@
         <v-card-title>Confirm Restore</v-card-title>
         <v-card-text>
           Are you sure you want to restore
-          <strong v-if="hospitalToRestore">{{ hospitalToRestore.name }}</strong>?
+          <strong v-if="clientToRestore">{{ clientToRestore.name }}</strong>?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="secondary" variant="text" @click="confirmRestoreDialog = false">Cancel</v-btn>
-          <v-btn color="success" variant="flat" @click="restoreHospital">Restore</v-btn>
+          <v-btn color="success" variant="flat" @click="restoreClient">Restore</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -64,14 +66,14 @@
         <v-card-title>Confirm Permanent Delete</v-card-title>
         <v-card-text>
           Are you sure you want to permanently delete
-          <strong v-if="hospitalToForceDelete">{{ hospitalToForceDelete.name }}</strong>?
+          <strong v-if="clientToForceDelete">{{ clientToForceDelete.name }}</strong>?
           <br>
           <span class="text-error">This action cannot be undone.</span>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="secondary" variant="text" @click="confirmForceDeleteDialog = false">Cancel</v-btn>
-          <v-btn color="error" variant="flat" @click="forceDeleteHospital">Delete Permanently</v-btn>
+          <v-btn color="error" variant="flat" @click="forceDeleteClient">Delete Permanently</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -86,37 +88,37 @@ import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
-  hospitals: Array
+  clients: Array
 })
 
 const confirmRestoreDialog = ref(false)
-const hospitalToRestore = ref(null)
+const clientToRestore = ref(null)
 const confirmForceDeleteDialog = ref(false)
-const hospitalToForceDelete = ref(null)
+const clientToForceDelete = ref(null)
 
-function openRestoreDialog(hospital) {
-  hospitalToRestore.value = hospital
+function openRestoreDialog(client) {
+  clientToRestore.value = client
   confirmRestoreDialog.value = true
 }
 
-function restoreHospital() {
-  if (hospitalToRestore.value) {
-    router.post(route('hospitals.restore', hospitalToRestore.value.id))
+function restoreClient() {
+  if (clientToRestore.value) {
+    router.post(route('clients.restore', clientToRestore.value.id))
     confirmRestoreDialog.value = false
-    hospitalToRestore.value = null
+    clientToRestore.value = null
   }
 }
 
-function openForceDeleteDialog(hospital) {
-  hospitalToForceDelete.value = hospital
+function openForceDeleteDialog(client) {
+  clientToForceDelete.value = client
   confirmForceDeleteDialog.value = true
 }
 
-function forceDeleteHospital() {
-  if (hospitalToForceDelete.value) {
-    router.delete(route('hospitals.forceDelete', hospitalToForceDelete.value.id))
+function forceDeleteClient() {
+  if (clientToForceDelete.value) {
+    router.delete(route('clients.forceDelete', clientToForceDelete.value.id))
     confirmForceDeleteDialog.value = false
-    hospitalToForceDelete.value = null
+    clientToForceDelete.value = null
   }
 }
 </script>

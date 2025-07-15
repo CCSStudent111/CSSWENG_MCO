@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('document_types', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        if (!Schema::hasColumn('document_types', 'deleted_at')) {
+            Schema::table('document_types', function (Blueprint $table) {
+                $table->timestamp('deleted_at')->nullable();
+            });
+        }
     }
 
     /**
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('document_types', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+            $table->dropColumn('deleted_at');
         });
     }
 };
