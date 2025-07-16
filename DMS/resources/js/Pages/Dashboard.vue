@@ -1,447 +1,289 @@
-<!-- LAST UPDATED BY: GIAN -->
 <template>
-    <!--header-->
-    <nav class="navbar navbar-expand-md sticky-top header-main">
-        <div class="container-fluid align-items-center">
-            <div class="navbar-brand d-flex gap-2 ms-3" href=""> 
-                <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                <div class="d-flex flex-column row-gap-0">
-                    <div class="header-uname">Name</div>
-                    <div class="header-role">Admin</div>
-                </div>
-            </div>
-            <div class="d-flex me-4 gap-4"><!--right side-->
-                <div>
-                    <a class="header-nav" href="">Schedule</a>
-                </div>
-                <div>
-                    <a class="header-nav" href="">Assignment</a>
-                </div>
-                <div>
-                    <a class="header-nav" href="">Support</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!--body-->
-    <div class="container-fluid page-content px-4">
-        <div class="row gap-3 row-gap-1">
-            <div class="d-flex flex-column col-xl-7 col-lg page-group p-4"><!--management-->
-                <div class="d-flex">
-                    <div class="page-group-title">Management</div>
-                    <div class="ms-auto"></div><!--tag stuff supposed to be here-->
-                    <div>
-                        <input type="text" class="page-search" placeholder="Search">
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <ul class="nav nav-underline justify-content-start">
-                        <li class="nav-item">
-                            <button class="page-man-tab nav-link active" id="man-employee-tab" data-bs-toggle="tab" data-bs-target="#employee-tab-pane" type="button" role="tab" aria-controls="employee-tab-pane" aria-selected="true">Employee</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="page-man-tab nav-link" id="man-hospital-tab" data-bs-toggle="tab" data-bs-target="#hospital-tab-pane" type="button" role="tab" aria-controls="hospital-tab-pane" aria-selected="false">Hospitals</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="page-man-tab nav-link " id="man-user-tab" data-bs-toggle="tab" data-bs-target="#user-tab-pane" type="button" role="tab" aria-controls="user-tab-pane" aria-selected="false">Users</button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="tab-content mt-2">
-                    <div class="tab-pane show active" id="employee-tab-pane" role="tabpanel" aria-labelledby="man-employee-tab" tabindex="0">
-                        <div class="d-flex justify-content-evenly">
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">Employee 1</div>
-                                </div>
-                            </div>
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">Employee 2</div>
-                                </div>
-                            </div>
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">Employee 3</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="hospital-tab-pane" role="tabpanel" aria-labelledby="man-hospital-tab" tabindex="0">
-                        <div class="d-flex justify-content-evenly">
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">Hospital 1</div>
-                                </div>
-                            </div>
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">Hospital 2</div>
-                                </div>
-                            </div>
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">Hospital 3</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="user-tab-pane" role="tabpanel" aria-labelledby="man-user-tab" tabindex="0">
-                        <div class="d-flex justify-content-evenly">
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">User 1</div>
-                                </div>
-                            </div>
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">User 2</div>
-                                </div>
-                            </div>
-                            <div class="man-item">
-                                <img src="https://dummyimage.com/160x160/d1d1d1/fff.png" />
-                                <div class="pt-2">
-                                    <div class="item-subtext">Heading</div>
-                                    <div class="item-text">User 3</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex mt-3 justify-content-between">
-                    <nav aria-label="...">
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="pagi-override page-item active">
-                                <a class="page-link pagi-override" aria-current="page">1</a>
-                            </li>
-                            <li class="pagi-override page-item"><a class="pagi-override page-link" href="#">2</a></li>
-                            <li class="pagi-override page-item"><a class="pagi-override page-link" href="#">3</a></li>
-                        </ul>
-                    </nav>
-                    <button class="btn btn-sm px-5 home-btn">Create New</button>
-                </div>
-            </div>
-            <div class="d-flex col-xl page-group p-4"><!--dashboard-->
-                <div class="page-group-title">Dashboard</div>
-            </div>
-            <div class="w-100"></div>
-            <div class="d-flex col-xl-2 col-lg page-group p-4"><!--app usage-->
-                <div class="d-flex flex-column w-100">
-                    <div class="item-subtext">System Monitoring</div>
-                    <div class="item-text">Application Usage</div>
-                    <hr class="my-2">
-                    <div class="d-flex flex-column row-gap-1">
-                        <div class="d-flex">
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                            <div class="d-flex flex-column ms-3 flex-grow-1">
-                                <div class="item-text-light">Menu Label</div>
-                                <div class="item-subtext">Menu description.</div>
-                            </div>
-                            <div class="item-text-light">⇧A</div>
-                        </div>
-                        <div class="d-flex">
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                            <div class="d-flex flex-column ms-3 flex-grow-1">
-                                <div class="item-text-light">Menu Label</div>
-                                <div class="item-subtext">Menu description.</div>
-                            </div>
-                            <div class="item-text-light">⇧A</div>
-                        </div>
-                        <div class="d-flex">
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                            <div class="d-flex flex-column ms-3 flex-grow-1">
-                                <div class="item-text-light">Menu Label</div>
-                                <div class="item-subtext">Menu description.</div>
-                            </div>
-                            <div class="item-text-light">⇧A</div>
-                        </div>
-                        <hr class="m-2">
-                        <div class="d-flex">
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                            <div class="d-flex flex-column ms-3 flex-grow-1">
-                                <div class="item-text-light">Menu Label</div>
-                                <div class="item-subtext">Menu description.</div>
-                            </div>
-                            <div class="item-text-light">⇧A</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-sm px-5 mt-3 home-btn">View More</button>
-                </div>
-            </div>
-            <div class="d-flex flex-column col-xl page-group p-4"><!--documents-->
-                <div class="d-flex">
-                    <div class="page-group-title">Documents</div>
-                    <div class="ms-auto"></div><!--tag stuff supposed to be here-->
-                    <div>
-                        <input type="text" class="page-search" placeholder="Search">
-                    </div>
-                </div>
-                <div class="d-flex mt-2 gap-3 flex-wrap justify-content-evenly">
-                    <div class="doc-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="doc-name">Document.doc</div>
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2"> 
-                            <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                            <div class="d-flex flex-column row-gap-0">
-                                <div class="header-uname">Title</div>
-                                <div class="header-role">Description</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="doc-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="doc-name">Document.doc</div>
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2"> 
-                            <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                            <div class="d-flex flex-column row-gap-0">
-                                <div class="header-uname">Title</div>
-                                <div class="header-role">Description</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="doc-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="doc-name">Document.doc</div>
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2"> 
-                            <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                            <div class="d-flex flex-column row-gap-0">
-                                <div class="header-uname">Title</div>
-                                <div class="header-role">Description</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="doc-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="doc-name">Document.doc</div>
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2"> 
-                            <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                            <div class="d-flex flex-column row-gap-0">
-                                <div class="header-uname">Title</div>
-                                <div class="header-role">Description</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="doc-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="doc-name">Document.doc</div>
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2"> 
-                            <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                            <div class="d-flex flex-column row-gap-0">
-                                <div class="header-uname">Title</div>
-                                <div class="header-role">Description</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="doc-item">
-                        <div class="d-flex justify-content-between">
-                            <div class="doc-name">Document.doc</div>
-                            <div>
-                                <span class="material-symbols-outlined">star</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2 mt-2"> 
-                            <img src="" alt="" width="35" height="35" class="d-inline-block align-text-top"/>
-                            <div class="d-flex flex-column row-gap-0">
-                                <div class="header-uname">Title</div>
-                                <div class="header-role">Description</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex mt-3 justify-content-between">
-                    <nav aria-label="...">
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="pagi-override page-item active">
-                                <a class="page-link pagi-override" aria-current="page">1</a>
-                            </li>
-                            <li class="pagi-override page-item"><a class="pagi-override page-link" href="#">2</a></li>
-                            <li class="pagi-override page-item"><a class="pagi-override page-link" href="#">3</a></li>
-                        </ul>
-                    </nav>
-                    <button class="btn btn-sm px-5 home-btn">Create Document</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <v-app>
+    <!-- Sidebar Navigation -->
+    <v-navigation-drawer app permanent>
+      <v-list>
+        <!-- Profile Section at the top of the sidebar -->
+        <v-list-item>
+          <v-list-item-avatar>
+            <v-avatar size="40">
+              <v-icon size="40">mdi-account-circle</v-icon>
+            </v-avatar>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>{{ currentUser?.name || 'User' }}</v-list-item-title>
+            <v-list-item-subtitle>{{ currentUser?.email || '' }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider class="my-2"></v-divider>
+        <Link href="/profile">
+          <v-list-item link>
+            <v-list-item-icon><v-icon>mdi-account</v-icon></v-list-item-icon>
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item>
+        </Link>
+        <Link href="/logout" method="post" as="button">
+          <v-list-item link>
+            <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </Link>
+        <v-divider class="my-2"></v-divider>
+        <Link href="/" style="text-decoration: none; color: inherit;">
+          <v-list-item link>
+            <v-list-item-icon><v-icon>mdi-view-dashboard</v-icon></v-list-item-icon>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item>
+        </Link>
+        <Link href="/documents" style="text-decoration: none; color: inherit;">
+          <v-list-item link>
+            <v-list-item-icon><v-icon>mdi-file-document</v-icon></v-list-item-icon>
+            <v-list-item-title>Documents</v-list-item-title>
+          </v-list-item>
+        </Link>
+        <Link href="/clients" style="text-decoration: none; color: inherit;">
+          <v-list-item link>
+            <v-list-item-icon><v-icon>mdi-account-group</v-icon></v-list-item-icon>
+            <v-list-item-title>Clients</v-list-item-title>
+          </v-list-item>
+        </Link>
+        <Link href="/users" style="text-decoration: none; color: inherit;">
+          <v-list-item link>
+            <v-list-item-icon><v-icon>mdi-account</v-icon></v-list-item-icon>
+            <v-list-item-title>Users</v-list-item-title>
+          </v-list-item>
+        </Link>
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- Top App Bar -->
+    <v-app-bar app color="primary" dark>
+      <v-toolbar-title>Dashboard</v-toolbar-title>
+    </v-app-bar>
+
+    <!-- Main Content -->
+    <v-main>
+      <v-container fluid>
+        <!-- Document Analytics and Activity Side by Side, slimmer width -->
+        <v-row align="stretch" justify="center">
+          <v-col cols="12" md="5" lg="4">
+            <v-card class="pa-6 mb-4 h-100" outlined>
+              <div class="text-h6 mb-4">Document Analytics</div>
+              <v-row>
+                <v-col cols="12" sm="4">
+                  <v-card class="pa-3 mb-2" outlined>
+                    <v-icon size="32" color="primary">mdi-file-document</v-icon>
+                    <div class="text-h5 mt-2">{{ documents.length }}</div>
+                    <div class="grey--text">Total Documents</div>
+                  </v-card>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-card class="pa-3 mb-2" outlined>
+                    <v-icon size="32" color="success">mdi-calendar-plus</v-icon>
+                    <div class="text-h5 mt-2">{{ documentsThisMonth }}</div>
+                    <div class="grey--text">Created This Month</div>
+                  </v-card>
+                </v-col>
+                <v-col cols="12" sm="4">
+                  <v-card class="pa-3 mb-2" outlined>
+                    <v-icon size="32" color="error">mdi-delete</v-icon>
+                    <div class="text-h5 mt-2">{{ documentsDeletedThisMonth }}</div>
+                    <div class="grey--text">Deleted This Month</div>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <div class="d-flex justify-end mt-2">
+                <Link href="/documents">
+                  <v-btn color="primary" variant="flat">
+                    Go to Documents
+                  </v-btn>
+                </Link>
+              </div>
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="5" lg="4">
+            <v-card class="pa-6 mb-4 h-100" outlined>
+              <div class="text-h6 mb-4">Document Activity (Last 30 Days)</div>
+              <canvas ref="docActivityChart" height="180"></canvas>
+            </v-card>
+          </v-col>
+        </v-row>
+        <!-- Users Analytics and Users per Department Side by Side, slimmer width -->
+        <v-row align="stretch" justify="center">
+          <v-col cols="12" md="5" lg="4">
+            <v-card class="pa-6 mb-4 h-100" outlined>
+              <div class="text-h6 mb-4">User Analytics</div>
+              <v-row>
+                <v-col cols="12">
+                  <v-card class="pa-3 mb-2" outlined>
+                    <v-icon size="32" color="primary">mdi-account</v-icon>
+                    <div class="text-h5 mt-2">{{ users.length }}</div>
+                    <div class="grey--text">Total Users</div>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+          <v-col cols="12" md="5" lg="4">
+            <v-card class="pa-6 mb-4 h-100" outlined>
+              <div class="text-h6 mb-2">Users per Department</div>
+              <canvas ref="deptChart" height="180"></canvas>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+
+    <v-footer app>
+      <span>&copy; 2025 My Application</span>
+    </v-footer>
+  </v-app>
 </template>
 
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { Link } from '@inertiajs/vue3'
+
+const props = defineProps({
+  documents: { type: Array, default: () => [] },
+  clients: { type: Array, default: () => [] },
+  users: { type: Array, default: () => [] },
+  departments: { type: Array, default: () => [] },
+  currentUser: { type: Object, default: () => ({}) }
+})
+
+// Document analytics
+const documentsThisMonth = computed(() => {
+  const now = new Date()
+  return props.documents.filter(doc => {
+    const created = new Date(doc.created_at)
+    return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear()
+  }).length
+})
+
+const documentsDeletedThisMonth = computed(() => {
+  const now = new Date()
+  return props.documents.filter(doc => {
+    if (!doc.deleted_at) return false
+    const deleted = new Date(doc.deleted_at)
+    return deleted.getMonth() === now.getMonth() && deleted.getFullYear() === now.getFullYear()
+  }).length
+})
+
+// --- Users per Department Pie Chart ---
+const deptChart = ref(null)
+let deptChartInstance = null
+
+const usersPerDepartment = computed(() => {
+  const counts = {}
+  props.departments.forEach(dep => {
+    counts[dep.name] = 0
+  })
+  props.users.forEach(user => {
+    const dep = props.departments.find(d => d.id === user.department_id)
+    if (dep) counts[dep.name]++
+  })
+  return counts
+})
+
+function renderDeptChart() {
+  if (!deptChart.value) return
+  if (deptChartInstance) {
+    deptChartInstance.destroy()
+  }
+  import('chart.js/auto').then(({ default: Chart }) => {
+    const ctx = deptChart.value.getContext('2d')
+    deptChartInstance = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(usersPerDepartment.value),
+        datasets: [{
+          label: 'Users',
+          data: Object.values(usersPerDepartment.value),
+          backgroundColor: [
+            '#1976d2', '#43a047', '#e53935', '#fbc02d', '#8e24aa', '#00acc1', '#ff7043', '#d4e157'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true, position: 'bottom' }
+        }
+      }
+    })
+  })
+}
+
+// --- Document Activity Over the Past Month (Line Chart) ---
+const docActivityChart = ref(null)
+let docActivityChartInstance = null
+
+// Prepare data: count documents created per day for the last 30 days
+const docActivityData = computed(() => {
+  const days = []
+  const counts = []
+  const now = new Date()
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now)
+    d.setDate(now.getDate() - i)
+    const label = `${d.getMonth() + 1}/${d.getDate()}`
+    days.push(label)
+    const count = props.documents.filter(doc => {
+      const created = new Date(doc.created_at)
+      return (
+        created.getFullYear() === d.getFullYear() &&
+        created.getMonth() === d.getMonth() &&
+        created.getDate() === d.getDate()
+      )
+    }).length
+    counts.push(count)
+  }
+  return { days, counts }
+})
+
+function renderDocActivityChart() {
+  if (!docActivityChart.value) return
+  if (docActivityChartInstance) {
+    docActivityChartInstance.destroy()
+  }
+  import('chart.js/auto').then(({ default: Chart }) => {
+    const ctx = docActivityChart.value.getContext('2d')
+    docActivityChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: docActivityData.value.days,
+        datasets: [{
+          label: 'Documents Created',
+          data: docActivityData.value.counts,
+          fill: false,
+          borderColor: '#1976d2',
+          backgroundColor: '#1976d2',
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true, position: 'top' }
+        },
+        scales: {
+          y: { beginAtZero: true, precision: 0 }
+        }
+      }
+    })
+  })
+}
+
+onMounted(() => {
+  renderDeptChart()
+  renderDocActivityChart()
+})
+
+watch([() => props.users, () => props.departments], () => {
+  renderDeptChart()
+})
+watch(() => props.documents, () => {
+  renderDocActivityChart()
+})
 </script>
-
-<style scoped>
-body{
-    background-color: #fff;
-    font-family: "Poppins", sans-serif !important;
-}
-a{
-    text-decoration: none !important;
-    color: inherit;
-}
-input{
-    border: solid 1px rgba(102,102,102,.35);
-    border-radius: 12px;
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    color: #333;
-    outline: none;
-}
-.header-main{
-    height: 9vh;
-    background-color: #fff;
-    border-bottom: 1px solid #d9d9d9;
-    width: 100%;
-    top: 0;
-}
-.header-uname{
-    font-weight: 600;
-    font-style: normal;
-    font-size: 15px;
-    color: #757575;
-}
-.header-role{
-    font-weight: 500;
-    font-style: normal;
-    font-size: 14px;
-    color: #b3b3b3;
-}
-.header-nav{
-    font-weight: 500;
-    font-style: normal;
-    font-size: 15px;
-    color: #1e1e1e;
-}
-
-/* main body */
-.page-content{
-    background-color: #fbfbfb;
-    padding: 10px 20px;
-    height: 91vh;
-}
-.page-group{
-    background-color: #fff;
-    border: solid 1px #d9d9d9;
-}
-.page-group-title{
-    font-weight: 600;
-    font-style: normal;
-    font-size: 24px;
-    color: #1e1e1e;
-}
-.page-search{
-    font-weight: 500;
-    font-size: 12px;
-    color: #1e1e1e;
-    padding: 5px 10px;
-}
-.page-man-tab{
-    font-weight: 400;
-    color: #303030;
-}
-.page-man-tab:hover{
-    font-weight: 400;
-    color: #303030;
-    border-bottom-color: #303030;
-}
-.man-item{
-    width: 241px;
-    border: solid 1px #d9d9d9;
-    border-radius: 8px;
-    padding: 24px;
-}
-.man-item img{
-    margin: auto;
-}
-.item-subtext{
-    font-weight: 400;
-    font-size: 14px;
-    color: #757575;
-}
-.item-text{
-    font-weight: 600;
-    font-size: 16px;
-    color: #1e1e1e;
-}
-.item-text-light{
-    font-weight: 400;
-    font-size: 16px;
-    color: #1e1e1e;
-}
-.pagi-override{
-    color: #757575;
-    background-color: #f5f5f5;
-}
-.pagi-override:hover{
-    color: #1e1e1e;
-}
-.active > .pagi-override{
-    background-color: #757575;
-    border-color: #757575;
-}
-.home-btn{
-    background-color: #2c2c2c;
-    color: #f5f5f5;
-}
-.home-btn:hover{
-    background-color: #f5f5f5;
-    border-color: #2c2c2c;
-    color: #2c2c2c;
-}
-.doc-item{
-    width: 306px;
-    height: 132px;
-    border: solid 1px #d9d9d9;
-    border-radius: 8px;
-    padding: 20px;
-}
-.doc-name{
-    font-size: 22px;
-    font-weight: 600;
-    color: #1e1e1e;
-}
-</style>
