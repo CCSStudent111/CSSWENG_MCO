@@ -11,7 +11,6 @@ const myComponents = {
   VFileUpload,
 }
 
-
 export default createVuetify({
     components: myComponents,
     directives,
@@ -21,6 +20,21 @@ export default createVuetify({
         aliases,
         sets: {
             mdi,
+        },
+    },
+    theme: {
+        defaultTheme: 'light',
+        themes: {
+            light: {
+                colors: {
+                    primary: '#2C2C2C',
+                },
+            },
+            dark: {
+                colors: {
+                    primary: '#2C2C2C',
+                },
+            },
         },
     },
 })

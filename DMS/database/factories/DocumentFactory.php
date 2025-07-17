@@ -23,7 +23,7 @@ class DocumentFactory extends Factory
             'summary' => $this->faker->paragraph,
             'document_type_id' => DocumentType::inRandomOrder()->value('id'),
             'created_by' => User::inRandomOrder()->value('id'),
-            'issued_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'issued_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
         ];
     }
 }

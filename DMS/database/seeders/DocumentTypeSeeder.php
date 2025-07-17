@@ -16,7 +16,16 @@ class DocumentTypeSeeder extends Seeder
         $types = [
             'Report',
             'Invoice',
-            '201 files',
+            'Contracts',
+            'Proposals',
+            'Memos',
+            'User Manuals',
+            'Meeting Minutes',
+            'Policies',
+            'Guidelines',
+            'Technical Specifications',
+            'Research Papers',
+            'Presentations',
             'BIR Reports',
         ];
 

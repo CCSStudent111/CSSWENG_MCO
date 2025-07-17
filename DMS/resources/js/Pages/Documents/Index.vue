@@ -15,10 +15,6 @@
             </v-btn>
             </Link>
             <Link :href="route('documents.create')">
-                <v-btn color="primary" variant="flat" size="small">
-                    <v-icon start>mdi-upload</v-icon>
-                    Add Document
-                </v-btn>
             <v-btn color="primary" variant="flat" size="small">
                 <v-icon start>mdi-upload</v-icon>Upload Document
             </v-btn>
@@ -97,15 +93,6 @@
             <v-pagination v-model="page" :length="pageCount" total-visible="7" color="primary"></v-pagination>
             <span class="ml-4">Page {{ page }} of {{ pageCount }}</span>
         </div>
-        <div class="d-flex justify-end align-center mt-4">
-            <v-pagination
-                v-model="page"
-                :length="pageCount"
-                total-visible="7"
-                color="primary"
-            ></v-pagination>
-            <span class="ml-4">Page {{ page }} of {{ pageCount }}</span>
-        </div>
     </AppLayout>
 </template>
 
@@ -153,14 +140,6 @@ const paginatedDocuments = computed(() => {
 })
 
 watch(entries, () => { page.value = 1 })
-
-function deleteDocument(id) {
-    if (confirm('Delete this document?')) {
-        form.delete(route('documents.destroy', id), {
-            preserveScroll: true
-        })
-    }
-}
 
 // Reset to page 1 when entries per page changes
 watch(entries, () => { page.value = 1 })

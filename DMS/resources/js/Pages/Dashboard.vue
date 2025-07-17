@@ -1,57 +1,70 @@
 <template>
   <v-app>
-    <!-- Sidebar Navigation -->
-    <v-navigation-drawer app permanent>
-      <v-list>
-        <!-- Profile Section at the top of the sidebar -->
-        <v-list-item>
-          <v-list-item-avatar>
-            <v-avatar size="40">
-              <v-icon size="40">mdi-account-circle</v-icon>
-            </v-avatar>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>{{ currentUser?.name || 'User' }}</v-list-item-title>
-            <v-list-item-subtitle>{{ currentUser?.email || '' }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-divider class="my-2"></v-divider>
-        <Link href="/profile">
-          <v-list-item link>
-            <v-list-item-icon><v-icon>mdi-account</v-icon></v-list-item-icon>
-            <v-list-item-title>Profile</v-list-item-title>
-          </v-list-item>
-        </Link>
-        <Link href="/logout" method="post" as="button">
-          <v-list-item link>
-            <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
-            <v-list-item-title>Logout</v-list-item-title>
-          </v-list-item>
-        </Link>
-        <v-divider class="my-2"></v-divider>
+    <!-- Sidebar Navigation as Rail -->
+    <v-navigation-drawer
+      app
+      permanent
+      color="primary"
+      dark
+      width="80"
+      class="pa-2"
+    >
+      <v-list nav dense>
         <Link href="/" style="text-decoration: none; color: inherit;">
-          <v-list-item link>
-            <v-list-item-icon><v-icon>mdi-view-dashboard</v-icon></v-list-item-icon>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item>
+          <v-tooltip text="Dashboard" location="right">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" class="justify-center">
+                <v-list-item-icon>
+                  <v-icon>mdi-view-dashboard</v-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </template>
+          </v-tooltip>
         </Link>
         <Link href="/documents" style="text-decoration: none; color: inherit;">
-          <v-list-item link>
-            <v-list-item-icon><v-icon>mdi-file-document</v-icon></v-list-item-icon>
-            <v-list-item-title>Documents</v-list-item-title>
-          </v-list-item>
+          <v-tooltip text="Documents" location="right">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" class="justify-center">
+                <v-list-item-icon>
+                  <v-icon>mdi-file-document</v-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </template>
+          </v-tooltip>
         </Link>
         <Link href="/clients" style="text-decoration: none; color: inherit;">
-          <v-list-item link>
-            <v-list-item-icon><v-icon>mdi-account-group</v-icon></v-list-item-icon>
-            <v-list-item-title>Clients</v-list-item-title>
-          </v-list-item>
+          <v-tooltip text="Clients" location="right">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" class="justify-center">
+                <v-list-item-icon>
+                  <v-icon>mdi-account-group</v-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </template>
+          </v-tooltip>
         </Link>
         <Link href="/users" style="text-decoration: none; color: inherit;">
-          <v-list-item link>
-            <v-list-item-icon><v-icon>mdi-account</v-icon></v-list-item-icon>
-            <v-list-item-title>Users</v-list-item-title>
-          </v-list-item>
+          <v-tooltip text="Users" location="right">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" class="justify-center">
+                <v-list-item-icon>
+                  <v-icon>mdi-account</v-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </template>
+          </v-tooltip>
+        </Link>
+        <v-divider class="my-2"></v-divider>
+        <Link href="/logout" method="post" as="button" style="text-decoration: none; color: inherit;">
+          <v-tooltip text="Logout" location="right">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" class="justify-center">
+                <v-list-item-icon>
+                  <v-icon>mdi-logout</v-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </template>
+          </v-tooltip>
         </Link>
       </v-list>
     </v-navigation-drawer>
@@ -134,9 +147,7 @@
       </v-container>
     </v-main>
 
-    <v-footer app>
-      <span>&copy; 2025 My Application</span>
-    </v-footer>
+
   </v-app>
 </template>
 
@@ -156,7 +167,7 @@ const props = defineProps({
 const documentsThisMonth = computed(() => {
   const now = new Date()
   return props.documents.filter(doc => {
-    const created = new Date(doc.created_at)
+    const created = new Date(doc.issued_at)
     return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear()
   }).length
 })
@@ -230,7 +241,7 @@ const docActivityData = computed(() => {
     const label = `${d.getMonth() + 1}/${d.getDate()}`
     days.push(label)
     const count = props.documents.filter(doc => {
-      const created = new Date(doc.created_at)
+      const created = new Date(doc.issued_at)
       return (
         created.getFullYear() === d.getFullYear() &&
         created.getMonth() === d.getMonth() &&
