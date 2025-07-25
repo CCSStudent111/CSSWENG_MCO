@@ -11,6 +11,7 @@ use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DepartmentDocumentTypeController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PasswordController;
 
 
 Route::controller(AuthController::class)->group(function () {
@@ -24,6 +25,13 @@ Route::controller(AuthController::class)->group(function () {
 
 
     Route::post('/logout', 'logout')->middleware('auth')->name('logout');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('/forgot-password', [PasswordController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [PasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordController::class, 'resetPassword'])->name('password.update');
 });
 
 Route::middleware(['auth'])->group(function () {
