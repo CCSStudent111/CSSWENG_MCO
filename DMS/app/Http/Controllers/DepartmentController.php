@@ -12,12 +12,12 @@ class DepartmentController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {   
-         $departments = Department::withTrashed()->get();
+    {
+        $departments = Department::withTrashed()->get();
 
-    return Inertia::render('Departments/Index', [
-        'departments' => $departments
-    ]);
+        return Inertia::render('Departments/Index', [
+            'departments' => $departments
+        ]);
     }
 
     /**
@@ -65,7 +65,7 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-     public function update(Request $request, Department $department)
+    public function update(Request $request, Department $department)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',

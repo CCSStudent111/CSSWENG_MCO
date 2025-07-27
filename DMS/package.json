@@ -21,6 +21,8 @@
     },
     "dependencies": {
         "chart.js": "^4.5.0",
+=======
+        "bootstrap": "^5.3.7",
         "dayjs": "^1.11.13",
         "vuetify": "^3.8.11"
     }

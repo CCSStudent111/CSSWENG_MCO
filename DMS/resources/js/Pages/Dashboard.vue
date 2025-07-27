@@ -149,6 +149,7 @@
 
 
   </v-app>
+
 </template>
 
 <script setup>
@@ -298,3 +299,4 @@ watch(() => props.documents, () => {
   renderDocActivityChart()
 })
 </script>
+
