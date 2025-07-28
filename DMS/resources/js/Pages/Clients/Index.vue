@@ -2,11 +2,11 @@
 
 <template>
   <AppLayout>
-    <div class="custom-title mb-4">Manage Hospitals</div>
+    <div class="custom-title mb-4">Manage Clients</div>
     <div class="d-flex mb-4 justify-end">
-     <Link :href="route('hospitals.create')">
+     <Link :href="route('clients.create')">
       <v-btn color="primary" variant="flat" size="small">
-        Add A Hospital
+        Add A Client
       </v-btn>
       </Link>      
     </div>
@@ -25,7 +25,7 @@
         ></v-select>
         <v-text-field
           v-model="search"
-          label="Search Hospitals"
+          label="Search Clients"
           prepend-inner-icon="mdi-magnify"
           clearable
           density="compact"
@@ -38,9 +38,10 @@
     <v-table density="comfortable">
       <thead>
         <tr>
-          <th class="text-left">Hospital ID</th>
+          <th class="text-left">Client ID</th>
           <th class="text-left">Name</th>
           <th class="text-left">Branch</th>
+          <th class="text-left">Address</th>
           <th class="text-left">Type</th>
           <th class="text-left">Date Added</th>
           <th class="text-left">Last Updated</th>
@@ -48,22 +49,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(hospital, index) in paginatedHospitals" :key="hospital.id"
+        <tr v-for="(client, index) in paginatedClients" :key="client.id"
           :class="index % 2 === 0 ? 'bg-grey-lighten-4' : ''">
-          <td>{{ hospital.id }}</td>
-          <td>{{ hospital.name }}</td>
-          <td>{{ hospital.branch }}</td>
-          <td>{{ hospital.type }}</td>
-          <td>{{ dayjs(hospital.created_at).format('MM/DD/YYYY') }}</td>
-          <td>{{ dayjs(hospital.updated_at).format('MM/DD/YYYY') }}</td>
+          <td>{{ client.id }}</td>
+          <td>{{ client.name }}</td>
+          <td>{{ client.branch }}</td>
+          <td>{{ client.address }}</td>
+          <td>{{ client.type }}</td>
+          <td>{{ dayjs(client.created_at).format('MM/DD/YYYY') }}</td>
+          <td>{{ dayjs(client.updated_at).format('MM/DD/YYYY') }}</td>
           <td>
-            <Link :href="route('hospitals.show', hospital.id)">
+            <Link :href="route('clients.show', client.id)">
             <v-btn icon size="small" variant="text" aria-label="View">
               <v-icon>mdi-eye</v-icon>
             </v-btn>
             </Link>
 
-            <Link :href ="route('hospitals.edit', hospital.id)">
+            <Link :href ="route('clients.edit', client.id)">
             <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
@@ -71,7 +73,7 @@
 
             
             <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
-            @click="openDeleteDialog(hospital)">
+            @click="openDeleteDialog(client)">
             <v-icon>mdi-delete</v-icon>
             </v-btn>
           </td>
@@ -94,7 +96,7 @@
         <v-card-title>Confirm Delete</v-card-title>
         <v-card-text>
           Are you sure you want to delete
-          <strong v-if="hospitalToDelete">{{ hospitalToDelete.name }}</strong>?
+          <strong v-if="clientToDelete">{{ clientToDelete.name }}</strong>?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -103,9 +105,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <Link :href="route('hospitals.trashed')">
+    <Link :href="route('clients.trashed')">
       <v-btn color="secondary" variant="outlined" size="small" class="ml-2">
-        View Trashed Hospitals
+        View Trashed Clients
       </v-btn>
     </Link>
 
@@ -120,7 +122,7 @@ import dayjs from 'dayjs'
 import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
-  hospitals: Array
+  clients: Array
 })
 
 const entries = ref(10)
@@ -128,38 +130,38 @@ const entriesOptions = [5, 10, 25, 50, 100]
 const search = ref('')
 const page = ref(1)
 const confirmDeleteDialog = ref(false)
-const hospitalToDelete = ref(null)
+const clientToDelete = ref(null)
 
-function openDeleteDialog(hospital) {
-  hospitalToDelete.value = hospital
+function openDeleteDialog(client) {
+  clientToDelete.value = client
   confirmDeleteDialog.value = true
 }
 
 function confirmDelete() {
-  if (hospitalToDelete.value) {
-    router.delete(route('hospitals.destroy', hospitalToDelete.value.id))
+  if (clientToDelete.value) {
+    router.delete(route('clients.destroy', clientToDelete.value.id))
     confirmDeleteDialog.value = false
-    hospitalToDelete.value = null
+    clientToDelete.value = null
   }
 }
 
-// Filter hospitals by search
-const filteredHospitals = computed(() =>
-  props.hospitals.filter(hospital =>
-    hospital.name.toLowerCase().includes(search.value.toLowerCase()) ||
-    hospital.branch.toLowerCase().includes(search.value.toLowerCase()) ||
-    String(hospital.id).includes(search.value)
+// Filter clients by search
+const filteredClients = computed(() =>
+  props.clients.filter(client =>
+    client.name.toLowerCase().includes(search.value.toLowerCase()) ||
+    client.branch.toLowerCase().includes(search.value.toLowerCase()) ||
+    String(client.id).includes(search.value)
   )
 )
 
 // Pagination logic
 const pageCount = computed(() =>
-  Math.ceil(filteredHospitals.value.length / entries.value)
+  Math.ceil(filteredClients.value.length / entries.value)
 )
 
-const paginatedHospitals = computed(() => {
+const paginatedClients = computed(() => {
   const start = (page.value - 1) * entries.value
-  return filteredHospitals.value.slice(start, start + entries.value)
+  return filteredClients.value.slice(start, start + entries.value)
 })
 
 // Reset to page 1 when entries per page changes

@@ -35,7 +35,6 @@ class UserFactory extends Factory
             'date_of_birth' => fake()->date('Y-m-d'),
             // 'department_id' => Department::inRandomOrder()->first()->id,
             'department_id' => Department::first()->id,
-            'role' => 'Employee',
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),
         ];
