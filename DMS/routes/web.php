@@ -60,7 +60,6 @@ Route::get('documents/{document}/logs', [DocumentController::class, 'documentLog
 Route::resource('documents', DocumentController::class);
 Route::resource('documentTypes', DocumentTypeController::class)->except(['show']);
 Route::resource('departments', DepartmentController::class);
-Route::post('/logout', 'logout')->middleware('auth')->name('logout');
 
 Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', [PasswordController::class, 'showForgotPassword'])->name('password.request');
@@ -72,11 +71,11 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
 
-    // Hospitals
-    Route::get('hospitals/trashed', [HospitalController::class, 'trashed'])->name('hospitals.trashed');
-    Route::post('hospitals/{id}/restore', [HospitalController::class, 'restore'])->name('hospitals.restore');
-    Route::delete('hospitals/{id}/force-delete', [HospitalController::class, 'forceDelete'])->name('hospitals.forceDelete');
-    Route::resource('hospitals', HospitalController::class);
+    // Clients
+    Route::get('clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
+    Route::post('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
+    Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
+    Route::resource('clients', ClientController::class);
 
     // Departments
     Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
