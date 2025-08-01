@@ -29,7 +29,9 @@ class StoreDocumentRequest extends FormRequest
             'tags.*' => ['string', 'max:50'],
             'pages' => ['required', 'array'],
             'pages.*' => ['file'], 
-            'issued_at' => ['nullable', 'date'],
+            'issued_at' => ['required', 'date'],
+            'target_type' => ['required', 'in:General,Employee,Client'],
+            'user_id' => ['nullable', 'exists:users,id'], // or 'clients,id' depending on target_type
         ];
     }
 }
