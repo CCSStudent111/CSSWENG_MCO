@@ -51,8 +51,11 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
+        $client->load('documents'); 
+
         return Inertia::render("Clients/Show", [
-            'client' => $client
+            'client' => $client,
+            'documents' => $client->documents, 
         ]);
     }
 

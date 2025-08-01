@@ -65,9 +65,9 @@ class Document extends Model
         return $this->belongsToMany(User::class, 'employee_documents', 'document_id', 'employee_id');
     }
 
-    public function hospitals()
+    public function clients()
     {
-        return $this->belongsToMany(Hospital::class, 'hospital_documents');
+        return $this->belongsToMany(Client::class, 'client_documents');
     }
 
 

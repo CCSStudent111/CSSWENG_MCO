@@ -32,7 +32,7 @@ class Client extends Model
 
     public function documents()
     {
-        return $this->belongsToMany(Document::class, 'hospital_documents');
+        return $this->belongsToMany(Document::class, 'client_documents');
     }
 }
 
