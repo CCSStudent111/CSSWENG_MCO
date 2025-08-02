@@ -27,40 +27,6 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
-Route::get('clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
-Route::post('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
-Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
-
-Route::resource('client-documents', \App\Http\Controllers\Client\DocumentController::class)
-    ->parameters(['client-documents' => 'document'])->only('store', 'create');
-
-
-Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
-Route::post('departments/{id}/restore', [DepartmentController::class, 'restore'])->name('departments.restore');
-Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('departments.forceDelete');
-
-Route::get('documentTypes', [DocumentTypeController::class, 'index'])->name('documentTypes.index');
-Route::post('documentTypes/{id}/restore', [DocumentTypeController::class, 'restore'])->name('documentTypes.restore');
-Route::delete('documentTypes/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
-
-
-Route::resource('clients', ClientController::class);
-Route::resource('users', UserController::class);
-
-Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
-Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])
-    ->withTrashed()
-    ->name('documents.restore');
-Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])
-    ->withTrashed()
-    ->name('documents.forceDelete');
-Route::get('documents/logs', [DocumentController::class,'logs'])->name('documents.all-logs');
-Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
-
-Route::resource('documents', DocumentController::class);
-Route::resource('documentTypes', DocumentTypeController::class)->except(['show']);
-Route::resource('departments', DepartmentController::class);
-
 Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', [PasswordController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/forgot-password', [PasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -93,10 +59,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])->withTrashed()->name('documents.restore');
     Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])->withTrashed()->name('documents.forceDelete');
     Route::get('documents/logs', [DocumentController::class, 'logs'])->name('documents.all-logs');
-    Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
     Route::get('/documents/pending', [DocumentController::class, 'pending'])
         ->middleware('manager')
         ->name('documents.pending');
+    Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
     Route::post('/documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
     Route::delete('/documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
     Route::resource('documents', DocumentController::class);

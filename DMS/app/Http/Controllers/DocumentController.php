@@ -25,20 +25,24 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $documents = Document::with([
-            'type',
-            'creator',
-            'tags',
-            'pages'
-        ])
-        ->where('status', '!=', 'deleted') 
-        ->orderBy('id', 'desc')
-        ->get();
+        $user = auth()->user()->load('department.documentTypes');
 
+        $documents = Document::with([
+                'type',
+                'creator',
+                'tags',
+                'pages'
+            ])
+            ->where('status', 'approved')
+            ->whereHas('type.departments', function ($query) use ($user) {
+                $query->where('departments.id', $user->department_id);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
-            'documentTypes' => DocumentType::all(),
+            'documentTypes' => $user->department->documentTypes->values(),
         ]);
     }
 
