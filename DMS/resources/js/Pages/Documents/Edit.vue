@@ -12,6 +12,37 @@
                                 <v-file-upload v-model="form.pages" label="Upload Files" multiple show-size
                                     prepend-icon="mdi-paperclip" :error-messages="form.errors.pages" required clearable>
                                 </v-file-upload>
+                                <v-card-subtitle class="mt-4 mb-2 font-weight-bold">Existing Document
+                                    Pages</v-card-subtitle>
+                                <v-table>
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">File Name</th>
+                                            <th class="text-left">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(page, index) in props.document.pages" :key="page.id">
+                                            <td>
+                                                <a :href="'/storage/' + page.file_path"
+                                                    class="text-blue-600 underline">
+                                                    {{ page.original_name }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <v-btn icon variant="text" size="small" @click="downloadPage(page)">
+                                                    <v-icon>mdi-download</v-icon>
+                                                </v-btn>
+                                                <v-btn icon variant="text" size="small" @click="reuploadPage(page)">
+                                                    <v-icon>mdi-upload</v-icon>
+                                                </v-btn>
+                                                <v-btn icon variant="text" size="small" @click="deletePage(page)">
+                                                    <v-icon color="red">mdi-delete</v-icon>
+                                                </v-btn>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </v-table>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -87,6 +118,49 @@ function submit() {
             'X-HTTP-Method-Override': 'PUT', // method spoofing for Laravel
         }
     })
+}
+
+function downloadPage(page) {
+    window.open(route('document-pages.download', page.id), '_blank');
+}
+
+function reuploadPage(page) {
+    const input = document.createElement('input');
+    input.type = 'file';
+
+    input.addEventListener('change', () => {
+        if (!input.files.length) return;
+
+        const formData = new FormData();
+        formData.append('page', input.files[0]);
+
+        formData.append('_method', 'PUT'); 
+
+        router.post(route('document-pages.update', page.id), formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                location.reload(); 
+            },
+            onError: () => {
+                alert('Reupload failed.');
+            },
+        });
+    });
+
+    input.click();
+}
+
+function deletePage(page) {
+    if (!confirm(`Are you sure you want to delete ${page.original_name}?`)) return;
+
+    router.delete(route('document-pages.destroy', page.id), {
+        onSuccess: () => {
+            location.reload();
+        },
+        onError: () => {
+            alert('Delete failed.');
+        }
+    });
 }
 </script>
 

@@ -114,6 +114,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
         Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
     });
+
+    Route::get('/document-pages/{documentPage}/download', [DocumentPageController::class, 'download'])
+    ->name('document-pages.download');
+    Route::put('/document-pages/{documentPage}', [DocumentPageController::class, 'update'])->name('document-pages.update');
+    Route::delete('/document-pages/{documentPage}', [DocumentPageController::class, 'destroy'])->name('document-pages.destroy');
+
 });
 
 Route::get('/phpinfo', function () {
