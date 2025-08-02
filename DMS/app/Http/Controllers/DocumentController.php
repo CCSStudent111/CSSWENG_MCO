@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\User;
-use App\Models\Hospital;
 use App\Models\Client;
+use App\Models\DocumentType;
 use App\Services\TrashService;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -25,17 +25,20 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $user = auth()->user()->load('department.documentTypes');
-        $documentTypes = $user->department->documentTypes;
-        $documentTypesIds = $user->department->documentTypes()->pluck('id');
+        $documents = Document::with([
+            'type',
+            'creator',
+            'tags',
+            'pages'
+        ])
+        ->where('status', '!=', 'deleted') 
+        ->orderBy('id', 'desc')
+        ->get();
 
-        $documents = Document::with(['type', 'tags', 'creator'])->whereIn('document_type_id', $documentTypesIds)
-            ->where('status', 'approved')
-            ->latest('issued_at')->get();
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
-            'documentTypes' => $documentTypes,
+            'documentTypes' => DocumentType::all(),
         ]);
     }
 
