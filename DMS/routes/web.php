@@ -50,6 +50,14 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('departments', DepartmentController::class);
 
     // Users
+    // User API routes
+    Route::get('/api/user/current', [UserController::class, 'getCurrentUser'])->name('api.user.current');
+    Route::get('/api/user/{id}', [UserController::class, 'getUserInfo'])->name('api.user.info');
+    
+    // Profile route
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.index');
+
+    // Regular user routes
     Route::resource('users', UserController::class);
     Route::put('/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('users.toggleAdmin');
     Route::put('/users/{user}/toggle-manager', [UserController::class, 'toggleManager'])->name('users.toggleManager');
@@ -68,12 +76,24 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('documents', DocumentController::class);
 
     // Document Types
-    Route::resource('document-types', DocumentTypeController::class)->except(['show']);
+    Route::resource('document-types', DocumentTypeController::class)
+        ->except(['show'])
+        ->names([
+            'index' => 'documentTypes.index',
+            'create' => 'documentTypes.create', 
+            'store' => 'documentTypes.store',
+            'edit' => 'documentTypes.edit',
+            'update' => 'documentTypes.update',
+            'destroy' => 'documentTypes.destroy'
+        ]);
+    Route::post('document-types/{id}/restore', [DocumentTypeController::class, 'restore'])->name('documentTypes.restore');
+    Route::delete('document-types/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
     // Department ↔ Document Type Linking
     Route::prefix('departments/{department}/document-types')->group(function () {

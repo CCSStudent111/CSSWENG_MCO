@@ -51,6 +51,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_manager' => 'boolean',
         ];
     }
 
@@ -78,4 +79,27 @@ class User extends Authenticatable
     {
         return $this->role === 'Employee';
     }
+    public function getFullNameAttribute(): string
+    {
+        $parts = array_filter([
+            $this->first_name,
+            $this->middle_name,
+            $this->last_name,
+            $this->suffix
+        ]);
+        
+        return implode(' ', $parts) ?: $this->username;
+    }
+
+    public function getRoleAttribute(): string
+    {
+        if ($this->is_admin) {
+            return 'Administrator';
+        } elseif ($this->is_manager) {
+            return 'Manager';
+        } else {
+            return 'Employee';
+        }
+    }
+    
 }

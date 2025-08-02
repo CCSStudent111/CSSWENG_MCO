@@ -51,75 +51,97 @@
       width="80"
       class="pa-2"
     >
-      <v-list nav density="compact" class="d-flex flex-column align-center">
-        <Link href="/" style="text-decoration: none; color: inherit;">
-          <v-tooltip text="Dashboard" location="right">
-            <template #activator="{ props }">
-              <v-list-item 
-                v-bind="props" 
-                class="ma-1 d-flex justify-center align-center"
-                style="min-height: 56px; width: 56px;"
-              >
-                <v-icon size="28">mdi-view-dashboard</v-icon>
-              </v-list-item>
-            </template>
-          </v-tooltip>
-        </Link>
-        <Link href="/documents" style="text-decoration: none; color: inherit;">
-          <v-tooltip text="Documents" location="right">
-            <template #activator="{ props }">
-              <v-list-item 
-                v-bind="props" 
-                class="ma-1 d-flex justify-center align-center"
-                style="min-height: 56px; width: 56px;"
-              >
-                <v-icon size="28">mdi-file-document</v-icon>
-              </v-list-item>
-            </template>
-          </v-tooltip>
-        </Link>
-        <Link href="/clients" style="text-decoration: none; color: inherit;">
-          <v-tooltip text="Clients" location="right">
-            <template #activator="{ props }">
-              <v-list-item 
-                v-bind="props" 
-                class="ma-1 d-flex justify-center align-center"
-                style="min-height: 56px; width: 56px;"
-              >
-                <v-icon size="28">mdi-account-group</v-icon>
-              </v-list-item>
-            </template>
-          </v-tooltip>
-        </Link>
-        <!-- Only show Users link for admin users -->
-        <Link v-if="user?.is_admin" href="/users" style="text-decoration: none; color: inherit;">
-          <v-tooltip text="Users" location="right">
-            <template #activator="{ props }">
-              <v-list-item 
-                v-bind="props" 
-                class="ma-1 d-flex justify-center align-center"
-                style="min-height: 56px; width: 56px;"
-              >
-                <v-icon size="28">mdi-account</v-icon>
-              </v-list-item>
-            </template>
-          </v-tooltip>
-        </Link>
-        <v-divider class="my-3" style="width: 80%;"></v-divider>
-        <Link href="/logout" method="post" as="button" style="text-decoration: none; color: inherit;">
-          <v-tooltip text="Logout" location="right">
-            <template #activator="{ props }">
-              <v-list-item 
-                v-bind="props" 
-                class="ma-1 d-flex justify-center align-center"
-                style="min-height: 56px; width: 56px;"
-              >
-                <v-icon size="28">mdi-logout</v-icon>
-              </v-list-item>
-            </template>
-          </v-tooltip>
-        </Link>
-      </v-list>
+      <div class="d-flex flex-column fill-height">
+        <!-- Main navigation items -->
+        <v-list nav density="compact" class="d-flex flex-column align-center">
+          <Link href="/" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Dashboard" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-view-dashboard</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+          <Link href="/documents" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Monument Documents" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-file-document-outline</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+          <Link href="/clients" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Manage Clients" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-account-box-multiple-outline</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+          <Link v-if="user?.is_admin" href="/document-types" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Manage Document Types" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-file-document-edit-outline</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+          <Link v-if="user?.is_admin" href="/users" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Manage Users" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-account-group</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+        </v-list>
+        
+        <!-- Spacer to push logout to bottom -->
+        <v-spacer></v-spacer>
+        
+        <!-- Logout button at bottom -->
+        <div class="d-flex flex-column align-center pb-2">
+          <v-divider class="my-3" style="width: 80%;"></v-divider>
+          <Link href="/logout" method="post" as="button" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Logout" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-logout</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+        </div>
+      </div>
     </v-navigation-drawer>
 
     <v-main>
