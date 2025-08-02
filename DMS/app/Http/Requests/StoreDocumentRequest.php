@@ -22,9 +22,10 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
+
             'name' => ['required', 'string', 'max:255'],
             'summary' => ['required', 'string'],
-            'document_type_id' => 'nullable|exists:document_types,id', 
+            'document_type_id' => 'nullable|exists:document_types,id', // Allow null
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
             'pages' => ['required', 'array'],
