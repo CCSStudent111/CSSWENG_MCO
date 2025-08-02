@@ -1,26 +1,42 @@
 <template>
-    <div class="container-fluid d-flex justify-content-center align-items-center center-height">
-        <div class="d-flex flex-column in-card col-4">
-            <div class="in-title">Sign In</div>
-            <form action="home.html" class="d-flex flex-column mt-5 row-gap-3">
-                <div class="d-flex flex-column">
-                    <label for="username" class="in-fieldname">Username</label>
-                    <input type="text" class="in-input" id="username">
-                </div>
-                <div class="d-flex flex-column">
-                    <div class="in-fieldname">Password</div>
-                    <input type="password" class="in-input">
-                </div>
-                <button type="submit" class="in-button mt-3">Log In</button>
-            </form>
-        </div>
-    </div>
+    <v-container class="center-height d-flex" fluid>
+        <v-row align="center"
+               justify="center">
+            <v-spacer></v-spacer>
+            <v-col class="d-flex justify-center">
+                <v-sheet elevation="5" height="370" width="400" rounded="lg">
+                    <div class="in-title mt-5">Sign In</div>
+                    <form @submit.prevent="form.post(route('login.submit'))" class="pa-2">
+                        <v-text-field hide-details
+                                      label="Username"
+                                      name="username"
+                                      variant="outlined"
+                                      class="in-input"
+                                      required></v-text-field>
+                        <v-text-field hide-details
+                                      label="Password"
+                                      name="password"
+                                      type="password"
+                                      variant="outlined"
+                                      class="in-input"
+                                      required></v-text-field>
+                        <v-btn class="mt-3 in-button" color="black" type="submit" :loading="form.processing" block rounded>
+                            Log In
+                        </v-btn>
+                    </form>
+                </v-sheet>
+            </v-col>
+            <v-spacer></v-spacer>
+        </v-row>
+    </v-container>
 </template>
 
-<script setup>
+<script setup>import { useForm } from '@inertiajs/vue3'
 
-</script>
+const form = useForm({
+    username: '',
+    password: ''
+})</script>
 
 <style scoped>
-    
 </style>
