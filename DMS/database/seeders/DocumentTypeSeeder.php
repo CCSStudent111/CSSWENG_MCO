@@ -32,17 +32,5 @@ class DocumentTypeSeeder extends Seeder
         foreach ($types as $type) {
             DocumentType::create(['name' => $type]);
         }
-
-        $hospitalTypes = [
-            'Project Documentation',
-            'Service Level Aggreement'
-        ];
-
-        foreach ($hospitalTypes as $type) {
-            DocumentType::create([
-                'name' => $type,
-                'is_hospital' => true,
-            ]);
-        }
     }
 }

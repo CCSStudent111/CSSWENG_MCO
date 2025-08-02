@@ -20,26 +20,26 @@
                   <v-list-item-title><strong>Branch:</strong> {{ client.branch }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-title><strong>Branch:</strong> {{ client.address }}</v-list-item-title>
+                  <v-list-item-title><strong>Address:</strong> {{ client.address }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title><strong>Type:</strong> {{ client.type }}</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>
-                    <strong>Date Added:</strong> {{ dayjs(client.created_at).format('MM/DD/YYYY') }}
+                    <strong>Date Added:</strong> {{ formatDate(client.created_at) }}
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>
-                    <strong>Last Updated:</strong> {{ dayjs(client.updated_at).format('MM/DD/YYYY') }}
+                    <strong>Last Updated:</strong> {{ formatDate(client.updated_at) }}
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-card-text>
             <v-card-actions>
               <Link :href="route('clients.index')">
-                <v-btn color="primary" variant="flat">Back to List</v-btn>
+              <v-btn color="primary" variant="flat">Back to List</v-btn>
               </Link>
             </v-card-actions>
           </v-card>
@@ -52,26 +52,23 @@
               <span class="text-h5">Associated Documents</span>
             </v-card-title>
             <v-card-text>
-              <v-list>
-                <v-list-item v-if="!documents.length">
-                  <v-list-item-title>No documents found.</v-list-item-title>
-                </v-list-item>
-                <v-list-item v-for="doc in documents" :key="doc.id">
-                  <v-list-item-title>
-                    {{ doc.title || doc.name || 'Untitled Document' }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ dayjs(doc.created_at).format('MM/DD/YYYY') }}
-                  </v-list-item-subtitle>
-                  <template #append>
-                    <Link :href="route('documents.show', doc.id)">
-                      <v-btn icon size="small" variant="text">
-                        <v-icon>mdi-eye</v-icon>
-                      </v-btn>
-                    </Link>
+              <v-list v-if="documents.length" density="compact" nav>
+                <v-list-item v-for="doc in documents" :key="doc.id" :href="route('documents.show', doc.id)" link rounded
+                  >
+                  <template #prepend>
+                    <v-icon color="primary">mdi-file-document-outline</v-icon>
                   </template>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ doc.title || doc.name || 'Untitled Document' }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ formatDate(doc.created_at) }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
                 </v-list-item>
               </v-list>
+              <div v-else class="text-grey">No documents found.</div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -92,4 +89,6 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const formatDate = (date) => dayjs(date).format('MM/DD/YYYY')
 </script>

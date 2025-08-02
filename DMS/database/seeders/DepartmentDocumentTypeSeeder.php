@@ -15,18 +15,18 @@ class DepartmentDocumentTypeSeeder extends Seeder
     public function run(): void
     {
         $departments = Department::all();
-
-        $hospitalTypeIds = DocumentType::where('is_hospital', true)->pluck('id');
-        $generalTypes = DocumentType::where('is_hospital', false)->get();
+        $documentTypeIds = DocumentType::pluck('id')->toArray();
 
         foreach ($departments as $department) {
-            $randomGeneralTypeIds = $generalTypes->random(rand(1, min(3, $generalTypes->count())))->pluck('id');
+            if (empty($documentTypeIds)) {
+                continue; 
+            }
 
-            // Merge both hospital and general types
-            $allTypeIds = $hospitalTypeIds->merge($randomGeneralTypeIds)->unique();
+            $randomTypeIds = collect($documentTypeIds)
+                ->random(rand(1, min(3, count($documentTypeIds))))
+                ->toArray();
 
-            // Attach to department
-            $department->documentTypes()->sync($allTypeIds);
+            $department->documentTypes()->sync($randomTypeIds);
         }
     }
 }

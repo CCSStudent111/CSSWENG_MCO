@@ -22,18 +22,16 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'summary' => 'nullable|string',
-            'document_type_id' => 'nullable|exists:document_types,id', // Allow null
-            'issued_at' => 'required|date',
-            'pages' => 'array',
-            'pages.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
-            'tag_ids' => 'array',
-            'tag_ids.*' => 'exists:tags,id',
-            'hospital_ids' => 'array',
-            'hospital_ids.*' => 'exists:hospitals,id',
-            'employee_ids' => 'array',
-            'employee_ids.*' => 'exists:users,id',
+            'name' => ['required', 'string', 'max:255'],
+            'summary' => ['required', 'string'],
+            'document_type_id' => 'nullable|exists:document_types,id', 
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string', 'max:50'],
+            'pages' => ['required', 'array'],
+            'pages.*' => ['file'], 
+            'issued_at' => ['required', 'date'],
+            'target_type' => ['required', 'in:General,Employee,Client'],
+            'user_id' => ['nullable', 'exists:users,id'], // or 'clients,id' depending on target_type
         ];
     }
 }

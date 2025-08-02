@@ -29,11 +29,12 @@ class DocumentController extends Controller
             'type',
             'creator',
             'tags',
-            'pages' // Make sure this is included if you need file information
+            'pages'
         ])
-        ->where('status', '!=', 'deleted') // Exclude soft-deleted documents
+        ->where('status', '!=', 'deleted') 
         ->orderBy('id', 'desc')
         ->get();
+
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
@@ -47,15 +48,14 @@ class DocumentController extends Controller
     public function create()
     {
         $user = auth()->user()->load('department.documentTypes');
-        $documentTypes = $user->department->documentTypes->where('is_hospital', false)->values();
-        // $hospitalDocumentTypes = $user->department->documentTypes->where('is_hospital', true)->values();
-
-        // $users = User::all();
-        // $hospitals = Hospital::all();
+        $documentTypes = $user->department->documentTypes->values();
+        $users = User::select('id', 'first_name', 'last_name')->get();
+        $clients = Client::select('id', 'name')->get();
 
         return Inertia::render('Documents/Create', [
             'documentTypes' => $documentTypes,
-            // 'hospitalDocumentTypes' => $hospitalDocumentTypes,
+            'users' => $users,
+            'clients' => $clients,
         ]);
     }
 
@@ -69,7 +69,15 @@ class DocumentController extends Controller
 
         $validated['pages'] = $request->file('pages') ?? [];
 
-        $this->documentService->create($validated);
+        $document = $this->documentService->create($validated);
+
+        if ($validated['target_type'] === 'Employee' && $validated['user_id']) {
+            $document->employees()->syncWithoutDetaching([$validated['user_id']]);
+        }
+
+        if ($validated['target_type'] === 'Client' && $validated['user_id']) {
+            $document->clients()->syncWithoutDetaching([$validated['user_id']]);
+        }
 
         return redirect()->route('documents.index');
     }
@@ -92,7 +100,7 @@ class DocumentController extends Controller
     public function edit(Document $document)
     {
         $user = auth()->user()->load('department.documentTypes');
-        $documentTypes = $user->department->documentTypes()->where('is_hospital', false)->get()->values();
+        $documentTypes = $user->department->documentTypes()->get()->values();
 
         $document->load(['type', 'tags', 'creator', 'pages']);
 
@@ -180,9 +188,6 @@ class DocumentController extends Controller
     {
         $documents = $this->trashService
             ->getTrashed(Document::class, ['type', 'tags', 'creator', 'pages'])
-            ->whereHas('type', function ($query) {
-                $query->where('is_hospital', false);
-            })
             ->get();
 
         return Inertia::render('Documents/Trash', [
