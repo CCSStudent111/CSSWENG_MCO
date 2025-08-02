@@ -26,8 +26,8 @@ return new class extends Migration
 
             $table->foreignId('department_id')->constrained('departments')->onDelete('restrict');
 
+            $table->string('role')->default('Employee');
             $table->boolean('is_admin')->default(false);
-            $table->boolean('is_manager')->default(false);
 
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

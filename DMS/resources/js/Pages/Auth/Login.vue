@@ -31,12 +31,13 @@
     </v-container>
 </template>
 
-<script setup>import { useForm } from '@inertiajs/vue3'
-
+<script setup>
+import { useForm } from '@inertiajs/vue3'
 const form = useForm({
     username: '',
     password: ''
-})</script>
+})
+</script>
 
 <style scoped>
 </style>

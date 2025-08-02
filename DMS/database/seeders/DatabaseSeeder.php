@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(DepartmentSeeder::class);
         $this->call(DocumentTypeSeeder::class);
-        $this->call(HospitalSeeder::class);
+        $this->call(ClientSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(DepartmentDocumentTypeSeeder::class);
         $this->call(DocumentSeeder::class);

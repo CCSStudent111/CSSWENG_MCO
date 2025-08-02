@@ -16,24 +16,21 @@ class DocumentTypeSeeder extends Seeder
         $types = [
             'Report',
             'Invoice',
-            '201 files',
+            'Contracts',
+            'Proposals',
+            'Memos',
+            'User Manuals',
+            'Meeting Minutes',
+            'Policies',
+            'Guidelines',
+            'Technical Specifications',
+            'Research Papers',
+            'Presentations',
             'BIR Reports',
         ];
 
         foreach ($types as $type) {
             DocumentType::create(['name' => $type]);
-        }
-
-        $hospitalTypes = [
-            'Project Documentation',
-            'Service Level Aggreement'
-        ];
-
-        foreach ($hospitalTypes as $type) {
-            DocumentType::create([
-                'name' => $type,
-                'is_hospital' => true,
-            ]);
         }
     }
 }

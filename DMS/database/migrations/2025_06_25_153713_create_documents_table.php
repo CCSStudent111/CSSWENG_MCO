@@ -17,9 +17,16 @@ return new class extends Migration
             $table->text('summary')->nullable();
             $table->foreignId('document_type_id')->constrained('document_types')->onDelete('restrict');
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('issued_at')->nullable();       
-            $table->softDeletes();                
+            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->timestamp('issued_at')->nullable();
+
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); // ← Added line
+
+            $table->softDeletes();
             $table->timestamps();
+
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
         });
     }
 

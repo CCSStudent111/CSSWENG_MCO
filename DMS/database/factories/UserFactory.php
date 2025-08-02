@@ -33,7 +33,8 @@ class UserFactory extends Factory
             'last_name' => fake()->lastName(),
             'suffix' => fake()->optional()->suffix(),
             'date_of_birth' => fake()->date('Y-m-d'),
-            'department_id' => Department::inRandomOrder()->first()->id,
+            // 'department_id' => Department::inRandomOrder()->first()->id,
+            'department_id' => Department::first()->id,
             'email_verified_at' => now(),
             'remember_token' => Str::random(10),
         ];
@@ -50,11 +51,15 @@ class UserFactory extends Factory
     }
     public function admin(): static
     {
-        return $this->state(fn() => ['is_admin' => true]);
+        return $this->state(fn () => [
+            'is_admin' => true,
+        ]);
     }
 
     public function manager(): static
     {
-        return $this->state(fn() => ['is_manager' => true]);
+        return $this->state(fn () => [
+            'role' => 'Manager',
+        ]);
     }
 }
