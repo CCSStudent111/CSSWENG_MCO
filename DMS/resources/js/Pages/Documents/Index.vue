@@ -56,6 +56,21 @@
                     variant="outlined" 
                     style="width: 200px; flex-shrink: 0;" 
                 />
+
+                <v-select 
+                    v-model="sortBy" 
+                    :items="[
+                        { title: 'ID (Low to High)', value: 'id-asc' },
+                        { title: 'ID (High to Low)', value: 'id-desc' },
+                        { title: 'Name (A-Z)', value: 'name-asc' },
+                        { title: 'Date (Newest)', value: 'date-desc' }
+                    ]"
+                    label="Sort by" 
+                    density="compact" 
+                    variant="outlined"
+                    hide-details
+                    style="width: 100px; flex-shrink: 0;"
+                />
             </div>
             <div class="d-flex" style="gap: 16px;">
                 <v-text-field 
@@ -154,6 +169,7 @@ const page = ref(1)
 const selectedType = ref(null)
 const startDate = ref('')
 const endDate = ref('')
+const sortBy = ref('')
 
 const form = useForm({})
 
@@ -170,8 +186,9 @@ const filteredDocuments = computed(() => {
         return []
     }
     
-    return props.documents.filter(doc => {
-        // Ensure document has required properties
+    const sortedDocs = [...props.documents].sort((a, b) => b.id - a.id)
+    
+    return sortedDocs.filter(doc => {
         if (!doc || !doc.type || !doc.creator) {
             return false
         }
@@ -206,17 +223,33 @@ const filteredDocuments = computed(() => {
     })
 })
 
+const sortedDocuments = computed(() => {
+    const docs = [...filteredDocuments.value]
+
+    if (sortBy.value === 'id-asc') {
+        docs.sort((a, b) => a.id - b.id)
+    } else if (sortBy.value === 'id-desc') {
+        docs.sort((a, b) => b.id - a.id)
+    } else if (sortBy.value === 'name-asc') {
+        docs.sort((a, b) => a.name.localeCompare(b.name))
+    } else if (sortBy.value === 'date-desc') {
+        docs.sort((a, b) => dayjs(b.issued_at).unix() - dayjs(a.issued_at).unix())
+    }
+
+    return docs
+})
+
 const pageCount = computed(() => {
-    return Math.ceil(filteredDocuments.value.length / entries.value) || 1
+    return Math.ceil(sortedDocuments.value.length / entries.value) || 1
 })
 
 const paginatedDocuments = computed(() => {
     const start = (page.value - 1) * entries.value
-    return filteredDocuments.value.slice(start, start + entries.value)
+    return sortedDocuments.value.slice(start, start + entries.value)
 })
 
-// Reset pagination when filters change
-watch([entries, selectedType, startDate, endDate, search], () => {
+// Reset pagination 
+watch([entries, selectedType, startDate, endDate, search, sortBy], () => {
     page.value = 1
 })
 </script>

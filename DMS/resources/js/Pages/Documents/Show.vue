@@ -1,93 +1,106 @@
 <template>
-    <!-- <AppLayout>
-        
-         Header 
-        <div class="d-flex align-center justify-between custom-title">
-            <h1 class="text-h4 font-weight-bold mb-2">Document "{{ document.name }}"</h1>
-
-            <div class="d-flex gap-2">
-                <Link :href="route('documents.logs', document.id)">
-                <v-btn color="secondary" size="small" variant="flat" prepend-icon="mdi-history">
-                    Logs
-                </v-btn>
-                </Link>
-
-                <Link :href="route('documents.edit', document.id)">
-                <v-btn color="primary" size="small" variant="flat" prepend-icon="mdi-pencil">
-                    Edit
-                </v-btn>
-                </Link>
-            </div>
-        </div>
-
-        <div class="d-flex align-center text-grey-darken-1 mb-1" style="font-size: 0.9rem;">
-            <v-icon class="me-1" size="18" color="grey">mdi-calendar</v-icon>
-            Issued at: {{ dayjs(document.issued_at).format('MMMM D, YYYY') }}
-        </div>
-
-         Type 
-        <div class="d-flex align-center text-grey-darken-1 mb-1" style="font-size: 0.9rem;">
-            <v-icon class="me-1" size="18" color="grey">mdi-file-document-outline</v-icon>
-            Type: {{ document.type?.name ?? 'N/A' }}
-        </div>
-
-         Created By 
-        <div class="d-flex align-center text-grey-darken-1" style="font-size: 0.9rem;">
-            <v-icon class="me-1" size="18" color="grey">mdi-account</v-icon>
-            Created by: {{ document.creator?.username ?? 'Unknown' }}
-        </div>
-        <v-divider class="mb-6" />
-
-         Summary Section 
-        <section class="mb-6">
-            <h2 class="text-subtitle-1 font-weight-medium mb-2">Summary</h2>
-            <p class="text-body-1 text-grey-darken-2" style="white-space: pre-line;">{{ document.summary }}</p>
-        </section>
-
-         Tags 
-        <section class="mb-6">
-            <h2 class="text-subtitle-1 font-weight-medium mb-2">Tags</h2>
-            <div class="d-flex flex-wrap">
-                <v-chip v-for="tag in document.tags" :key="tag.id" class="me-2 mb-2" color="grey-lighten-3" size="small"
-                    label variant="flat">
-                    {{ tag.name }}
-                </v-chip>
-            </div>
-        </section>
-
-         Pages 
-        <section v-if="document.pages?.length" class="mb-6">
-            <h2 class="text-subtitle-1 font-weight-medium mb-2">Attached Pages</h2>
-            <v-list density="compact" nav>
-                <a v-for="page in document.pages" :key="page.id" :href="`/storage/${page.file_path}`" target="_blank"
-                    class="v-list-item rounded-lg" style="display: block;">
-                    <v-list-item>
-                        <template #prepend>
-                            <v-icon color="primary">mdi-file-document-outline</v-icon>
-                        </template>
-<v-list-item-title>{{ page.original_name }}</v-list-item-title>
-</v-list-item>
-</a>
-</v-list>
-</section>
-</AppLayout> -->
     <AppLayout>
         <div class="create-page-wrapper mt-2">
             <v-row class="fill-height">
                 <v-col cols="7">
                     <v-card class="fill-height pa-2 elevation-3">
-                        <v-card-title>Attached Pages</v-card-title>
-                        <v-card-text>
-                            <v-list v-if="document.pages?.length" density="compact" nav>
-                                <v-list-item v-for="page in document.pages" :key="page.id"
-                                    :href="`/storage/${page.file_path}`" target="_blank" rounded link>
+                        <v-card-title class="d-flex justify-between align-center">
+                            <span>Attached Pages</span>
+                            <v-btn 
+                                v-if="selectedPage"
+                                @click="downloadFile"
+                                color="primary"
+                                variant="outlined"
+                                size="small"
+                                prepend-icon="mdi-download"
+                            >
+                                Download
+                            </v-btn>
+                        </v-card-title>
+                        <v-card-text class="pa-0">
+                            <!-- File List -->
+                            <v-list v-if="document.pages?.length" density="compact" nav class="mb-2">
+                                <v-list-item 
+                                    v-for="page in document.pages" 
+                                    :key="page.id"
+                                    @click="selectPage(page)"
+                                    :class="{ 'bg-blue-lighten-5': selectedPage?.id === page.id }"
+                                    rounded
+                                    link
+                                >
                                     <template #prepend>
-                                        <v-icon color="primary">mdi-file-document-outline</v-icon>
+                                        <v-icon 
+                                            :color="selectedPage?.id === page.id ? 'primary' : 'grey'"
+                                            :icon="getFileIcon(page.file_path)"
+                                        ></v-icon>
                                     </template>
                                     <v-list-item-title>{{ page.original_name }}</v-list-item-title>
+                                    <template #append>
+                                        <v-btn
+                                            :href="`/storage/${page.file_path}`"
+                                            target="_blank"
+                                            icon="mdi-open-in-new"
+                                            variant="text"
+                                            size="small"
+                                            @click.stop
+                                        ></v-btn>
+                                    </template>
                                 </v-list-item>
                             </v-list>
-                            <div v-else class="text-grey">No pages attached.</div>
+                            <div v-else class="text-grey pa-4">No pages attached.</div>
+                            
+                            <!-- File Viewer -->
+                            <v-divider v-if="selectedPage"></v-divider>
+                            <div v-if="selectedPage" class="file-viewer pa-4">
+                                <div class="text-subtitle-2 mb-2">Preview: {{ selectedPage.original_name }}</div>
+                                
+                                <!-- PDF Viewer -->
+                                <div v-if="isPDF(selectedPage.file_path)" class="pdf-container">
+                                    <iframe
+                                        :src="`/storage/${selectedPage.file_path}`"
+                                        width="100%"
+                                        height="400"
+                                        type="application/pdf"
+                                    >
+                                        <p>Your browser does not support PDFs. 
+                                            <a :href="`/storage/${selectedPage.file_path}`" target="_blank">Download the PDF</a>
+                                        </p>
+                                    </iframe>
+                                </div>
+                                
+                                <!-- Image Viewer -->
+                                <div v-else-if="isImage(selectedPage.file_path)" class="image-container">
+                                    <v-img
+                                        :src="`/storage/${selectedPage.file_path}`"
+                                        :alt="selectedPage.original_name"
+                                        max-height="400"
+                                        contain
+                                        class="mx-auto"
+                                    >
+                                        <template v-slot:placeholder>
+                                            <v-row class="fill-height ma-0" align="center" justify="center">
+                                                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                                            </v-row>
+                                        </template>
+                                    </v-img>
+                                </div>
+                                
+                                <!-- Unsupported File Type -->
+                                <div v-else class="text-center pa-8">
+                                    <v-icon size="64" color="grey">mdi-file-question</v-icon>
+                                    <div class="text-h6 mt-2">Preview not available</div>
+                                    <div class="text-body-2 text-grey mb-4">This file type cannot be previewed</div>
+                                    <v-btn
+                                        :href="`/storage/${selectedPage.file_path}`"
+                                        target="_blank"
+                                        color="primary"
+                                        variant="outlined"
+                                        prepend-icon="mdi-download"
+                                    >
+                                        Download File
+                                    </v-btn>
+                                </div>
+                            </div>
                         </v-card-text>
                     </v-card>
                 </v-col>
@@ -111,7 +124,6 @@
                                 :model-value="document.issued_at ? dayjs(document.issued_at).format('MMMM D, YYYY') : 'N/A'"
                                 readonly disabled density="compact" variant="outlined" />
 
-
                             <div class="mb-4">
                                 <label class="v-label v-label--active">Tags</label>
                                 <div class="d-flex flex-wrap mt-1">
@@ -132,7 +144,6 @@
                         </v-card-text>
 
                         <v-card-actions class="justify-end">
-
                             <v-btn v-if="document.status === 'pending'" color="red" variant="flat" size="small"
                                 prepend-icon="mdi-close" @click="rejectDocument">
                                 Reject
@@ -142,7 +153,6 @@
                                 prepend-icon="mdi-check" @click="approveDocument">
                                 Approve
                             </v-btn>
-
 
                             <Link :href="route('documents.edit', props.document.id)">
                             <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
@@ -157,8 +167,8 @@
     </AppLayout>
 </template>
 
-
 <script setup>
+import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 import { Link, router } from '@inertiajs/vue3'
@@ -167,16 +177,53 @@ const props = defineProps({
     document: Object
 })
 
+const selectedPage = ref(null)
+
+// File type detection
+const isPDF = (filePath) => {
+    return /\.pdf$/i.test(filePath)
+}
+
+const isImage = (filePath) => {
+    return /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i.test(filePath)
+}
+
+const getFileIcon = (filePath) => {
+    if (isPDF(filePath)) return 'mdi-file-pdf-box'
+    if (isImage(filePath)) return 'mdi-file-image'
+    return 'mdi-file-document-outline'
+}
+
+// File selection
+const selectPage = (page) => {
+    selectedPage.value = page
+}
+
+// Download file
+const downloadFile = () => {
+    if (selectedPage.value) {
+        const link = document.createElement('a')
+        link.href = `/storage/${selectedPage.value.file_path}`
+        link.download = selectedPage.value.original_name
+        link.click()
+    }
+}
+
+// Auto-select first file if available
+if (props.document.pages?.length > 0) {
+    selectedPage.value = props.document.pages[0]
+}
+
 const approveDocument = () => {
-  if (confirm('Are you sure you want to approve this document?')) {
-    router.post(route('documents.approve', props.document.id))
-  }
+    if (confirm('Are you sure you want to approve this document?')) {
+        router.post(route('documents.approve', props.document.id))
+    }
 }
 
 const rejectDocument = () => {
-  if (confirm('Are you sure you want to reject and delete this document?')) {
-    router.delete(route('documents.reject', props.document.id))
-  }
+    if (confirm('Are you sure you want to reject and delete this document?')) {
+        router.delete(route('documents.reject', props.document.id))
+    }
 }
 </script>
 
@@ -185,5 +232,18 @@ const rejectDocument = () => {
     height: calc(100vh - 100px);
 }
 
+.file-viewer {
+    border-top: 1px solid #e0e0e0;
+}
 
+.pdf-container iframe {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.image-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
 </style>
