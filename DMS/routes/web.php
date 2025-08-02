@@ -102,7 +102,18 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('documents', DocumentController::class);
 
     // Document Types
-    Route::resource('document-types', DocumentTypeController::class)->except(['show']);
+    Route::resource('document-types', DocumentTypeController::class)
+        ->except(['show'])
+        ->names([
+            'index' => 'documentTypes.index',
+            'create' => 'documentTypes.create', 
+            'store' => 'documentTypes.store',
+            'edit' => 'documentTypes.edit',
+            'update' => 'documentTypes.update',
+            'destroy' => 'documentTypes.destroy'
+        ]);
+    Route::post('document-types/{id}/restore', [DocumentTypeController::class, 'restore'])->name('documentTypes.restore');
+    Route::delete('document-types/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

@@ -14,6 +14,32 @@
         </v-btn>
       </Link>
     </div>
+
+    <!-- Search and Pagination Controls -->
+    <div class="controls-row mb-4">
+      <div class="d-flex" style="gap: 16px;">
+        <v-select
+          v-model="entries"
+          :items="entriesOptions"
+          label="Show entries"
+          class="custom-entries"
+          density="compact"
+          hide-details
+          variant="outlined"
+          style="width: 160px; flex-shrink: 0;"
+        ></v-select>
+        <v-text-field
+          v-model="search"
+          label="Search Document Types"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          density="compact"
+          class="custom-search"
+          style="flex: 1 1 0;"
+        ></v-text-field>
+      </div>
+    </div>
+
     <v-table density="comfortable">
       <thead>
         <tr>
@@ -24,7 +50,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="documentType in filteredDocTypes" :key="documentType.id">
+        <tr v-for="(documentType, index) in paginatedDocTypes" :key="documentType.id"
+          :class="index % 2 === 0 ? 'bg-grey-lighten-4' : ''">
           <td>{{ documentType.id }}</td>
           <td>{{ documentType.name }}</td>
           <td>
@@ -75,6 +102,17 @@
         </tr>
       </tbody>
     </v-table>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-end align-center mt-4">
+      <v-pagination
+        v-model="page"
+        :length="pageCount"
+        total-visible="7"
+        color="primary"
+      ></v-pagination>
+      <span class="ml-4">Page {{ page }} of {{ pageCount }}</span>
+    </div>
 
     <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="confirmDeleteDialog" max-width="400">
@@ -131,22 +169,55 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link, router } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { usePage } from '@inertiajs/vue3'
+const { props: pageProps } = usePage()
 
 const props = defineProps({
   documentTypes: Array
 })
 
 const filter = ref('all')
+const entries = ref(10)
+const entriesOptions = [5, 10, 25, 50, 100]
+const search = ref('')
+const page = ref(1)
 
+// Filter and search logic
 const filteredDocTypes = computed(() => {
+  let filtered = props.documentTypes
+
+  // Filter by status
   if (filter.value === 'active') {
-    return props.documentTypes.filter(d => !d.deleted_at)
+    filtered = filtered.filter(d => !d.deleted_at)
+  } else if (filter.value === 'trashed') {
+    filtered = filtered.filter(d => d.deleted_at)
   }
-  if (filter.value === 'trashed') {
-    return props.documentTypes.filter(d => d.deleted_at)
+
+  // Filter by search
+  if (search.value) {
+    filtered = filtered.filter(docType =>
+      docType.name.toLowerCase().includes(search.value.toLowerCase()) ||
+      String(docType.id).includes(search.value)
+    )
   }
-  return props.documentTypes
+
+  return filtered
+})
+
+// Pagination logic
+const pageCount = computed(() => {
+  return Math.ceil(filteredDocTypes.value.length / entries.value) || 1
+})
+
+const paginatedDocTypes = computed(() => {
+  const start = (page.value - 1) * entries.value
+  return filteredDocTypes.value.slice(start, start + entries.value)
+})
+
+// Reset to page 1 when entries per page changes or search changes
+watch([entries, search, filter], () => { 
+  page.value = 1 
 })
 
 const confirmDeleteDialog = ref(false)
@@ -163,9 +234,26 @@ function openDeleteDialog(documentType) {
 
 function deleteDocType() {
   if (documentTypeToDelete.value) {
-    router.delete(route('documentTypes.destroy', documentTypeToDelete.value.id))
-    confirmDeleteDialog.value = false
-    documentTypeToDelete.value = null
+    console.log('Deleting document type:', documentTypeToDelete.value)
+    console.log('Route URL:', route('documentTypes.destroy', documentTypeToDelete.value.id))
+    
+    router.delete(route('documentTypes.destroy', documentTypeToDelete.value.id), {
+      onStart: () => {
+        console.log('Delete request started')
+      },
+      onSuccess: (page) => {
+        console.log('Delete successful:', page)
+        confirmDeleteDialog.value = false
+        documentTypeToDelete.value = null
+      },
+      onError: (errors) => {
+        console.error('Delete failed:', errors)
+        // Keep dialog open to show errors
+      },
+      onFinish: () => {
+        console.log('Delete request finished')
+      }
+    })
   }
 }
 
@@ -195,3 +283,27 @@ function forceDeleteDocType() {
   }
 }
 </script>
+
+<style scoped>
+.custom-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.controls-row {
+  width: 100%;
+  max-width: 100%;
+}
+
+.custom-entries {
+  min-width: 140px;
+  max-width: 180px;
+  height: 40px; 
+  align-items: center;
+}
+
+.custom-search {
+  width: 100%;
+  height: 40px; 
+}
+</style>
