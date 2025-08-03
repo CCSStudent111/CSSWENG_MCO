@@ -267,15 +267,14 @@ class DocumentController extends Controller
 
     public function pending()
     {
-        $manager = auth()->user()->load('department');
+        // Add authorization check
+        if (!auth()->user()->is_admin && !in_array(strtolower(auth()->user()->role ?? ''), ['manager'])) {
+            abort(403, 'Access denied. Admin or Manager privileges required.');
+        }
 
-        $documents = Document::with(['type', 'tags', 'creator'])
+        $documents = Document::with(['type', 'creator', 'tags'])
             ->where('status', 'pending')
-            ->get()
-            ->filter(function ($document) use ($manager) {
-                return $manager->can('viewPending', $document); 
-            })
-            ->values();
+            ->get();
 
         return Inertia::render('Documents/Pending', [
             'documents' => $documents,
