@@ -100,7 +100,7 @@ const usersWithFullName = computed(() => {
 const clientsWithName = computed(() => {
     return props.clients.map(client => ({
         id: client.id,
-        full_name: `${client.name} (${client.address})`,
+        full_name: `${client.name} (${client.branch})`,
     }))
 })
 

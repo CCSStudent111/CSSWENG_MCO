@@ -54,7 +54,7 @@ class DocumentController extends Controller
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes->values();
         $users = User::select('id', 'first_name', 'last_name')->get();
-        $clients = Client::select('id', 'name')->get();
+        $clients = Client::select('id', 'name', 'branch')->get();
 
         return Inertia::render('Documents/Create', [
             'documentTypes' => $documentTypes,
