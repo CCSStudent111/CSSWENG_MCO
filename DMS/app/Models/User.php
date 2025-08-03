@@ -67,19 +67,19 @@ class User extends Authenticatable
 
     public function isManager(): bool
     {
-        return $this->attributes['role'] === 'manager';  // Check the actual role field
+        return $this->attributes['role'] === 'Manager';  // Check the actual role field
     }
 
     public function isEmployee(): bool
     {
-        return !$this->is_admin && $this->attributes['role'] !== 'manager';
+        return !$this->is_admin && $this->attributes['role'] !== 'Manager';
     }
 
     public function getRoleDisplayAttribute(): string
     {
         if ($this->is_admin) {
             return 'Administrator';
-        } elseif ($this->attributes['role'] === 'manager') {
+        } elseif ($this->attributes['role'] === 'Manager') {
             return 'Manager';
         } else {
             return 'Employee';

@@ -271,8 +271,7 @@ class DocumentController extends Controller
 
     public function pending()
     {
-        // Add authorization check
-        if (!auth()->user()->is_admin && !in_array(strtolower(auth()->user()->role ?? ''), ['manager'])) {
+        if (!in_array(strtolower(auth()->user()->role ?? ''), ['manager'])) {
             abort(403, 'Access denied. Admin or Manager privileges required.');
         }
 
@@ -288,8 +287,9 @@ class DocumentController extends Controller
     public function approve(Document $document)
     {
         $document->load('type', 'creator');
-
         $this->authorize('approve', $document); 
+
+
         $manager = auth()->user();
 
         $document->update([
