@@ -23,18 +23,20 @@
         density="compact"
         class="mb-3"
       ></v-text-field>
+      <!-- FIXED: Use form.type instead of client.type -->
       <v-select
-        v-model="client.type"
+        v-model="form.type"
         :items="typeOptions"
         label="Type"
         required
         density="compact"
         class="mb-3"
         clearable
-      /><v-btn type="submit" color="primary" variant="flat">Save Changes</v-btn>
-        <Link :href="route('clients.index')">
+      />
+      <v-btn type="submit" color="primary" variant="flat">Save Changes</v-btn>
+      <Link :href="route('clients.index')">
         <v-btn class="ml-2" color="secondary" variant="text">Cancel</v-btn>
-        </Link>
+      </Link>
     </v-form>
   </AppLayout>
 </template>
@@ -55,6 +57,18 @@ const form = ref({
   address: props.client?.address ?? '',
   type: props.client?.type ?? ''
 })
+
+// Add type options
+const typeOptions = [
+  'Clinic',
+  'Hospital',
+  'Specialty',
+  'Pharmacy',
+  'Diagnostic',
+  'Medical Center',
+  'Laboratory',
+  'Other'
+]
 
 function submit() {
   router.put(route('clients.update', props.client.id), form.value)

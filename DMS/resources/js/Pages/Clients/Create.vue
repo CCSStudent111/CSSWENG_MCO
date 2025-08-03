@@ -73,13 +73,18 @@ const client = ref({
     type: ''
 });
 
+// Add type options
 const typeOptions = [
-    'Client',
-    'Clinic',
-    'Diagnosis',
-    'Medical Center',
-    'Specialty'
-];
+  'Clinic',
+  'Hospital',
+  'Specialty',
+  'Pharmacy',
+  'Diagnostic',
+  'Medical Center',
+  'Laboratory',
+  'Other'
+]
+
 
 const confirmDialog = ref(false);
 
