@@ -9,7 +9,7 @@
                 <v-icon start>mdi-history</v-icon>Logs
             </v-btn>
             </Link>
-            <template v-if="authUser.role !== 'Employee' || authUser.is_admin"">
+            <template v-if="authUser.role !== 'Employee' || authUser.is_admin">
                 <Link :href="route('documents.trash')">
                 <v-btn color="error" variant="flat" size="small">
                     <v-icon start>mdi-delete</v-icon>Trash

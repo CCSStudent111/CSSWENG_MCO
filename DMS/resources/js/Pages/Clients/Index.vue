@@ -4,7 +4,7 @@
   <AppLayout>
     <div class="custom-title mb-4">Manage Clients</div>
     <div class="d-flex mb-4 justify-end">
-      <template v-if="authUser.role !== 'Employee'">
+      <template v-if="authUser.role !== 'Employee' || authUser.is_admin">
         <Link :href="route('clients.create')">
          <v-btn color="primary" variant="flat" size="small">
            Add A Client
@@ -66,7 +66,7 @@
               <v-icon>mdi-eye</v-icon>
             </v-btn>
             </Link>
-            <template v-if="authUser.role !== 'Employee'">
+            <template v-if="authUser.role !== 'Employee' || authUser.is_admin">
               <Link :href ="route('clients.edit', client.id)">
               <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
                 <v-icon>mdi-pencil</v-icon>
