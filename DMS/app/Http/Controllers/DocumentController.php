@@ -151,16 +151,28 @@ class DocumentController extends Controller
                 ->get()
                 ->map(function ($activity) {
                     $subject = $activity->subject;
+                    $properties = $activity->properties->toArray();
+
+                    // Replace document_type_id with name (New changes)
+                    if (isset($properties['attributes']['document_type_id']) && $subject?->type) {
+                        $properties['attributes']['document_type'] = $subject->type->name;
+                        unset($properties['attributes']['document_type_id']);
+                    }
+
+                    if (isset($properties['old']['document_type_id']) && $subject?->type) {
+                        $properties['old']['document_type'] = $subject->type->name;
+                        unset($properties['old']['document_type_id']);
+                    }
 
                     return [
                         'description' => $activity->description,
-                        'changes' => $activity->properties->toArray(),
+                        'changes' => $properties,
                         'causer' => $activity->causer,
                         'document' => [
                             'id' => $subject->id ?? null,
                             'name' => $subject->name
-                                ?? $activity->properties['old']['name']
-                                ?? $activity->properties['attributes']['name']
+                                ?? $properties['old']['name']
+                                ?? $properties['attributes']['name']
                                 ?? 'N/A',
                         ],
                         'date' => $activity->created_at,
@@ -174,18 +186,40 @@ class DocumentController extends Controller
 
     public function documentLogs(Document $document)
     {
-        $document->load(['activities' => function ($query) {
-            $query->latest();
-        }, 'activities.causer']);
-
+        $document->load([
+            'activities' => function ($query) {
+                $query->latest();
+            },
+            'activities.causer',
+            'type' 
+        ]);
 
         return Inertia::render('Documents/Logs', [
             'document' => $document,
-            'logs' => $document->activities->map(function ($activity) {
+            'logs' => $document->activities->map(function ($activity) use ($document) {
+                $properties = $activity->properties->toArray();
+
+                if (isset($properties['attributes']['document_type_id']) && $document?->type) {
+                    $properties['attributes']['document_type'] = $document->type->name;
+                    unset($properties['attributes']['document_type_id']);
+                }
+
+                if (isset($properties['old']['document_type_id']) && $document?->type) {
+                    $properties['old']['document_type'] = $document->type->name;
+                    unset($properties['old']['document_type_id']);
+                }
+
                 return [
                     'description' => $activity->description,
-                    'changes' => $activity->properties->toArray(),
+                    'changes' => $properties,
                     'causer' => $activity->causer,
+                    'document' => [
+                        'id' => $document->id,
+                        'name' => $document->name
+                            ?? $properties['old']['name']
+                            ?? $properties['attributes']['name']
+                            ?? 'N/A',
+                    ],
                     'date' => $activity->created_at,
                 ];
             }),
