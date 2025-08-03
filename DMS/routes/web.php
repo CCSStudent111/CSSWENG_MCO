@@ -58,10 +58,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.index');
 
     // Regular user routes
+    Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+    Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+    Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+    Route::put('users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('users.toggleAdmin');
+    Route::put('users/{user}/toggle-manager', [UserController::class, 'toggleManager'])->name('users.toggleManager');
     Route::resource('users', UserController::class);
-    Route::put('/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('users.toggleAdmin');
-    Route::put('/users/{user}/toggle-manager', [UserController::class, 'toggleManager'])->name('users.toggleManager');
-
+    
     // Documents
     Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
     Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])->withTrashed()->name('documents.restore');
