@@ -95,11 +95,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
         Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
 
-        Route::get('clients/{client}/edit', [ClientController::class, 'edit'])
-        ->name('clients.edit');
+        Route::get('clients/create', [ClientController::class, 'create'])->name('clients.create');
+        Route::get('clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
     });
 
-    Route::resource('clients', ClientController::class)->except(['edit']);
+    Route::resource('clients', ClientController::class)->except(['create', 'edit']);
     
     Route::get('documents/logs', [DocumentController::class, 'logs'])->name('documents.all-logs');
     Route::get('/documents/pending', [DocumentController::class, 'pending'])

@@ -4,11 +4,13 @@
   <AppLayout>
     <div class="custom-title mb-4">Manage Clients</div>
     <div class="d-flex mb-4 justify-end">
-     <Link :href="route('clients.create')">
-      <v-btn color="primary" variant="flat" size="small">
-        Add A Client
-      </v-btn>
-      </Link>      
+      <template v-if="authUser.role !== 'Employee'">
+        <Link :href="route('clients.create')">
+         <v-btn color="primary" variant="flat" size="small">
+           Add A Client
+         </v-btn>
+         </Link>      
+      </template>
     </div>
 
     <div class="controls-row mb-4">
@@ -64,18 +66,19 @@
               <v-icon>mdi-eye</v-icon>
             </v-btn>
             </Link>
-
-            <Link :href ="route('clients.edit', client.id)">
-            <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            </Link>
-
-            
-            <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
-            @click="openDeleteDialog(client)">
-            <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            <template v-if="authUser.role !== 'Employee'">
+              <Link :href ="route('clients.edit', client.id)">
+              <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              </Link>
+  
+              
+              <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
+              @click="openDeleteDialog(client)">
+              <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </template>
           </td>
         </tr>
       </tbody>
@@ -119,7 +122,9 @@ import { ref, computed, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import dayjs from 'dayjs'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
+
+const authUser = usePage().props.auth.user
 
 const props = defineProps({
   clients: Array
