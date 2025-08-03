@@ -34,12 +34,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
 
-    // Clients
-    Route::get('clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
-    Route::post('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
-    Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
-    Route::resource('clients', ClientController::class);
-
     Route::middleware('ensure.admin')->group(function () {
         // Departments
         Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
@@ -69,6 +63,12 @@ Route::middleware(['auth'])->group(function () {
                 'update' => 'documentTypes.update',
                 'destroy' => 'documentTypes.destroy'
             ]);
+
+        // Department ↔ Document Type Linking
+        Route::prefix('departments/{department}/document-types')->group(function () {
+            Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
+            Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
+        });
     });
 
     // Users
@@ -80,34 +80,41 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.index');
     
     // Documents
-    Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
-    Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])->withTrashed()->name('documents.restore');
-    Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])->withTrashed()->name('documents.forceDelete');
+    Route::middleware('block.employees')->group(function () {
+        Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
+        Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])->withTrashed()->name('documents.restore');
+        Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])->withTrashed()->name('documents.forceDelete');
+        Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
+        Route::post('documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
+        Route::delete('documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
+
+        Route::get('documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
+
+        // Clients
+        Route::get('clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
+        Route::post('clients/{id}/restore', [ClientController::class, 'restore'])->name('clients.restore');
+        Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
+
+        Route::get('clients/{client}/edit', [ClientController::class, 'edit'])
+        ->name('clients.edit');
+    });
+
+    Route::resource('clients', ClientController::class)->except(['edit']);
+    
     Route::get('documents/logs', [DocumentController::class, 'logs'])->name('documents.all-logs');
     Route::get('/documents/pending', [DocumentController::class, 'pending'])
         ->middleware('manager')
         ->name('documents.pending');
-    Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');
-    Route::post('/documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
-    Route::delete('/documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
-    Route::resource('documents', DocumentController::class);
 
-    
+    Route::resource('documents', DocumentController::class)->except(['edit']);
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
-    // Department ↔ Document Type Linking
-    Route::prefix('departments/{department}/document-types')->group(function () {
-        Route::post('{documentType}/attach', [DepartmentDocumentTypeController::class, 'attach'])->name('departments.document-types.attach');
-        Route::delete('{documentType}/detach', [DepartmentDocumentTypeController::class, 'detach'])->name('departments.document-types.detach');
-    });
-
     Route::get('/document-pages/{documentPage}/download', [DocumentPageController::class, 'download'])
-    ->name('document-pages.download');
+        ->name('document-pages.download'); // add policy
     Route::put('/document-pages/{documentPage}', [DocumentPageController::class, 'update'])->name('document-pages.update');
     Route::delete('/document-pages/{documentPage}', [DocumentPageController::class, 'destroy'])->name('document-pages.destroy');
 });
