@@ -31,8 +31,15 @@ class DocumentService
 
     private function storeFiles(Document $document, array $files)
     {
+
+        $type = sha1($document->type->name);
+        $id = sha1($document->id);
+
         foreach ($files as $file) {
-            $path = $file->store("{$document->type->name}/{$document->id}", 'public');
+
+            $fileName = $file->hashName();
+
+            $path = $file->storeAs("{$type}/{$id}", $fileName, 'public');
 
             $document->pages()->create([
                 'file_path' => $path,

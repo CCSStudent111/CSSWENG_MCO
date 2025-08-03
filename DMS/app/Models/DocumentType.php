@@ -10,11 +10,12 @@ class DocumentType extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'is_hospital'];
+    protected $fillable = ['name'];
 
     public function documents()
     {
-        return $this->hasMany(Document::class);
+
+        return $this->hasMany(Document::class, 'document_type_id'); // Add the foreign key explicitly
     }
 
     public function departments()

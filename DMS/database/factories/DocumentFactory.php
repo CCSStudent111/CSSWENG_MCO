@@ -24,6 +24,7 @@ class DocumentFactory extends Factory
             'document_type_id' => DocumentType::inRandomOrder()->value('id'),
             'created_by' => User::inRandomOrder()->value('id'),
             'issued_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'status' => 'approved'
         ];
     }
 }

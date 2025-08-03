@@ -8,20 +8,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class Hospital extends Model
+class Client extends Model
 {
     use HasFactory, SoftDeletes, LogsActivity;
 
-    protected $fillable = ['name', 'branch', 'type'];
+    protected $fillable = ['name', 'branch', 'address', 'type'];
     protected static $recordEvents = ['created', 'updated', 'deleted', 'restored'];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'branch', 'type']) 
-            ->useLogName('hospital')
+            ->logOnly(['name', 'branch', 'address', 'type']) 
+            ->useLogName('client')
             ->logOnlyDirty()
-            ->setDescriptionForEvent(fn(string $eventName) => "Hospital was {$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "Client was {$eventName}");
     }
 
     public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
@@ -32,6 +32,7 @@ class Hospital extends Model
 
     public function documents()
     {
-        return $this->belongsToMany(Document::class, 'hospital_documents');
+        return $this->belongsToMany(Document::class, 'client_documents');
     }
 }
+

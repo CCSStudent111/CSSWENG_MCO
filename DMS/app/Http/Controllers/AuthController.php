@@ -10,36 +10,7 @@ use App\Models\Department;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
-{
-    public function showRegister()
-    {
-        $departments = Department::all();
-        return Inertia::render("Auth/Register", [
-            'departments' => $departments,
-        ]);
-    }
-
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:users'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', 'min:8'],
-            'first_name' => ['required', 'string', 'max:255'],
-            'middle_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'suffix' => ['nullable', 'string', 'max:10'],
-            'date_of_birth' => ['required', 'date'],
-            'department_id' => ['required', 'exists:departments,id'],
-            'is_admin' => ['required', 'boolean'],
-            'is_manager' => ['required', 'boolean'],
-        ]);
-
-        User::create($validated);
-
-        return redirect(route('login'));
-    }
-
+{   
     public function showLogin()
     {
         return Inertia::render('Auth/Login');

@@ -22,22 +22,75 @@
         </div>
         <div class="controls-row mb-4">
             <div class="d-flex mb-4" style="gap: 16px;">
-                <v-select v-model="selectedType" :items="props.documentTypes" item-title="name" item-value="id"
-                    label="Filter by Type" clearable density="compact" class="custom-entries" hide-details
-                    variant="outlined" style="width: 1600px; flex-shrink: 0;" />
+                <v-select
+                    v-model="entries"
+                    :items="entriesOptions"
+                    label="Show entries"
+                    class="custom-entries"
+                    density="compact"
+                    hide-details
+                    variant="outlined"
+                    style="width: 160px; flex-shrink: 0;"
+                ></v-select>
+                
+                <v-text-field
+                    v-model="search"
+                    label="Search Documents"
+                    prepend-inner-icon="mdi-magnify"
+                    clearable
+                    density="compact"
+                    class="custom-search"
+                    style="flex: 1 1 0;"
+                ></v-text-field>
+                
+                <v-select 
+                    v-model="selectedType" 
+                    :items="props.documentTypes" 
+                    item-title="name" 
+                    item-value="id"
+                    label="Filter by Type" 
+                    clearable 
+                    density="compact" 
+                    class="custom-entries" 
+                    hide-details
+                    variant="outlined" 
+                    style="width: 200px; flex-shrink: 0;" 
+                />
 
-                <v-select v-model="entries" :items="entriesOptions" label="Show entries" class="narrow-select"
-                    density="compact" hide-details variant="outlined"></v-select>
-
-                <v-text-field v-model="search" label="Search Documents" prepend-inner-icon="mdi-magnify" clearable
-                    density="compact" class="custom-search" style="flex: 1 1 0;"></v-text-field>
+                <v-select 
+                    v-model="sortBy" 
+                    :items="[
+                        { title: 'ID (Low to High)', value: 'id-asc' },
+                        { title: 'ID (High to Low)', value: 'id-desc' },
+                        { title: 'Name (A-Z)', value: 'name-asc' },
+                        { title: 'Date (Newest)', value: 'date-desc' }
+                    ]"
+                    label="Sort by" 
+                    density="compact" 
+                    variant="outlined"
+                    hide-details
+                    style="width: 100px; flex-shrink: 0;"
+                />
             </div>
             <div class="d-flex" style="gap: 16px;">
-                <v-text-field v-model="startDate" label="Start Date" type="date" density="compact" hide-details
-                    variant="outlined" style="max-width: 170px" />
-
-                <v-text-field v-model="endDate" label="End Date" type="date" density="compact" hide-details
-                    variant="outlined" style="max-width: 170px" />
+                <v-text-field 
+                    v-model="startDate" 
+                    label="Start Date" 
+                    type="date" 
+                    density="compact" 
+                    hide-details
+                    variant="outlined" 
+                    style="max-width: 170px" 
+                />
+                <v-text-field 
+                    v-model="endDate" 
+                    label="End Date" 
+                    type="date" 
+                    density="compact" 
+                    hide-details
+                    variant="outlined" 
+                    style="max-width: 170px" 
+                />
             </div>
         </div>
         <v-table density="comfortable">
@@ -72,13 +125,11 @@
                             <v-icon>mdi-eye</v-icon>
                         </v-btn>
                         </Link>
-
                         <Link :href="route('documents.edit', document.id)">
                         <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
                             <v-icon>mdi-pencil</v-icon>
                         </v-btn>
                         </Link>
-
                         <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
                             @click="deleteDocument(document.id)">
                             <v-icon>mdi-delete</v-icon>
@@ -102,8 +153,14 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
+
+const props = defineProps({
+    documents: { type: Array, default: () => [] },
+    documentTypes: { type: Array, default: () => [] },
+})
 
 const entries = ref(10)
 const entriesOptions = [5, 10, 25, 50, 100]
@@ -112,15 +169,9 @@ const page = ref(1)
 const selectedType = ref(null)
 const startDate = ref('')
 const endDate = ref('')
+const sortBy = ref('')
 
 const form = useForm({})
-
-const props = defineProps({
-    documents: Array,
-    documentTypes: Array,
-})
-
-
 
 function deleteDocument(id) {
     if (confirm('Delete this document?')) {
@@ -131,33 +182,39 @@ function deleteDocument(id) {
 }
 
 const filteredDocuments = computed(() => {
-    return props.documents.filter(doc => {
+    if (!props.documents || !Array.isArray(props.documents)) {
+        return []
+    }
+    
+    const sortedDocs = [...props.documents].sort((a, b) => b.id - a.id)
+    
+    return sortedDocs.filter(doc => {
+        if (!doc || !doc.type || !doc.creator) {
+            return false
+        }
+        
         const issuedAt = dayjs(doc.issued_at)
+        
+        // Search filter
+        const searchTerm = search.value.toLowerCase()
+        const matchesSearch = !searchTerm || 
+            doc.name?.toLowerCase().includes(searchTerm) ||
+            doc.type?.name?.toLowerCase().includes(searchTerm) ||
+            String(doc.id).includes(searchTerm)
 
-        console.log({
-            issued_at: doc.issued_at,
-            issuedAtValid: issuedAt.isValid(),
-            startDate: startDate.value,
-            endDate: endDate.value,
-        })
+        // Type filter
+        const matchesType = !selectedType.value || doc.type.id === selectedType.value
 
-        const matchesSearch =
-            doc.name.toLowerCase().includes(search.value.toLowerCase()) ||
-            doc.type.name.toLowerCase().includes(search.value.toLowerCase()) ||
-            String(doc.id).includes(search.value)
-
-        const matchesType =
-            !selectedType.value || doc.type.id === selectedType.value
-
+        // Date filters
         let matchesStartDate = true
         let matchesEndDate = true
 
-        if (startDate.value) {
+        if (startDate.value && issuedAt.isValid()) {
             const start = dayjs(startDate.value)
             matchesStartDate = start.isValid() && issuedAt.isSameOrAfter(start, 'day')
         }
 
-        if (endDate.value) {
+        if (endDate.value && issuedAt.isValid()) {
             const end = dayjs(endDate.value)
             matchesEndDate = end.isValid() && issuedAt.isSameOrBefore(end, 'day')
         }
@@ -166,19 +223,35 @@ const filteredDocuments = computed(() => {
     })
 })
 
-const pageCount = computed(() =>
-    Math.ceil(filteredDocuments.value.length / entries.value)
-)
+const sortedDocuments = computed(() => {
+    const docs = [...filteredDocuments.value]
+
+    if (sortBy.value === 'id-asc') {
+        docs.sort((a, b) => a.id - b.id)
+    } else if (sortBy.value === 'id-desc') {
+        docs.sort((a, b) => b.id - a.id)
+    } else if (sortBy.value === 'name-asc') {
+        docs.sort((a, b) => a.name.localeCompare(b.name))
+    } else if (sortBy.value === 'date-desc') {
+        docs.sort((a, b) => dayjs(b.issued_at).unix() - dayjs(a.issued_at).unix())
+    }
+
+    return docs
+})
+
+const pageCount = computed(() => {
+    return Math.ceil(sortedDocuments.value.length / entries.value) || 1
+})
 
 const paginatedDocuments = computed(() => {
     const start = (page.value - 1) * entries.value
-    return filteredDocuments.value.slice(start, start + entries.value)
+    return sortedDocuments.value.slice(start, start + entries.value)
 })
 
-watch([entries, selectedType, startDate, endDate, search], () => {
+// Reset pagination 
+watch([entries, selectedType, startDate, endDate, search, sortBy], () => {
     page.value = 1
 })
-
 </script>
 
 <style scoped>
