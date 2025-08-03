@@ -129,34 +129,43 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function logs() // change to view user associated document types, add pagination to logs view
+    public function logs() 
     {
-        $logs = Activity::where('subject_type', Document::class)
-            ->with([
-                'causer',
-                'subject' => function ($query) {
-                    $query->withTrashed();
-                }
-            ])
-            ->latest()
-            ->get()
-            ->map(function ($activity) {
-                $subject = $activity->subject;
+        $user = Auth::user()->load('department.documentTypes');
 
-                return [
-                    'description' => $activity->description,
-                    'changes' => $activity->properties->toArray(),
-                    'causer' => $activity->causer,
-                    'document' => [
-                        'id' => $subject->id ?? null,
-                        'name' => $subject->name
-                            ?? $activity->properties['old']['name']
-                            ?? $activity->properties['attributes']['name']
-                            ?? 'N/A',
-                    ],
-                    'date' => $activity->created_at,
-                ];
-            });
+        $documentTypeIds = $user->department->documentTypes->pluck('id');
+
+        $documentIds = Document::withTrashed()
+            ->whereIn('document_type_id', $documentTypeIds)
+            ->pluck('id');
+
+        $logs = Activity::where('subject_type', Document::class)
+                ->whereIn('subject_id', $documentIds)
+                ->with([
+                    'causer',
+                    'subject' => function ($query) {
+                        $query->withTrashed();
+                    }
+                ])
+                ->latest()
+                ->get()
+                ->map(function ($activity) {
+                    $subject = $activity->subject;
+
+                    return [
+                        'description' => $activity->description,
+                        'changes' => $activity->properties->toArray(),
+                        'causer' => $activity->causer,
+                        'document' => [
+                            'id' => $subject->id ?? null,
+                            'name' => $subject->name
+                                ?? $activity->properties['old']['name']
+                                ?? $activity->properties['attributes']['name']
+                                ?? 'N/A',
+                        ],
+                        'date' => $activity->created_at,
+                    ];
+                });
 
         return Inertia::render('Documents/AllLogs', [
             'logs' => $logs,

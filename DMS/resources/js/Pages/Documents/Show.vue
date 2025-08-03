@@ -6,6 +6,11 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title class="d-flex justify-between align-center">
                             <span>Attached Pages</span>
+                            <Link :href="route('documents.logs', props.document.id)">
+                            <v-btn color="info" variant="flat" size="small" prepend-icon="mdi-history">
+                                View Logs
+                            </v-btn>
+                            </Link>
                             <v-btn v-if="selectedPage" @click="downloadFile" color="primary" variant="outlined"
                                 size="small" prepend-icon="mdi-download">
                                 Download
