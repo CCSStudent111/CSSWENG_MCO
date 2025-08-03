@@ -87,7 +87,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        $document->load(['type', 'tags', 'creator', 'pages', 'approver']);
+        $document->load(['type', 'tags', 'creator', 'pages', 'approver', 'clients']);
 
         return Inertia::render('Documents/Show', [
             'document' => $document
@@ -101,12 +101,13 @@ class DocumentController extends Controller
     {
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->get()->values();
-
+        $clients = Client::select('id', 'name', 'branch')->get();
         $document->load(['type', 'tags', 'creator', 'pages']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,
-            'documentTypes' => $documentTypes
+            'documentTypes' => $documentTypes,
+            'clients' => $clients
         ]);
     }
 

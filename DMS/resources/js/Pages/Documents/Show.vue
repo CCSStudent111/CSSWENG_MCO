@@ -85,6 +85,10 @@
                                 :model-value="document.status" readonly disabled density="compact" variant="outlined"
                                 class="mb-4" />
 
+                            <v-text-field v-if="document.clients.length > 0" label="Client"
+                                :model-value="`${document.clients[0].name} (${document.clients[0].branch})`" readonly disabled
+                                density="compact" variant="outlined" class="mb-4" />
+
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled
                                 density="compact" variant="outlined" class="mb-4" />
 
