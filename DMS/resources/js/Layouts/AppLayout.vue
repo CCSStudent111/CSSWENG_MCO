@@ -80,15 +80,15 @@
               </template>
             </v-tooltip>
           </Link>
-          <Link href="/clients" style="text-decoration: none; color: inherit;">
-            <v-tooltip text="Manage Clients" location="right">
+          <Link v-if="user?.is_admin || user?.is_manager" href="/documents/pending" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Approve Pended Documents" location="right">
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
                   class="ma-1 d-flex justify-center align-center"
                   style="min-height: 56px; width: 56px;"
                 >
-                  <v-icon size="28">mdi-account-box-multiple-outline</v-icon>
+                  <v-icon size="28">mdi-file-document-check-outline</v-icon>
                 </v-list-item>
               </template>
             </v-tooltip>
@@ -102,6 +102,19 @@
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-file-document-edit-outline</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+          <Link href="/clients" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Manage Clients" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-account-box-multiple-outline</v-icon>
                 </v-list-item>
               </template>
             </v-tooltip>
