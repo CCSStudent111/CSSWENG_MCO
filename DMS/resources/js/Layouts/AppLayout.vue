@@ -110,7 +110,7 @@
           </Link>
           
           <!-- Manager/Admin features - add debug info -->
-          <Link v-if="isAdminOrManager()" href="/documents/pending" style="text-decoration: none; color: inherit;">
+          <Link v-if="isManager()" href="/documents/pending" style="text-decoration: none; color: inherit;">
             <v-tooltip text="Approve Pending Documents" location="right">
               <template #activator="{ props }">
                 <v-list-item 

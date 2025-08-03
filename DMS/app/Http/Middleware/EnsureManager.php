@@ -21,8 +21,8 @@ class EnsureManager
             return redirect()->route('login');
         }
 
-        if ($user->is_admin || $user->role === 'Manager') {
-            return $next($request);
+        if ($user->role !== 'Manager') {
+            abort(403, 'UNAUTHORIZED ACCESS: Only manageres can access this resource.');
         }
 
         return $next($request);
