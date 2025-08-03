@@ -10,8 +10,7 @@
                             <v-card-title>Upload Document</v-card-title>
                             <v-card-text>
                                 <v-file-upload v-model="form.pages" label="Upload Files" multiple show-size
-                                    prepend-icon="mdi-paperclip" :error-messages="form.errors.pages" required
-                                    clearable />
+                                    prepend-icon="mdi-paperclip" :error-messages="pageErrors" required clearable />
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -23,9 +22,9 @@
                                     Document Details
                                 </v-card-title>
                                 <div style="min-width: 180px;">
-                                    <v-select v-model="form.target_type" :items="['General', 'Client']"
-                                        label="Category" :error-messages="form.errors.target_type" required
-                                        density="compact" variant="outlined" />
+                                    <v-select v-model="form.target_type" :items="['General', 'Client']" label="Category"
+                                        :error-messages="form.errors.target_type" required density="compact"
+                                        variant="outlined" />
                                 </div>
                             </div>
 
@@ -90,12 +89,16 @@ const form = useForm({
     user_id: null,
 })
 
-const usersWithFullName = computed(() => {
-    return props.users.map(user => ({
-        ...user,
-        full_name: `${user.first_name} ${user.last_name}`,
-    }))
+const pageErrors = computed(() => {
+    const errors = form.errors.pages || []
+    for (const key in form.errors) {
+        if (key.startsWith('pages.') && key !== 'pages') {
+            errors.push(form.errors[key])
+        }
+    }
+    return errors
 })
+
 
 const clientsWithName = computed(() => {
     return props.clients.map(client => ({
