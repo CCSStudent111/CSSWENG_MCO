@@ -106,15 +106,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/documents/pending', [DocumentController::class, 'pending'])
         ->middleware('manager')
         ->name('documents.pending');
-
+    
     Route::resource('documents', DocumentController::class)->except(['edit']);
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-
-   
 
     // Department Document Type Routes (Admin only)
     Route::middleware([AdminMiddleware::class])->group(function () {
@@ -134,6 +132,14 @@ Route::middleware(['auth'])->group(function () {
             ->name('department-document-types.bulk-detach');
     });
 
+    Route::get('document-pages/{documentPage}/download', [DocumentPageController::class, 'download'])
+    ->name('document-pages.download');
+
+    Route::put('document-pages/{documentPage}', [DocumentPageController::class, 'update'])
+        ->name('document-pages.update');
+
+    Route::delete('document-pages/{documentPage}', [DocumentPageController::class, 'destroy'])
+        ->name('document-pages.destroy');
 });
 
 Route::get('/phpinfo', function () {

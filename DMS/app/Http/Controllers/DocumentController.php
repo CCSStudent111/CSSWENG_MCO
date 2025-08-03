@@ -16,6 +16,7 @@ use App\Services\TrashService;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
+
 class DocumentController extends Controller
 {
     use AuthorizesRequests;

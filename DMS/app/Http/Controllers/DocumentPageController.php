@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\DocumentPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class DocumentPageController extends Controller
 {
+    use AuthorizesRequests;
+
     public function download(DocumentPage $documentPage)
     {
         $this->authorize('download', $documentPage);

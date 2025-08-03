@@ -97,6 +97,7 @@
                 </tr>
             </tbody>
         </v-table>
+        
         <div class="d-flex justify-end align-center mt-4">
             <v-pagination v-model="page" :length="pageCount" total-visible="7" color="primary"></v-pagination>
             <span class="ml-4">Page {{ page }} of {{ pageCount }}</span>
@@ -208,6 +209,7 @@ const paginatedDocuments = computed(() => {
     const start = (page.value - 1) * entries.value
     return sortedDocuments.value.slice(start, start + entries.value)
 })
+
 
 // Reset pagination 
 watch([entries, selectedType, startDate, endDate, search, sortBy], () => {
