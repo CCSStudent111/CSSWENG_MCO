@@ -102,7 +102,7 @@ class DocumentController extends Controller
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->get()->values();
         $clients = Client::select('id', 'name', 'branch')->get();
-        $document->load(['type', 'tags', 'creator', 'pages']);
+        $document->load(['type', 'tags', 'creator', 'pages', 'clients']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,
@@ -116,7 +116,17 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
-        $this->documentService->update($document, $request->validated());
+        $validated = $request->validated();
+
+        $this->documentService->update($document, $validated);
+
+        // Sync client if target_type is Client
+        if ($validated['target_type'] === 'Client' && $validated['user_id']) {
+            $document->clients()->sync([$validated['user_id']]);
+        } else {
+            // Detach all clients if target is not Client
+            $document->clients()->detach();
+        }
 
         return redirect()->route('documents.show', $document->id);
     }
