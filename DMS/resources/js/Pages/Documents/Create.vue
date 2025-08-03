@@ -30,9 +30,10 @@
                             </div>
 
                             <v-card-text>
-                                <v-select v-if="form.target_type === 'Employee'" v-model="form.user_id"
-                                    :items="usersWithFullName" item-title="full_name" item-value="id"
-                                    label="Select Employee" :error-messages="form.errors.user_id" density="compact"
+
+                                <v-select v-if="form.target_type === 'Client'" v-model="form.user_id"
+                                    :items="clientsWithName" item-title="full_name" item-value="id"
+                                    label="Select Client" :error-messages="form.errors.user_id" density="compact"
                                     variant="outlined" autocomplete clearable />
 
                                 <v-text-field v-model="form.name" label="Document Name"
