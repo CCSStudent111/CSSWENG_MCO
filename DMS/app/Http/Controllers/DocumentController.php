@@ -75,10 +75,6 @@ class DocumentController extends Controller
 
         $document = $this->documentService->create($validated);
 
-        if ($validated['target_type'] === 'Employee' && $validated['user_id']) {
-            $document->employees()->syncWithoutDetaching([$validated['user_id']]);
-        }
-
         if ($validated['target_type'] === 'Client' && $validated['user_id']) {
             $document->clients()->syncWithoutDetaching([$validated['user_id']]);
         }

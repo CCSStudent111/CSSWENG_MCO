@@ -23,7 +23,7 @@
                                     Document Details
                                 </v-card-title>
                                 <div style="min-width: 180px;">
-                                    <v-select v-model="form.target_type" :items="['General', 'Employee', 'Client']"
+                                    <v-select v-model="form.target_type" :items="['General', 'Client']"
                                         label="Category" :error-messages="form.errors.target_type" required
                                         density="compact" variant="outlined" />
                                 </div>
@@ -33,11 +33,6 @@
                                 <v-select v-if="form.target_type === 'Employee'" v-model="form.user_id"
                                     :items="usersWithFullName" item-title="full_name" item-value="id"
                                     label="Select Employee" :error-messages="form.errors.user_id" density="compact"
-                                    variant="outlined" autocomplete clearable />
-
-                                <v-select v-if="form.target_type === 'Client'" v-model="form.user_id"
-                                    :items="clientsWithName" item-title="full_name" item-value="id"
-                                    label="Select Client" :error-messages="form.errors.user_id" density="compact"
                                     variant="outlined" autocomplete clearable />
 
                                 <v-text-field v-model="form.name" label="Document Name"
