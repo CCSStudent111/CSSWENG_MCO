@@ -24,75 +24,29 @@
         </div>
         <div class="controls-row mb-4">
             <div class="d-flex mb-4" style="gap: 16px;">
-                <v-select
-                    v-model="entries"
-                    :items="entriesOptions"
-                    label="Show entries"
-                    class="custom-entries"
-                    density="compact"
-                    hide-details
-                    variant="outlined"
-                    style="width: 160px; flex-shrink: 0;"
-                ></v-select>
-                
-                <v-text-field
-                    v-model="search"
-                    label="Search Documents"
-                    prepend-inner-icon="mdi-magnify"
-                    clearable
-                    density="compact"
-                    class="custom-search"
-                    style="flex: 1 1 0;"
-                ></v-text-field>
-                
-                <v-select 
-                    v-model="selectedType" 
-                    :items="props.documentTypes" 
-                    item-title="name" 
-                    item-value="id"
-                    label="Filter by Type" 
-                    clearable 
-                    density="compact" 
-                    class="custom-entries" 
-                    hide-details
-                    variant="outlined" 
-                    style="width: 200px; flex-shrink: 0;" 
-                />
+                <v-select v-model="entries" :items="entriesOptions" label="Show entries" class="custom-entries"
+                    density="compact" hide-details variant="outlined" style="width: 160px; flex-shrink: 0;"></v-select>
 
-                <v-select 
-                    v-model="sortBy" 
-                    :items="[
-                        { title: 'ID (Low to High)', value: 'id-asc' },
-                        { title: 'ID (High to Low)', value: 'id-desc' },
-                        { title: 'Name (A-Z)', value: 'name-asc' },
-                        { title: 'Date (Newest)', value: 'date-desc' }
-                    ]"
-                    label="Sort by" 
-                    density="compact" 
-                    variant="outlined"
-                    hide-details
-                    style="width: 100px; flex-shrink: 0;"
-                />
+                <v-text-field v-model="search" label="Search Documents" prepend-inner-icon="mdi-magnify" clearable
+                    density="compact" class="custom-search" style="flex: 1 1 0;" variant="outlined" />
+
+                <v-select v-model="selectedType" :items="props.documentTypes" item-title="name" item-value="id"
+                    label="Filter by Type" clearable density="compact" class="custom-entries" hide-details
+                    variant="outlined" style="width: 200px; flex-shrink: 0;" />
+
+                <v-select v-model="sortBy" :items="[
+                    { title: 'ID (Low to High)', value: 'id-asc' },
+                    { title: 'ID (High to Low)', value: 'id-desc' },
+                    { title: 'Name (A-Z)', value: 'name-asc' },
+                    { title: 'Date (Newest)', value: 'date-desc' }
+                ]" label="Sort by" density="compact" variant="outlined" hide-details
+                    style="width: 100px; flex-shrink: 0;" />
             </div>
             <div class="d-flex" style="gap: 16px;">
-                <v-text-field 
-                    v-model="startDate" 
-                    label="Start Date" 
-                    type="date" 
-                    density="compact" 
-                    hide-details
-                    variant="outlined" 
-                    style="max-width: 170px" 
-                />
-                <v-text-field 
-                    v-model="endDate" 
-                    label="End Date" 
-                    type="date" 
-                    density="compact" 
-                    hide-details
-                    variant="outlined" 
-                    style="max-width: 170px" 
-                />
+                <v-text-field v-model="startDate" label="Start Date" type="date" density="compact" hide-details
+                    variant="outlined" style="max-width: 170px" />
+                <v-text-field v-model="endDate" label="End Date" type="date" density="compact" hide-details
+                    variant="outlined" style="max-width: 170px" />
             </div>
         </div>
         <v-table density="comfortable">
@@ -192,19 +146,19 @@ const filteredDocuments = computed(() => {
     if (!props.documents || !Array.isArray(props.documents)) {
         return []
     }
-    
+
     const sortedDocs = [...props.documents].sort((a, b) => b.id - a.id)
-    
+
     return sortedDocs.filter(doc => {
         if (!doc || !doc.type || !doc.creator) {
             return false
         }
-        
+
         const issuedAt = dayjs(doc.issued_at)
-        
+
         // Search filter
         const searchTerm = search.value.toLowerCase()
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             doc.name?.toLowerCase().includes(searchTerm) ||
             doc.type?.name?.toLowerCase().includes(searchTerm) ||
             String(doc.id).includes(searchTerm)
