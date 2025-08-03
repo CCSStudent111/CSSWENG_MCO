@@ -19,7 +19,7 @@
                     <th class="text-left">Tags</th>
                     <th class="text-left">Issued At</th>
                     <th class="text-left">Created By</th>
-                    <th class="text-left">Actions</th>
+                    <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +38,7 @@
                     <td>{{ dayjs(document.issued_at).format('MM/DD/YYYY') }}</td>
                     <td>{{ document.creator?.username ?? 'Unknown' }}</td>
 
-                    <td>
+                    <td class="text-center">
                         <v-btn icon size="small" color="success" variant="text" aria-label="Restore"
                             @click="restoreDocument(document.id)">
                             <v-icon>mdi-restore</v-icon>
