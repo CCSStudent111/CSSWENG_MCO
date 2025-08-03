@@ -16,9 +16,6 @@ use App\Http\Controllers\PasswordController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::middleware('guest')->group(function () {
-        Route::get('/register', 'showRegister')->name('register');
-        Route::post('/register', 'register')->name('register.submit');
-
         Route::get('/login', 'showLogin')->name('login');
         Route::post('/login', 'login')->name('login.submit');
     });
@@ -43,11 +40,36 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('clients/{id}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.forceDelete');
     Route::resource('clients', ClientController::class);
 
-    // Departments
-    Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
-    Route::post('departments/{id}/restore', [DepartmentController::class, 'restore'])->name('departments.restore');
-    Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('departments.forceDelete');
-    Route::resource('departments', DepartmentController::class);
+    Route::middleware('ensure.admin')->group(function () {
+        // Departments
+        Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
+        Route::post('departments/{id}/restore', [DepartmentController::class, 'restore'])->name('departments.restore');
+        Route::delete('departments/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('departments.forceDelete');
+        Route::resource('departments', DepartmentController::class);
+
+        
+        // Regular user routes
+        Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+        Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+        Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+        Route::put('users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('users.toggleAdmin');
+        Route::put('users/{user}/toggle-manager', [UserController::class, 'toggleManager'])->name('users.toggleManager');
+        Route::resource('users', UserController::class);
+
+        // Document Types
+        Route::post('document-types/{id}/restore', [DocumentTypeController::class, 'restore'])->name('documentTypes.restore');
+        Route::delete('document-types/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
+        Route::resource('document-types', DocumentTypeController::class)
+            ->except(['show'])
+            ->names([
+                'index' => 'documentTypes.index',
+                'create' => 'documentTypes.create', 
+                'store' => 'documentTypes.store',
+                'edit' => 'documentTypes.edit',
+                'update' => 'documentTypes.update',
+                'destroy' => 'documentTypes.destroy'
+            ]);
+    });
 
     // Users
     // User API routes
@@ -56,14 +78,6 @@ Route::middleware(['auth'])->group(function () {
     
     // Profile route
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.index');
-
-    // Regular user routes
-    Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
-    Route::post('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-    Route::delete('users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
-    Route::put('users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('users.toggleAdmin');
-    Route::put('users/{user}/toggle-manager', [UserController::class, 'toggleManager'])->name('users.toggleManager');
-    Route::resource('users', UserController::class);
     
     // Documents
     Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
@@ -78,19 +92,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
     Route::resource('documents', DocumentController::class);
 
-    // Document Types
-    Route::resource('document-types', DocumentTypeController::class)
-        ->except(['show'])
-        ->names([
-            'index' => 'documentTypes.index',
-            'create' => 'documentTypes.create', 
-            'store' => 'documentTypes.store',
-            'edit' => 'documentTypes.edit',
-            'update' => 'documentTypes.update',
-            'destroy' => 'documentTypes.destroy'
-        ]);
-    Route::post('document-types/{id}/restore', [DocumentTypeController::class, 'restore'])->name('documentTypes.restore');
-    Route::delete('document-types/{id}/force-delete', [DocumentTypeController::class, 'forceDelete'])->name('documentTypes.forceDelete');
+    
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -108,7 +110,6 @@ Route::middleware(['auth'])->group(function () {
     ->name('document-pages.download');
     Route::put('/document-pages/{documentPage}', [DocumentPageController::class, 'update'])->name('document-pages.update');
     Route::delete('/document-pages/{documentPage}', [DocumentPageController::class, 'destroy'])->name('document-pages.destroy');
-
 });
 
 Route::get('/phpinfo', function () {

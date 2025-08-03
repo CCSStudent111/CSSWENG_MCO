@@ -17,7 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'manager' => \App\Http\Middleware\EnsureManager::class, 
+            'manager' => \App\Http\Middleware\EnsureManager::class,
+            'block.employees' => \App\Http\Middleware\BlockEmployees::class,
+            'ensure.admin' => \App\Http\Middleware\EnsureAdmin::class, 
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
