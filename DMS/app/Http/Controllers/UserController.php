@@ -117,7 +117,6 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Admin status updated.');
     }
-    
 
     public function toggleManager(User $user)
     {
