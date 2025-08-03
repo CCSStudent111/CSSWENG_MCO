@@ -14,9 +14,17 @@ class EnsureManager
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-    {
-        if (!auth()->check() || !auth()->user()->isManager()) {
-            abort(403, 'UNAUTHORIZED ACCESS: Only managers can access this resource.');
+  {
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Allow access if user is admin OR manager
+        if ($user->is_admin || $user->role === 'Manager') {
+            return $next($request);
+
         }
 
         return $next($request);

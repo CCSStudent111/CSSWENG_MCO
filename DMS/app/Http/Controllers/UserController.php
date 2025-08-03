@@ -51,7 +51,6 @@ class UserController extends Controller
             'date_of_birth' => 'nullable|date',
             'department_id' => 'nullable|exists:departments,id',
             'is_admin' => 'required|boolean',
-            'is_manager' => 'required|boolean',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -135,7 +134,7 @@ class UserController extends Controller
 
     public function toggleManager(User $user)
     {
-        $user->is_manager = !$user->is_manager;
+        $user->role = $user->role === 'manager' ? null : 'manager';
         $user->save();
 
         return redirect()->back()->with('success', 'Manager status updated.');
@@ -149,19 +148,4 @@ class UserController extends Controller
             'users' => $trashedUsers
         ]);
     }
-
-    public function restore($id)
-    {
-        $user = User::onlyTrashed()->findOrFail($id);
-        $user->restore();
-        return redirect()->route('users.index')->with('success', 'User restored successfully.');
-    }
-
-    public function forceDelete($id)
-    {
-        $user = User::onlyTrashed()->findOrFail($id);
-        $user->forceDelete();
-        return redirect()->route('users.index')->with('success', 'User permanently deleted.');
-    }
-
 }

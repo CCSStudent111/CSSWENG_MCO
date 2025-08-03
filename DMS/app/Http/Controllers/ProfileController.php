@@ -165,7 +165,6 @@ class ProfileController extends Controller
                 'full_name' => $this->getFullName($user),
                 'role' => $this->getUserRole($user),
                 'is_admin' => $user->is_admin,
-                'is_manager' => $user->is_manager ?? false,
                 'department' => $user->department,
                 'department_id' => $user->department_id,
                 'created_at' => $user->created_at,
@@ -207,7 +206,7 @@ class ProfileController extends Controller
         }
 
         // Documents approved by user (if manager/admin)
-        if (($user->is_manager || $user->is_admin) && method_exists($user, 'approvedDocuments')) {
+        if (($user->role === 'manager' || $user->is_admin) && method_exists($user, 'approvedDocuments')) {
             $documentsApproved = $user->approvedDocuments()
                 ->latest()
                 ->take(10)
@@ -257,7 +256,7 @@ class ProfileController extends Controller
         }
 
         // Additional stats for managers/admins
-        if ($user->is_manager || $user->is_admin) {
+        if ($user->role === 'manager' || $user->is_admin) {
             if (method_exists($user, 'approvedDocuments')) {
                 $stats['documents_approved'] = $user->approvedDocuments()->count();
             }
@@ -327,7 +326,7 @@ class ProfileController extends Controller
                 'email' => true,
                 'browser' => true,
                 'document_updates' => true,
-                'system_alerts' => $user->is_admin || $user->is_manager,
+                'system_alerts' => $user->is_admin || $user->role === 'manager',
             ],
             'language' => 'en',
             'timezone' => 'UTC',
@@ -383,7 +382,7 @@ class ProfileController extends Controller
     {
         if ($user->is_admin) {
             return 'Administrator';
-        } elseif ($user->is_manager ?? false) {
+        } elseif ($user->role === 'manager') {
             return 'Manager';
         } else {
             return 'Employee';
