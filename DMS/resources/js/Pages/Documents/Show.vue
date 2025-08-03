@@ -123,6 +123,11 @@
                                 Approve
                             </v-btn>
 
+                            <Link :href="route('documents.index')">
+                            <v-btn color="secondary" variant="flat" size="small">
+                                Back to Documents
+                            </v-btn>
+                            </Link>
                             <template v-if="authUser?.role !== 'Employee'">
                                 <Link :href="route('documents.edit', props.document.id)">
                                 <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
