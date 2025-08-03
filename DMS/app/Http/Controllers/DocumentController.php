@@ -199,16 +199,15 @@ class DocumentController extends Controller
     public function documentLogs(Document $document)
     {
         $document->load([
-            'activities' => function ($query) {
-                $query->latest();
-            },
-            'activities.causer',
-            'type' 
+            'type',
         ]);
 
-        return Inertia::render('Documents/Logs', [
-            'document' => $document,
-            'logs' => $document->activities->map(function ($activity) use ($document) {
+        $logs = $document->activities()
+            ->with('causer')
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($activity) use ($document) {
                 $properties = $activity->properties->toArray();
 
                 if (isset($properties['attributes']['document_type_id']) && $document?->type) {
@@ -234,7 +233,11 @@ class DocumentController extends Controller
                     ],
                     'date' => $activity->created_at,
                 ];
-            }),
+            });
+
+        return Inertia::render('Documents/Logs', [
+            'document' => $document,
+            'logs' => $logs,
         ]);
     }
 
