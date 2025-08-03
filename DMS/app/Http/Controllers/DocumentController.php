@@ -160,7 +160,7 @@ class DocumentController extends Controller
                     }
                 ])
                 ->latest()
-                ->get()
+                ->paginate(10)
                 ->map(function ($activity) {
                     $subject = $activity->subject;
                     $properties = $activity->properties->toArray();

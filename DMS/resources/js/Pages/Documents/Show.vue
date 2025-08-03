@@ -6,15 +6,19 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title class="d-flex justify-between align-center">
                             <span>Attached Pages</span>
-                            <Link :href="route('documents.logs', props.document.id)">
-                            <v-btn color="info" variant="flat" size="small" prepend-icon="mdi-history">
-                                View Logs
-                            </v-btn>
-                            </Link>
-                            <v-btn v-if="selectedPage" @click="downloadFile" color="primary" variant="outlined"
-                                size="small" prepend-icon="mdi-download">
-                                Download
-                            </v-btn>
+
+                            <div class="d-flex align-center ml-auto" style="gap: 8px">
+                                <Link :href="route('documents.logs', props.document.id)">
+                                <v-btn color="info" variant="flat" size="small" prepend-icon="mdi-history">
+                                    View Logs
+                                </v-btn>
+                                </Link>
+
+                                <v-btn v-if="selectedPage" @click="downloadFile" color="primary" variant="outlined"
+                                    size="small" prepend-icon="mdi-download">
+                                    Download
+                                </v-btn>
+                            </div>
                         </v-card-title>
                         <v-card-text class="pa-0">
                             <!-- File List -->
@@ -86,8 +90,8 @@
                                 class="mb-4" />
 
                             <v-text-field v-if="document.clients.length > 0" label="Client"
-                                :model-value="`${document.clients[0].name} (${document.clients[0].branch})`" readonly disabled
-                                density="compact" variant="outlined" class="mb-4" />
+                                :model-value="`${document.clients[0].name} (${document.clients[0].branch})`" readonly
+                                disabled density="compact" variant="outlined" class="mb-4" />
 
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled
                                 density="compact" variant="outlined" class="mb-4" />

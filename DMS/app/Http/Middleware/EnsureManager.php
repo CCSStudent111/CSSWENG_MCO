@@ -21,10 +21,8 @@ class EnsureManager
             return redirect()->route('login');
         }
 
-        // Allow access if user is admin OR manager
         if ($user->is_admin || $user->role === 'Manager') {
             return $next($request);
-
         }
 
         return $next($request);
