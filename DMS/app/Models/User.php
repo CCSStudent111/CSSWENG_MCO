@@ -27,6 +27,7 @@ class User extends Authenticatable
         'suffix',
         'date_of_birth',
         'department_id',
+        'role',
         'is_admin',
     ];
 
@@ -51,7 +52,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
-            'is_manager' => 'boolean',
         ];
     }
 
@@ -95,11 +95,8 @@ class User extends Authenticatable
     {
         if ($this->is_admin) {
             return 'Administrator';
-        } elseif ($this->is_manager) {
-            return 'Manager';
-        } else {
-            return 'Employee';
-        }
+        } 
+
+        return $this->getAttributes()['role'];
     }
-    
 }
