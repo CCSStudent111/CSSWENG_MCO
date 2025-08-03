@@ -126,4 +126,28 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Manager status updated.');
     }
+
+    public function trashed()
+    {
+        $trashedUsers = User::onlyTrashed()->with('department')->get();
+        
+        return Inertia::render('Users/Trashed', [
+            'users' => $trashedUsers
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+        return redirect()->route('users.index')->with('success', 'User restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->forceDelete();
+        return redirect()->route('users.index')->with('success', 'User permanently deleted.');
+    }
+
 }

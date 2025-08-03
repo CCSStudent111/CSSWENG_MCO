@@ -1,6 +1,8 @@
+
 <template>
   <AppLayout>
     <div class="custom-title mb-4">Manage Users</div>
+
     <div class="d-flex mb-4 justify-end">
       <Link :href="route('users.create')">
         <v-btn color="primary" variant="flat" size="small">
@@ -20,7 +22,7 @@
           hide-details
           variant="outlined"
           style="width: 160px; flex-shrink: 0;"
-        ></v-select>
+        />
         <v-text-field
           v-model="search"
           label="Search Users"
@@ -80,7 +82,15 @@
         size="small"
       />
     </div>
-  </AppLayout>
+  
+    <Link :href="route('users.trashed')">
+      <v-btn color="secondary" variant="outlined" size="small" class="ml-2">
+        View Trashed Users
+      </v-btn>
+    </Link>
+
+</AppLayout>
+
 </template>
 
 <script setup>
