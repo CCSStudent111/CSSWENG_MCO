@@ -60,9 +60,11 @@
           <td>••••••••••</td>
           <td>{{ user.department.name }}</td>
           <td>
-            <v-btn icon size="small" variant="text" aria-label="View">
-              <v-icon>mdi-eye</v-icon>
-            </v-btn>
+            <Link :href="route('users.show', user.id)">
+              <v-btn icon size="small" variant="text" aria-label="View">
+                <v-icon>mdi-eye</v-icon>
+              </v-btn>
+            </Link>
             <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
