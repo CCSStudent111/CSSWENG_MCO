@@ -1,23 +1,61 @@
 <template>
   <v-app>
-    <v-app-bar
-      color="white"
-      elevation="1"
-      height="64"
-      app
-    >
+    <!-- Top Header with Logo and Title -->
+    <<v-app-bar
+    color="primary"
+    dark
+    elevation="2"
+    height="80"
+    app
+    class="top-header"
+  >
+    <div class="d-flex align-center fill-height px-4 w-100">
+      <!-- Logo Space -->
+      <Link href="/" style="text-decoration: none; color: inherit;">
+        <v-tooltip text="Dashboard" location="bottom">
+          <template #activator="{ props }">
+            <div v-bind="props" class="logo-container mr-4">
+            <v-avatar size="48">
+              <v-img 
+                src="/logo.png" 
+                alt="Company Logo"
+                @error="console.log('Image failed to load')"
+                @load="console.log('Image loaded successfully')"
+              >
+                <!-- Fallback content -->
+                <template v-slot:placeholder>
+                  <v-icon size="32" color="primary">mdi-file-document-multiple</v-icon>
+                </template>
+              </v-img>
+            </v-avatar>
+            </div>
+          </template>
+        </v-tooltip>
+      </Link>
+
+      <!-- Title -->
+      <div class="title-section">
+        <h1 class="app-title">Document Management System</h1>
+        <p class="app-subtitle mb-0">Streamlined Document Solutions</p>
+      </div>
+      
       <v-spacer></v-spacer>
+      
+      <!-- User Menu -->
       <v-menu>
         <template v-slot:activator="{ props }">
           <v-btn
             v-bind="props"
             variant="text"
-            class="d-flex align-center"
+            class="d-flex align-center user-menu-btn"
           >
-            <v-avatar size="32" class="mr-2">
-              <v-icon>mdi-account-circle</v-icon>
+            <v-avatar size="32" class="mr-2" color="white">
+              <v-icon color="primary">mdi-account-circle</v-icon>
             </v-avatar>
-            <span class="d-none d-sm-inline">{{ user?.username || 'User' }}</span>
+            <div class="d-none d-sm-block text-left mr-2">
+              <div class="user-name">{{ user?.username || 'User' }}</div>
+              <div class="user-role">{{ getUserRole() }}</div>
+            </div>
             <v-icon>mdi-chevron-down</v-icon>
           </v-btn>
         </template>
@@ -41,38 +79,27 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    </v-app-bar>
+    </div>
+  </v-app-bar>
 
+    <!-- Side Navigation -->
     <v-navigation-drawer
       app
       permanent
       color="primary"
       dark
       width="80"
-      class="pa-2"
+      class="pa-2 side-nav"
     >
       <div class="d-flex flex-column fill-height">
         <!-- Main navigation items -->
         <v-list nav density="compact" class="d-flex flex-column align-center">
-          <Link href="/" style="text-decoration: none; color: inherit;">
-            <v-tooltip text="Dashboard" location="right">
-              <template #activator="{ props }">
-                <v-list-item 
-                  v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
-                  style="min-height: 56px; width: 56px;"
-                >
-                  <v-icon size="28">mdi-view-dashboard</v-icon>
-                </v-list-item>
-              </template>
-            </v-tooltip>
-          </Link>
           <Link href="/documents" style="text-decoration: none; color: inherit;">
             <v-tooltip text="Monument Documents" location="right">
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
+                  class="ma-1 d-flex justify-center align-center nav-item"
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-file-document-outline</v-icon>
@@ -81,11 +108,11 @@
             </v-tooltip>
           </Link>
           <Link v-if="user?.is_admin || user?.is_manager" href="/documents/pending" style="text-decoration: none; color: inherit;">
-            <v-tooltip text="Approve Pended Documents" location="right">
+            <v-tooltip text="Approve Pending Documents" location="right">
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
+                  class="ma-1 d-flex justify-center align-center nav-item"
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-file-document-check-outline</v-icon>
@@ -98,7 +125,7 @@
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
+                  class="ma-1 d-flex justify-center align-center nav-item"
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-file-document-edit-outline</v-icon>
@@ -111,10 +138,23 @@
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
+                  class="ma-1 d-flex justify-center align-center nav-item"
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-account-box-multiple-outline</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
+          <Link v-if="user?.is_admin" href="/departments" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Manage Departments" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center nav-item"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-domain</v-icon>
                 </v-list-item>
               </template>
             </v-tooltip>
@@ -124,7 +164,7 @@
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
+                  class="ma-1 d-flex justify-center align-center nav-item"
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-account-group</v-icon>
@@ -145,7 +185,7 @@
               <template #activator="{ props }">
                 <v-list-item 
                   v-bind="props" 
-                  class="ma-1 d-flex justify-center align-center"
+                  class="ma-1 d-flex justify-center align-center nav-item"
                   style="min-height: 56px; width: 56px;"
                 >
                   <v-icon size="28">mdi-logout</v-icon>
@@ -167,10 +207,19 @@
 
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
-
+import { ref } from 'vue'
 // Get user data from Inertia props
 const { props } = usePage()
 const user = props.auth?.user
+
+const imageLoaded = ref(false)
+
+// Helper function to get user role
+function getUserRole() {
+  if (user?.is_admin) return 'Administrator'
+  if (user?.is_manager) return 'Manager'
+  return 'Employee'
+}
 </script>
 
 <style scoped>
@@ -178,15 +227,119 @@ const user = props.auth?.user
   padding: 32px 24px 24px 24px;
 }
 
-/* Custom styles for navigation items */
-.v-list-item {
+/* Top Header Styles */
+.top-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.title-section {
+  color: white;
+}
+
+.app-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+  color: white;
+}
+
+.app-subtitle {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  font-weight: 400;
+  color: white;
+}
+
+/* User Menu Styles */
+.user-menu-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  line-height: 1;
+}
+
+/* Side Navigation Styles */
+.side-nav {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-item {
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
-.v-list-item:hover {
+.nav-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 1.5rem;
+  }
+  
+  .app-subtitle {
+    display: none;
+  }
+  
+  .logo-container {
+    margin-right: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .title-section {
+    display: none;
+  }
+  
+  .logo-container {
+    margin-right: 0;
+  }
+
+  .user-menu-fixed {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
+.user-menu-btn {
+  background: rgba(25, 118, 210, 0.9);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: white;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  line-height: 1;
+  color: white;
+}
 }
 </style>
 
