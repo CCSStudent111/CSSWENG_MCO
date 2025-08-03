@@ -60,11 +60,6 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class);
     }
 
-    public function documents()
-    {
-        return $this->hasMany(Document::class, 'created_by');
-    }
-
     public function isAdmin(): bool
     {
         return $this->is_admin;
