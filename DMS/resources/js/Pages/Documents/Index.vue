@@ -34,6 +34,10 @@
                     label="Filter by Type" clearable density="compact" class="custom-entries" hide-details
                     variant="outlined" style="width: 200px; flex-shrink: 0;" />
 
+                <v-select v-model="selectedTags" :items="props.tags" item-title="name" item-value="id" label="Filter by Tags"
+                    multiple chips clearable density="compact" class="custom-entries" hide-details variant="outlined"
+                    style="width: 200px; flex-shrink: 0;" />
+
                 <v-select v-model="sortBy" :items="[
                     { title: 'ID (Low to High)', value: 'id-asc' },
                     { title: 'ID (High to Low)', value: 'id-desc' },
@@ -122,6 +126,7 @@ dayjs.extend(isSameOrBefore)
 const props = defineProps({
     documents: { type: Array, default: () => [] },
     documentTypes: { type: Array, default: () => [] },
+    tags: { type: Array, default: () => [] },
 })
 
 const entries = ref(10)
@@ -129,6 +134,7 @@ const entriesOptions = [5, 10, 25, 50, 100]
 const search = ref('')
 const page = ref(1)
 const selectedType = ref(null)
+const selectedTags = ref([])
 const startDate = ref('')
 const endDate = ref('')
 const sortBy = ref('')
@@ -181,7 +187,10 @@ const filteredDocuments = computed(() => {
             matchesEndDate = end.isValid() && issuedAt.isSameOrBefore(end, 'day')
         }
 
-        return matchesSearch && matchesType && matchesStartDate && matchesEndDate
+        const matchesTags = selectedTags.value.length === 0 ||
+        selectedTags.value.every(tagId => doc.tags?.some(tag => tag.id === tagId))
+
+        return matchesSearch && matchesType && matchesStartDate && matchesEndDate && matchesTags
     })
 })
 

@@ -15,6 +15,10 @@ use App\Models\DocumentType;
 use App\Services\TrashService;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Models\Tag;
+
+
 
 
 class DocumentController extends Controller
@@ -24,26 +28,36 @@ class DocumentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user()->load('department.documentTypes');
+        $query = Document::with(['tags', 'type', 'creator']);
 
-        $documents = Document::with([
-                'type',
-                'creator',
-                'tags',
-                'pages'
-            ])
-            ->where('status', 'approved')
-            ->whereHas('type.departments', function ($query) use ($user) {
-                $query->where('departments.id', $user->department_id);
-            })
-            ->orderBy('id', 'desc')
-            ->get();
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('tag')) {
+            $tagIds = $request->input('tag'); 
+            $query->whereHas('tags', function ($q) use ($tagIds) {
+                $q->whereIn('id', $tagIds);
+            });
+        }
+
+
+        $documents = $query->with(['tags', 'type', 'creator'])->get();
+        $tags = Tag::select('id', 'name')->get();
+        $documentTypes = DocumentType::select('id', 'name')->get();
+
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
-            'documentTypes' => $user->department->documentTypes->values(),
+            'filters' => $request->only(['search', 'tag']),
+            'tags' => $tags,
+            'documentTypes' => $documentTypes,
         ]);
     }
 
