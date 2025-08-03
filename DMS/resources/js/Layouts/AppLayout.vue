@@ -172,6 +172,20 @@
               </template>
             </v-tooltip>
           </Link>
+          <!-- Add this navigation item in your side navigation -->
+          <Link v-if="user?.is_admin" href="/department-document-types" style="text-decoration: none; color: inherit;">
+            <v-tooltip text="Department Document Types" location="right">
+              <template #activator="{ props }">
+                <v-list-item 
+                  v-bind="props" 
+                  class="ma-1 d-flex justify-center align-center nav-item"
+                  style="min-height: 56px; width: 56px;"
+                >
+                  <v-icon size="28">mdi-file-tree</v-icon>
+                </v-list-item>
+              </template>
+            </v-tooltip>
+          </Link>
         </v-list>
         
         <!-- Spacer to push logout to bottom -->
