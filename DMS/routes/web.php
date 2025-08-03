@@ -140,6 +140,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('document-pages/{documentPage}', [DocumentPageController::class, 'destroy'])
         ->name('document-pages.destroy');
+
+    Route::put('/document-pages/{documentPage}/rename', [DocumentPageController::class, 'rename'])->name('document-pages.rename');
 });
 
 Route::get('/phpinfo', function () {

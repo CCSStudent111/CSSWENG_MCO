@@ -34,8 +34,8 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                <v-btn icon variant="text" size="small" @click="downloadPage(page)">
-                                                    <v-icon>mdi-download</v-icon>
+                                                <v-btn icon variant="text" size="small" @click="openEditDialog(page)">
+                                                    <v-icon>mdi-pencil</v-icon>
                                                 </v-btn>
                                                 <v-btn icon variant="text" size="small" @click="reuploadPage(page)">
                                                     <v-icon>mdi-upload</v-icon>
@@ -43,10 +43,30 @@
                                                 <v-btn icon variant="text" size="small" @click="deletePage(page)">
                                                     <v-icon color="red">mdi-delete</v-icon>
                                                 </v-btn>
+                                                <v-btn icon variant="text" size="small" @click="downloadPage(page)">
+                                                    <v-icon>mdi-download</v-icon>
+                                                </v-btn>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </v-table>
+
+                                <v-dialog v-model="editDialog" max-width="500px">
+                                    <v-card>
+                                        <v-card-title>Edit File Name</v-card-title>
+                                        <v-card-text>
+                                            <v-text-field v-model="editedPage.nameWithoutExtension"
+                                                label="New File Name" variant="outlined"
+                                                density="compact" />
+                                            <div class="text-caption text-grey">File extension: .{{ editedPage.extension
+                                            }}</div>
+                                        </v-card-text>
+                                        <v-card-actions class="justify-end">
+                                            <v-btn variant="text" @click="editDialog = false">Cancel</v-btn>
+                                            <v-btn color="primary" variant="flat" @click="saveEditedName">Save</v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
                             </v-card-text>
                         </v-card>
                     </v-col>
@@ -103,6 +123,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm, Link, router } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import { ref, reactive } from 'vue'
 import dayjs from 'dayjs'
 
 const props = defineProps({
@@ -122,6 +143,44 @@ const form = useForm({
     target_type: props.document.clients?.length ? 'Client' : 'General',
     user_id: props.document.clients?.[0]?.id ?? null,
 })
+
+const editDialog = ref(false)
+const editedPage = reactive({
+    id: null,
+    original_name: '',
+    nameWithoutExtension: '',
+    extension: ''
+})
+
+function openEditDialog(page) {
+    const lastDotIndex = page.original_name.lastIndexOf('.')
+    const base = lastDotIndex !== -1 ? page.original_name.slice(0, lastDotIndex) : page.original_name
+    const ext = lastDotIndex !== -1 ? page.original_name.slice(lastDotIndex + 1) : ''
+
+    editedPage.id = page.id
+    editedPage.original_name = page.original_name
+    editedPage.nameWithoutExtension = base
+    editedPage.extension = ext
+    editDialog.value = true
+}
+
+function saveEditedName() {
+    const newName = `${editedPage.nameWithoutExtension.trim()}.${editedPage.extension}`
+
+    router.put(route('document-pages.rename', editedPage.id), {
+        original_name: newName,
+    }, {
+        onSuccess: () => {
+            const page = props.document.pages.find(p => p.id === editedPage.id)
+            if (page) page.original_name = newName
+
+            editDialog.value = false
+        },
+        onError: () => {
+            alert('Failed to rename file.')
+        }
+    })
+}
 
 const pageErrors = computed(() => {
     const errors = form.errors.pages || []

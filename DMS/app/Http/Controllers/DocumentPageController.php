@@ -79,4 +79,28 @@ class DocumentPageController extends Controller
 
         return back()->with('success', 'Page deleted successfully.');
     }
+
+    public function rename(Request $request, DocumentPage $documentPage)
+    {
+        $request->validate([
+            'original_name' => 'required|string|max:255',
+        ]);
+
+        $newName = $request->input('original_name');
+        $oldName = $documentPage->original_name;
+
+        // Extract and compare extensions
+        $newExt = pathinfo($newName, PATHINFO_EXTENSION);
+        $oldExt = pathinfo($oldName, PATHINFO_EXTENSION);
+
+        if (strtolower($newExt) !== strtolower($oldExt)) {
+            return back()->withErrors(['original_name' => 'You cannot change the file extension.']);
+        }
+
+        $documentPage->update([
+            'original_name' => $newName,
+        ]);
+
+        return back()->with('success', 'File name updated.');
+    }
 }
