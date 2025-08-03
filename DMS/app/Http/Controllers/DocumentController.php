@@ -54,7 +54,7 @@ class DocumentController extends Controller
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes->values();
         $users = User::select('id', 'first_name', 'last_name')->get();
-        $clients = Client::select('id', 'name')->get();
+        $clients = Client::select('id', 'name', 'branch')->get();
 
         return Inertia::render('Documents/Create', [
             'documentTypes' => $documentTypes,
@@ -74,10 +74,6 @@ class DocumentController extends Controller
         $validated['pages'] = $request->file('pages') ?? [];
 
         $document = $this->documentService->create($validated);
-
-        if ($validated['target_type'] === 'Employee' && $validated['user_id']) {
-            $document->employees()->syncWithoutDetaching([$validated['user_id']]);
-        }
 
         if ($validated['target_type'] === 'Client' && $validated['user_id']) {
             $document->clients()->syncWithoutDetaching([$validated['user_id']]);

@@ -22,7 +22,24 @@ class DocumentPageController extends Controller
     public function update(Request $request, DocumentPage $documentPage)
     {
         $request->validate([
-            'page' => 'required|file'
+            'page' => [
+                'required',
+                'file',
+                function ($attribute, $value, $fail) {
+                    $extension = strtolower($value->getClientOriginalExtension());
+                    $sizeInMB = $value->getSize() / 1024 / 1024; // convert bytes to MB
+
+                    if (in_array($extension, ['png', 'jpeg', 'jpg']) && $sizeInMB > 15) {
+                        $fail('Image files must not exceed 15MB.');
+                    } elseif ($extension === 'pdf' && $sizeInMB > 150) {
+                        $fail('PDF files must not exceed 150MB.');
+                    } elseif (in_array($extension, ['docx', 'pptx', 'xlsx']) && $sizeInMB > 2048) {
+                        $fail('Document files must not exceed 2GB.');
+                    } elseif (!in_array($extension, ['png', 'jpeg', 'jpg', 'pdf', 'docx', 'pptx', 'xlsx'])) {
+                        $fail('Invalid file type: ' . $extension);
+                    }
+                },
+            ],
         ]);
 
         // Delete old file from 'public' disk

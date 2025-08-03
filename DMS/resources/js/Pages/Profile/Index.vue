@@ -65,14 +65,14 @@
                 <v-col cols="12" md="4">
                   <div class="text-subtitle-2 text-grey-darken-1 mb-1">Account Type</div>
                   <v-chip 
-                    :color="user.is_admin ? 'error' : (user.role == 'manager' ? 'warning' : 'primary')" 
+                    :color="user.is_admin ? 'error' : (user.role ? 'warning' : 'primary')" 
                     size="small"
                     variant="tonal"
                   >
                     <v-icon left size="16">
-                      {{ user.is_admin ? 'mdi-shield-crown' : (user.role == 'manager' ? 'mdi-account-tie' : 'mdi-account') }}
+                      {{ user.is_admin ? 'mdi-shield-crown' : (user.role ? 'mdi-account-tie' : 'mdi-account') }}
                     </v-icon>
-                    {{ user.is_admin ? 'Administrator' : (user.role == 'manager' ? 'Manager' : 'Employee') }}
+                    {{ user.is_admin ? 'Administrator' : (user.role ? 'Manager' : 'Employee') }}
                   </v-chip>
                 </v-col>
                 

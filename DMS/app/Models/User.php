@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +28,9 @@ class User extends Authenticatable
         'suffix',
         'date_of_birth',
         'department_id',
+        'role',
         'is_admin',
+        'is_manager',
     ];
 
     /**
@@ -51,18 +54,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
-            'role' => 'string',
         ];
     }
 
     public function department()
     {
         return $this->belongsTo(Department::class);
-    }
-
-    public function documents()
-    {
-        return $this->hasMany(Document::class, 'created_by');
     }
 
     public function isAdmin(): bool
@@ -95,11 +92,8 @@ class User extends Authenticatable
     {
         if ($this->is_admin) {
             return 'Administrator';
-        } elseif ($this->attributes['role'] == 'manager') {
-            return 'Manager';
-        } else {
-            return 'Employee';
-        }
+        } 
+
+        return $this->getAttributes()['role'];
     }
-    
 }
