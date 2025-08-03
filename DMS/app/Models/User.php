@@ -16,13 +16,17 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'suffix',
+        'date_of_birth',
         'email',
         'password',
         'username',
         'department_id',
         'is_admin',
-        'role',  // Remove is_manager from fillable
+        'role',  
     ];
 
     /**

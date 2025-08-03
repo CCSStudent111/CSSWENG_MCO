@@ -51,6 +51,7 @@ class UserController extends Controller
             'date_of_birth' => 'nullable|date',
             'department_id' => 'nullable|exists:departments,id',
             'is_admin' => 'required|boolean',
+            'role' => 'nullable|in:Manager,Employee', // ✅ Add role validation
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -100,6 +101,7 @@ class UserController extends Controller
             'department_id' => 'nullable|exists:departments,id',
             'is_admin' => 'boolean',
             'is_manager' => 'boolean',
+            'role' => 'nullable|in:Manager,Employee', // ✅ Add role validation
         ]);
 
         $user->update($validated);

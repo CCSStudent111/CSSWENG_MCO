@@ -85,8 +85,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('documents-trash', [DocumentController::class, 'trash'])->name('documents.trash');
         Route::put('documents/{document}/restore', [DocumentController::class, 'restore'])->withTrashed()->name('documents.restore');
         Route::delete('documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])->withTrashed()->name('documents.forceDelete');
-        
-        
+        Route::post('documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
+        Route::delete('documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
         Route::get('documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
         
         // Clients
@@ -98,8 +98,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
     });
     
-    Route::post('documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
-    Route::delete('documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
+    
     Route::resource('clients', ClientController::class)->except(['create', 'edit']);
     
     Route::get('documents/{document}/logs', [DocumentController::class, 'documentLogs'])->name('documents.logs');

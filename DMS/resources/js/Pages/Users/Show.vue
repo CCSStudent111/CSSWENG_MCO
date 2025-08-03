@@ -21,6 +21,9 @@
           <strong>Role:</strong> {{ user.role }}
         </v-col>
         <v-col cols="12" md="6">
+          <strong>Admin:</strong> {{ user.is_admin ? 'Yes' : 'No' }}
+        </v-col>
+        <v-col cols="12" md="6">
           <strong>Date of Birth:</strong>
           {{ user.date_of_birth ? dayjs(user.date_of_birth).format('MM/DD/YYYY') : '—' }}
         </v-col>
@@ -33,9 +36,9 @@
 
     <div class="d-flex justify-end">
       <Link :href="route('users.index')">
-        <v-btn color="secondary" variant="outlined" size="small">
-          Back to List
-        </v-btn>
+      <v-btn color="secondary" variant="outlined" size="small">
+        Back to List
+      </v-btn>
       </Link>
     </div>
   </AppLayout>
