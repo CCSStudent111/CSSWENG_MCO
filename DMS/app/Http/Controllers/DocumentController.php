@@ -87,7 +87,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        $document->load(['type', 'tags', 'creator', 'pages', 'approver']);
+        $document->load(['type', 'tags', 'creator', 'pages', 'approver', 'clients']);
 
         return Inertia::render('Documents/Show', [
             'document' => $document
@@ -101,12 +101,13 @@ class DocumentController extends Controller
     {
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->get()->values();
-
-        $document->load(['type', 'tags', 'creator', 'pages']);
+        $clients = Client::select('id', 'name', 'branch')->get();
+        $document->load(['type', 'tags', 'creator', 'pages', 'clients']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,
-            'documentTypes' => $documentTypes
+            'documentTypes' => $documentTypes,
+            'clients' => $clients
         ]);
     }
 
@@ -115,7 +116,17 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
-        $this->documentService->update($document, $request->validated());
+        $validated = $request->validated();
+
+        $this->documentService->update($document, $validated);
+
+        // Sync client if target_type is Client
+        if ($validated['target_type'] === 'Client' && $validated['user_id']) {
+            $document->clients()->sync([$validated['user_id']]);
+        } else {
+            // Detach all clients if target is not Client
+            $document->clients()->detach();
+        }
 
         return redirect()->route('documents.show', $document->id);
     }
@@ -129,34 +140,55 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function logs() // change to view user associated document types, add pagination to logs view
+    public function logs() 
     {
-        $logs = Activity::where('subject_type', Document::class)
-            ->with([
-                'causer',
-                'subject' => function ($query) {
-                    $query->withTrashed();
-                }
-            ])
-            ->latest()
-            ->get()
-            ->map(function ($activity) {
-                $subject = $activity->subject;
+        $user = Auth::user()->load('department.documentTypes');
 
-                return [
-                    'description' => $activity->description,
-                    'changes' => $activity->properties->toArray(),
-                    'causer' => $activity->causer,
-                    'document' => [
-                        'id' => $subject->id ?? null,
-                        'name' => $subject->name
-                            ?? $activity->properties['old']['name']
-                            ?? $activity->properties['attributes']['name']
-                            ?? 'N/A',
-                    ],
-                    'date' => $activity->created_at,
-                ];
-            });
+        $documentTypeIds = $user->department->documentTypes->pluck('id');
+
+        $documentIds = Document::withTrashed()
+            ->whereIn('document_type_id', $documentTypeIds)
+            ->pluck('id');
+
+        $logs = Activity::where('subject_type', Document::class)
+                ->whereIn('subject_id', $documentIds)
+                ->with([
+                    'causer',
+                    'subject' => function ($query) {
+                        $query->withTrashed();
+                    }
+                ])
+                ->latest()
+                ->get()
+                ->map(function ($activity) {
+                    $subject = $activity->subject;
+                    $properties = $activity->properties->toArray();
+
+                    // Replace document_type_id with name (New changes)
+                    if (isset($properties['attributes']['document_type_id']) && $subject?->type) {
+                        $properties['attributes']['document_type'] = $subject->type->name;
+                        unset($properties['attributes']['document_type_id']);
+                    }
+
+                    if (isset($properties['old']['document_type_id']) && $subject?->type) {
+                        $properties['old']['document_type'] = $subject->type->name;
+                        unset($properties['old']['document_type_id']);
+                    }
+
+                    return [
+                        'description' => $activity->description,
+                        'changes' => $properties,
+                        'causer' => $activity->causer,
+                        'document' => [
+                            'id' => $subject->id ?? null,
+                            'name' => $subject->name
+                                ?? $properties['old']['name']
+                                ?? $properties['attributes']['name']
+                                ?? 'N/A',
+                        ],
+                        'date' => $activity->created_at,
+                    ];
+                });
 
         return Inertia::render('Documents/AllLogs', [
             'logs' => $logs,
@@ -165,18 +197,40 @@ class DocumentController extends Controller
 
     public function documentLogs(Document $document)
     {
-        $document->load(['activities' => function ($query) {
-            $query->latest();
-        }, 'activities.causer']);
-
+        $document->load([
+            'activities' => function ($query) {
+                $query->latest();
+            },
+            'activities.causer',
+            'type' 
+        ]);
 
         return Inertia::render('Documents/Logs', [
             'document' => $document,
-            'logs' => $document->activities->map(function ($activity) {
+            'logs' => $document->activities->map(function ($activity) use ($document) {
+                $properties = $activity->properties->toArray();
+
+                if (isset($properties['attributes']['document_type_id']) && $document?->type) {
+                    $properties['attributes']['document_type'] = $document->type->name;
+                    unset($properties['attributes']['document_type_id']);
+                }
+
+                if (isset($properties['old']['document_type_id']) && $document?->type) {
+                    $properties['old']['document_type'] = $document->type->name;
+                    unset($properties['old']['document_type_id']);
+                }
+
                 return [
                     'description' => $activity->description,
-                    'changes' => $activity->properties->toArray(),
+                    'changes' => $properties,
                     'causer' => $activity->causer,
+                    'document' => [
+                        'id' => $document->id,
+                        'name' => $document->name
+                            ?? $properties['old']['name']
+                            ?? $properties['attributes']['name']
+                            ?? 'N/A',
+                    ],
                     'date' => $activity->created_at,
                 ];
             }),

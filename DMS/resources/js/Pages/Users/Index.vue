@@ -60,14 +60,21 @@
           <td>••••••••••</td>
           <td>{{ user.department.name }}</td>
           <td>
-            <v-btn icon size="small" variant="text" aria-label="View">
-              <v-icon>mdi-eye</v-icon>
-            </v-btn>
+            <Link :href="route('users.show', user.id)">
+              <v-btn icon size="small" variant="text" aria-label="View">
+                <v-icon>mdi-eye</v-icon>
+              </v-btn>
+            </Link>
+
+            <Link :href="route('users.edit', user.id)">
             <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon size="small" color="error" variant="text" aria-label="Delete">
-              <v-icon>mdi-delete</v-icon>
+            </Link>
+
+            <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
+            @click="openDeleteDialog(user)">
+            <v-icon>mdi-delete</v-icon>
             </v-btn>
           </td>
         </tr>
@@ -80,9 +87,24 @@
         :length="totalPages"
         total-visible="7"
         size="small"
-      />
+      ></v-pagination>
     </div>
-  
+
+
+    <v-dialog v-model="confirmDeleteDialog" max-width="400">
+      <v-card>
+        <v-card-title>Confirm Delete</v-card-title>
+        <v-card-text>
+          Are you sure you want to delete
+          <strong v-if="userToDelete">{{ userToDelete.username }}</strong>?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="secondary" variant="text" @click="confirmDeleteDialog = false">Cancel</v-btn>
+          <v-btn color="error" variant="flat" @click="confirmDelete">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <Link :href="route('users.trashed')">
       <v-btn color="secondary" variant="outlined" size="small" class="ml-2">
         View Trashed Users
@@ -98,6 +120,8 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref, computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import dayjs from 'dayjs'
+import { router } from '@inertiajs/vue3'
+
 
 const props = defineProps({ users: Array })
 
@@ -105,6 +129,21 @@ const search = ref('')
 const entries = ref(10)
 const currentPage = ref(1)
 const entriesOptions = [5, 10, 20, 50, 100]
+const confirmDeleteDialog = ref(false)
+const userToDelete = ref(null)
+
+function openDeleteDialog(user) {
+  userToDelete.value = user
+  confirmDeleteDialog.value = true
+}
+
+function confirmDelete() {
+  if (userToDelete.value) {
+    router.delete(route('users.destroy', userToDelete.value.id))
+    confirmDeleteDialog.value = false
+    userToDelete.value = null
+  }
+}
 
 const filteredUsers = computed(() => {
   if (!search.value) return props.users

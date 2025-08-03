@@ -10,6 +10,8 @@ class DocumentPageController extends Controller
 {
     public function download(DocumentPage $documentPage)
     {
+        $this->authorize('download', $documentPage);
+
         if (!Storage::disk('public')->exists($documentPage->file_path)) {
             abort(404, 'File not found.');
         }
