@@ -150,4 +150,24 @@ class UserController extends Controller
             'users' => $trashedUsers
         ]);
     }
+
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return redirect()->route('users.trashed')->with('success', 'User restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        if (!auth()->user()->is_admin) {
+            abort(403, 'Only admins can permanently delete users.');
+        }
+
+        $user = User::onlyTrashed()->findOrFail($id);
+        $user->forceDelete();
+
+        return redirect()->route('users.trashed')->with('success', 'User permanently deleted.');
+    }
 }
