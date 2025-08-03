@@ -22,7 +22,7 @@ class EnsureManager
         }
 
         // Allow access if user is admin OR manager
-        if ($user->is_admin || $user->role === 'manager') {
+        if ($user->is_admin || $user->role === 'Manager') {
             return $next($request);
         }
 

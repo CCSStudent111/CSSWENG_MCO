@@ -104,7 +104,6 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('documents/logs', [DocumentController::class, 'logs'])->name('documents.all-logs');
     Route::get('/documents/pending', [DocumentController::class, 'pending'])
-        ->middleware('admin_or_manager')
         ->name('documents.pending');
 
     Route::resource('documents', DocumentController::class)->except(['edit']);
