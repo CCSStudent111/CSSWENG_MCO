@@ -9,11 +9,13 @@
                 <v-icon start>mdi-history</v-icon>Logs
             </v-btn>
             </Link>
-            <Link :href="route('documents.trash')">
-            <v-btn color="error" variant="flat" size="small">
-                <v-icon start>mdi-delete</v-icon>Trash
-            </v-btn>
-            </Link>
+            <template v-if="authUser.role !== 'Employee'">
+                <Link :href="route('documents.trash')">
+                <v-btn color="error" variant="flat" size="small">
+                    <v-icon start>mdi-delete</v-icon>Trash
+                </v-btn>
+                </Link>
+            </template>
             <Link :href="route('documents.create')">
             <v-btn color="primary" variant="flat" size="small">
                 <v-icon start>mdi-upload</v-icon>Upload Document
@@ -125,15 +127,17 @@
                             <v-icon>mdi-eye</v-icon>
                         </v-btn>
                         </Link>
-                        <Link :href="route('documents.edit', document.id)">
-                        <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
-                            <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                        </Link>
-                        <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
-                            @click="deleteDocument(document.id)">
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
+                        <template v-if="authUser.role !== 'Employee'">
+                            <Link :href="route('documents.edit', document.id)">
+                            <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
+                                <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
+                            </Link>
+                            <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
+                                @click="deleteDocument(document.id)">
+                                <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                        </template>
 
                     </td>
                 </tr>
@@ -148,11 +152,14 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Link, useForm } from '@inertiajs/vue3'
+import { Link, useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+
+const { props: pageProps } = usePage()
+const authUser = pageProps.auth.user
 
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)

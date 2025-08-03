@@ -59,12 +59,6 @@ class Document extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-
-    public function employees()
-    {
-        return $this->belongsToMany(User::class, 'employee_documents', 'document_id', 'employee_id');
-    }
-
     public function clients()
     {
         return $this->belongsToMany(Client::class, 'client_documents');

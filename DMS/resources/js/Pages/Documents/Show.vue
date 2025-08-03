@@ -6,97 +6,65 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title class="d-flex justify-between align-center">
                             <span>Attached Pages</span>
-                            <v-btn 
-                                v-if="selectedPage"
-                                @click="downloadFile"
-                                color="primary"
-                                variant="outlined"
-                                size="small"
-                                prepend-icon="mdi-download"
-                            >
+                            <v-btn v-if="selectedPage" @click="downloadFile" color="primary" variant="outlined"
+                                size="small" prepend-icon="mdi-download">
                                 Download
                             </v-btn>
                         </v-card-title>
                         <v-card-text class="pa-0">
                             <!-- File List -->
                             <v-list v-if="document.pages?.length" density="compact" nav class="mb-2">
-                                <v-list-item 
-                                    v-for="page in document.pages" 
-                                    :key="page.id"
-                                    @click="selectPage(page)"
-                                    :class="{ 'bg-blue-lighten-5': selectedPage?.id === page.id }"
-                                    rounded
-                                    link
-                                >
+                                <v-list-item v-for="page in document.pages" :key="page.id" @click="selectPage(page)"
+                                    :class="{ 'bg-blue-lighten-5': selectedPage?.id === page.id }" rounded link>
                                     <template #prepend>
-                                        <v-icon 
-                                            :color="selectedPage?.id === page.id ? 'primary' : 'grey'"
-                                            :icon="getFileIcon(page.file_path)"
-                                        ></v-icon>
+                                        <v-icon :color="selectedPage?.id === page.id ? 'primary' : 'grey'"
+                                            :icon="getFileIcon(page.file_path)"></v-icon>
                                     </template>
                                     <v-list-item-title>{{ page.original_name }}</v-list-item-title>
                                     <template #append>
-                                        <v-btn
-                                            :href="`/storage/${page.file_path}`"
-                                            target="_blank"
-                                            icon="mdi-open-in-new"
-                                            variant="text"
-                                            size="small"
-                                            @click.stop
-                                        ></v-btn>
+                                        <v-btn :href="`/storage/${page.file_path}`" target="_blank"
+                                            icon="mdi-open-in-new" variant="text" size="small" @click.stop></v-btn>
                                     </template>
                                 </v-list-item>
                             </v-list>
                             <div v-else class="text-grey pa-4">No pages attached.</div>
-                            
+
                             <!-- File Viewer -->
                             <v-divider v-if="selectedPage"></v-divider>
                             <div v-if="selectedPage" class="file-viewer pa-4">
                                 <div class="text-subtitle-2 mb-2">Preview: {{ selectedPage.original_name }}</div>
-                                
+
                                 <!-- PDF Viewer -->
                                 <div v-if="isPDF(selectedPage.file_path)" class="pdf-container">
-                                    <iframe
-                                        :src="`/storage/${selectedPage.file_path}`"
-                                        width="100%"
-                                        height="400"
-                                        type="application/pdf"
-                                    >
-                                        <p>Your browser does not support PDFs. 
-                                            <a :href="`/storage/${selectedPage.file_path}`" target="_blank">Download the PDF</a>
+                                    <iframe :src="`/storage/${selectedPage.file_path}`" width="100%" height="400"
+                                        type="application/pdf">
+                                        <p>Your browser does not support PDFs.
+                                            <a :href="`/storage/${selectedPage.file_path}`" target="_blank">Download the
+                                                PDF</a>
                                         </p>
                                     </iframe>
                                 </div>
-                                
+
                                 <!-- Image Viewer -->
                                 <div v-else-if="isImage(selectedPage.file_path)" class="image-container">
-                                    <v-img
-                                        :src="`/storage/${selectedPage.file_path}`"
-                                        :alt="selectedPage.original_name"
-                                        max-height="400"
-                                        contain
-                                        class="mx-auto"
-                                    >
+                                    <v-img :src="`/storage/${selectedPage.file_path}`" :alt="selectedPage.original_name"
+                                        max-height="400" contain class="mx-auto">
                                         <template v-slot:placeholder>
                                             <v-row class="fill-height ma-0" align="center" justify="center">
-                                                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                                                <v-progress-circular indeterminate
+                                                    color="primary"></v-progress-circular>
                                             </v-row>
                                         </template>
                                     </v-img>
                                 </div>
-                                
+
                                 <!-- Unsupported File Type -->
                                 <div v-else class="text-center pa-8">
                                     <v-icon size="64" color="grey">mdi-file-question</v-icon>
                                     <div class="text-h6 mt-2">Preview not available</div>
                                     <div class="text-body-2 text-grey mb-4">This file type cannot be previewed</div>
-                                    <v-btn
-                                        :href="`/storage/${selectedPage.file_path}`"
-                                        target="_blank"
-                                        color="primary"
-                                        variant="outlined"
-                                        prepend-icon="mdi-download"
-                                    >
+                                    <v-btn :href="`/storage/${selectedPage.file_path}`" target="_blank" color="primary"
+                                        variant="outlined" prepend-icon="mdi-download">
                                         Download File
                                     </v-btn>
                                 </div>
@@ -108,8 +76,9 @@
                     <v-card class="fill-height pa-2 elevation-3">
                         <v-card-title>Document Details</v-card-title>
                         <v-card-text>
-                            <v-text-field v-if="document.status === 'pending'" label="Status" :model-value="document.status" readonly disabled
-                                density="compact" variant="outlined" class="mb-4" />
+                            <v-text-field v-if="document.status === 'pending'" label="Status"
+                                :model-value="document.status" readonly disabled density="compact" variant="outlined"
+                                class="mb-4" />
 
                             <v-text-field label="Document Name" :model-value="document.name" readonly disabled
                                 density="compact" variant="outlined" class="mb-4" />
@@ -154,11 +123,18 @@
                                 Approve
                             </v-btn>
 
-                            <Link :href="route('documents.edit', props.document.id)">
-                            <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
-                                Edit Document
+                            <Link :href="route('documents.index')">
+                            <v-btn color="secondary" variant="flat" size="small">
+                                Back to Documents
                             </v-btn>
                             </Link>
+                            <template v-if="authUser?.role !== 'Employee'">
+                                <Link :href="route('documents.edit', props.document.id)">
+                                <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
+                                    Edit Document
+                                </v-btn>
+                                </Link>
+                            </template>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -171,7 +147,10 @@
 import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import dayjs from 'dayjs'
-import { Link, router } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
+
+const authUser = usePage().props.auth.user
+
 
 const props = defineProps({
     document: Object
