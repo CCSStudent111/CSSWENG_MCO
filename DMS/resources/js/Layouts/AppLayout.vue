@@ -107,7 +107,7 @@
               </template>
             </v-tooltip>
           </Link>
-          <Link v-if="user?.is_admin || user?.is_manager" href="/documents/pending" style="text-decoration: none; color: inherit;">
+          <Link v-if="user?.is_admin || user.role == 'manager'" href="/documents/pending" style="text-decoration: none; color: inherit;">
             <v-tooltip text="Approve Pending Documents" location="right">
               <template #activator="{ props }">
                 <v-list-item 
@@ -231,7 +231,7 @@ const imageLoaded = ref(false)
 // Helper function to get user role
 function getUserRole() {
   if (user?.is_admin) return 'Administrator'
-  if (user?.is_manager) return 'Manager'
+  if (user.role == 'manager') return 'Manager'
   return 'Employee'
 }
 </script>

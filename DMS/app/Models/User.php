@@ -51,7 +51,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
-            'is_manager' => 'boolean',
+            'role' => 'string',
         ];
     }
 
@@ -95,7 +95,7 @@ class User extends Authenticatable
     {
         if ($this->is_admin) {
             return 'Administrator';
-        } elseif ($this->is_manager) {
+        } elseif ($this->attributes['role'] == 'manager') {
             return 'Manager';
         } else {
             return 'Employee';

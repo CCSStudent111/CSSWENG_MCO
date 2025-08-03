@@ -51,7 +51,6 @@ class UserController extends Controller
             'date_of_birth' => 'nullable|date',
             'department_id' => 'nullable|exists:departments,id',
             'is_admin' => 'required|boolean',
-            'is_manager' => 'required|boolean',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -121,7 +120,7 @@ class UserController extends Controller
 
     public function toggleManager(User $user)
     {
-        $user->is_manager = !$user->is_manager;
+        $user->role = $user->role === 'manager' ? null : 'manager';
         $user->save();
 
         return redirect()->back()->with('success', 'Manager status updated.');
