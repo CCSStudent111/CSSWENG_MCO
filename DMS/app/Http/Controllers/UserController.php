@@ -88,12 +88,26 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(Request $request, User $user)
     {
-        $user->update($request->validated());
+        $validated = $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+            'date_of_birth' => 'nullable|date',
+            'department_id' => 'nullable|exists:departments,id',
+            'is_admin' => 'boolean',
+            'is_manager' => 'boolean',
+        ]);
+
+        $user->update($validated);
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
+
 
 
     /**
