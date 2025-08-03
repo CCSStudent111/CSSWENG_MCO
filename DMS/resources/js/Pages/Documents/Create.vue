@@ -10,7 +10,12 @@
                             <v-card-title>Upload Document</v-card-title>
                             <v-card-text>
                                 <v-file-upload v-model="form.pages" label="Upload Files" multiple show-size
-                                    prepend-icon="mdi-paperclip" :error-messages="pageErrors" required clearable />
+                                    prepend-icon="mdi-paperclip" required clearable />
+                                <v-alert v-if="pageErrors && pageErrors.length" type="error" class="mt-2" dense text>
+                                    <div v-for="(error, index) in pageErrors" :key="index">
+                                        {{ error }}
+                                    </div>
+                                </v-alert>
                             </v-card-text>
                         </v-card>
                     </v-col>

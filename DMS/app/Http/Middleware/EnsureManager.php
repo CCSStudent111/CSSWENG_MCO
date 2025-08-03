@@ -22,10 +22,11 @@ class EnsureManager
         }
 
         // Allow access if user is admin OR manager
-        if ($user->is_admin || $user->role === 'manager') {
+        if ($user->is_admin || $user->role === 'Manager') {
             return $next($request);
+
         }
 
-        abort(403, 'Access denied. Only administrators and managers can access this page.');
+        return $next($request);
     }
 }

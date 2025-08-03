@@ -12,6 +12,11 @@
                                 <v-file-upload v-model="form.pages" label="Upload Files" multiple show-size
                                     prepend-icon="mdi-paperclip" :error-messages="form.errors.pages" required clearable>
                                 </v-file-upload>
+
+                                <v-alert v-if="pageErrors.length" type="error" class="mt-2" dense text>
+                                    <div v-for="(error, index) in pageErrors" :key="index">{{ error }}</div>
+                                </v-alert>
+
                                 <v-card-subtitle class="mt-4 mb-2 font-weight-bold">Existing Document
                                     Pages</v-card-subtitle>
                                 <v-table>
@@ -24,8 +29,7 @@
                                     <tbody>
                                         <tr v-for="(page, index) in props.document.pages" :key="page.id">
                                             <td>
-                                                <a :href="'/storage/' + page.file_path"
-                                                    class="text-blue-600 underline">
+                                                <a :href="'/storage/' + page.file_path" class="text-blue-600 underline">
                                                     {{ page.original_name }}
                                                 </a>
                                             </td>
@@ -48,8 +52,19 @@
                     </v-col>
                     <v-col cols="5">
                         <v-card class="fill-height pa-2 elevation-3">
-                            <v-card-title>Document Details</v-card-title>
+                            <div class="d-flex align-center justify-space-between mb-1" style="gap: 16px;">
+                                <v-card-title class="pa-0">Document Details</v-card-title>
+                                <div style="min-width: 180px;">
+                                    <v-select v-model="form.target_type" :items="['General', 'Client']" label="Category"
+                                        :error-messages="form.errors.target_type" required density="compact"
+                                        variant="outlined" />
+                                </div>
+                            </div>
                             <v-card-text>
+                                <v-select v-if="form.target_type === 'Client'" v-model="form.user_id"
+                                    :items="clientsWithName" item-title="full_name" item-value="id"
+                                    label="Select Client" :error-messages="form.errors.user_id" density="compact"
+                                    variant="outlined" clearable />
                                 <v-text-field v-model="form.name" label="Document Name"
                                     :error-messages="form.errors.name" required density="compact" variant="outlined" />
                                 <v-select v-model="form.document_type_id" :items="documentTypes" item-title="name"
@@ -87,11 +102,13 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm, Link, router } from '@inertiajs/vue3'
+import { computed } from 'vue'
 import dayjs from 'dayjs'
 
 const props = defineProps({
     document: Object,
-    documentTypes: Array
+    documentTypes: Array,
+    clients: Array
 })
 
 const form = useForm({
@@ -102,7 +119,27 @@ const form = useForm({
     summary: props.document.summary || '',
     tags: props.document.tags?.map(tag => tag.name) || [],
     pages: [],
+    target_type: props.document.clients?.length ? 'Client' : 'General',
+    user_id: props.document.clients?.[0]?.id ?? null,
 })
+
+const pageErrors = computed(() => {
+    const errors = form.errors.pages || []
+    for (const key in form.errors) {
+        if (key.startsWith('pages.') && key !== 'pages') {
+            errors.push(form.errors[key])
+        }
+    }
+    return errors
+})
+
+const clientsWithName = computed(() => {
+    return props.clients.map(client => ({
+        id: client.id,
+        full_name: `${client.name} (${client.branch})`
+    }))
+})
+
 
 function submit() {
     form.post(route('documents.update', props.document.id), {
@@ -134,12 +171,12 @@ function reuploadPage(page) {
         const formData = new FormData();
         formData.append('page', input.files[0]);
 
-        formData.append('_method', 'PUT'); 
+        formData.append('_method', 'PUT');
 
         router.post(route('document-pages.update', page.id), formData, {
             forceFormData: true,
             onSuccess: () => {
-                location.reload(); 
+                location.reload();
             },
             onError: () => {
                 alert('Reupload failed.');
