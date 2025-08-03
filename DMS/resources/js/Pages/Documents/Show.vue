@@ -141,7 +141,7 @@
                                 Back to Documents
                             </v-btn>
                             </Link>
-                            <template v-if="authUser?.role !== 'Employee'">
+                            <template v-if="authUser?.role !== 'Employee' || authUser.is_admin">
                                 <Link :href="route('documents.edit', props.document.id)">
                                 <v-btn color="primary" variant="flat" size="small" prepend-icon="mdi-pencil">
                                     Edit Document

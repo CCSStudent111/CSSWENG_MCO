@@ -15,7 +15,9 @@ class BlockEmployees
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->isEmployee()) {
+        $user = auth()->user();
+
+        if ($user && !$user->is_admin && $user->isEmployee()) {
             abort(403, 'UNAUTHORIZED ACCESS: Employees are not allowed to access this resource.');
         }
 

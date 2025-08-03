@@ -9,7 +9,7 @@
                 <v-icon start>mdi-history</v-icon>Logs
             </v-btn>
             </Link>
-            <template v-if="authUser.role !== 'Employee'">
+            <template v-if="authUser.role !== 'Employee' || authUser.is_admin"">
                 <Link :href="route('documents.trash')">
                 <v-btn color="error" variant="flat" size="small">
                     <v-icon start>mdi-delete</v-icon>Trash
@@ -81,7 +81,7 @@
                             <v-icon>mdi-eye</v-icon>
                         </v-btn>
                         </Link>
-                        <template v-if="authUser.role !== 'Employee'">
+                        <template v-if="authUser.role !== 'Employee' || authUser.is_admin">
                             <Link :href="route('documents.edit', document.id)">
                             <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
                                 <v-icon>mdi-pencil</v-icon>
