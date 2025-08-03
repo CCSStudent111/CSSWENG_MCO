@@ -65,9 +65,12 @@
                 <v-icon>mdi-eye</v-icon>
               </v-btn>
             </Link>
+
+            <Link :href="route('users.edit', user.id)">
             <v-btn icon size="small" color="primary" variant="text" aria-label="Edit">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
+            </Link>
 
             <v-btn icon size="small" color="error" variant="text" aria-label="Delete"
             @click="openDeleteDialog(user)">
