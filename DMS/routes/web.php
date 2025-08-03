@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DepartmentDocumentTypeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Middleware\AdminMiddleware;
 
 
 Route::controller(AuthController::class)->group(function () {
@@ -103,7 +104,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('documents/logs', [DocumentController::class, 'logs'])->name('documents.all-logs');
     Route::get('/documents/pending', [DocumentController::class, 'pending'])
-        ->middleware('manager')
+        ->middleware('admin_or_manager')
         ->name('documents.pending');
 
     Route::resource('documents', DocumentController::class)->except(['edit']);
@@ -113,10 +114,26 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
-    Route::get('/document-pages/{documentPage}/download', [DocumentPageController::class, 'download'])
-        ->name('document-pages.download'); // add policy
-    Route::put('/document-pages/{documentPage}', [DocumentPageController::class, 'update'])->name('document-pages.update');
-    Route::delete('/document-pages/{documentPage}', [DocumentPageController::class, 'destroy'])->name('document-pages.destroy');
+   
+
+    // Department Document Type Routes (Admin only)
+    Route::middleware([AdminMiddleware::class])->group(function () {
+         Route::get('/department-document-types', [DepartmentDocumentTypeController::class, 'index'])
+            ->name('department-document-types.index');
+        
+        Route::post('/department-document-types/{department}/{type}/attach', [DepartmentDocumentTypeController::class, 'attach'])
+            ->name('department-document-types.attach');
+        
+        Route::delete('/department-document-types/{department}/{type}/detach', [DepartmentDocumentTypeController::class, 'detach'])
+            ->name('department-document-types.detach');
+            
+        Route::post('/department-document-types/{department}/bulk-attach', [DepartmentDocumentTypeController::class, 'bulkAttach'])
+            ->name('department-document-types.bulk-attach');
+            
+        Route::post('/department-document-types/{department}/bulk-detach', [DepartmentDocumentTypeController::class, 'bulkDetach'])
+            ->name('department-document-types.bulk-detach');
+    });
+
 });
 
 Route::get('/phpinfo', function () {

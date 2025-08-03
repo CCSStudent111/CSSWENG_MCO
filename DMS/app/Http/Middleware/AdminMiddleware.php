@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureManager
+class AdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -14,18 +14,11 @@ class EnsureManager
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-  {
-        $user = auth()->user();
-
-        if (!$user) {
-            return redirect()->route('login');
+    {
+        if (!auth()->check() || !auth()->user()->is_admin) {
+            abort(403, 'Access denied. Admin privileges required.');
         }
 
-        // Allow access if user is admin OR manager
-        if ($user->is_admin || $user->is_manager) {
-            return $next($request);
-        }
-
-        abort(403, 'Access denied. Only administrators and managers can access this page.');
+        return $next($request);
     }
 }
