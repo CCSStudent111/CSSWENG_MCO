@@ -58,7 +58,7 @@
                     <th class="text-left">Tags</th>
                     <th class="text-left">Issued At</th>
                     <th class="text-left">Created By</th>
-                    <th class="text-left">Action</th>
+                    <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -75,7 +75,7 @@
                     </td>
                     <td>{{ dayjs(document.issued_at).format('MM/DD/YYYY') }}</td>
                     <td>{{ document.creator.username }}</td>
-                    <td>
+                    <td class="text-center" >
                         <Link :href="route('documents.show', document.id)">
                         <v-btn icon size="small" variant="text" aria-label="View">
                             <v-icon>mdi-eye</v-icon>

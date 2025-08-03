@@ -23,7 +23,7 @@
                                     <thead>
                                         <tr>
                                             <th class="text-left">File Name</th>
-                                            <th class="text-left">Actions</th>
+                                            <th class="text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -33,7 +33,7 @@
                                                     {{ page.original_name }}
                                                 </a>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 <v-btn icon variant="text" size="small" @click="openEditDialog(page)">
                                                     <v-icon>mdi-pencil</v-icon>
                                                 </v-btn>
