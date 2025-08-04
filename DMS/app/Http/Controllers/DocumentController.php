@@ -27,6 +27,7 @@ class DocumentController extends Controller
     {
         $user = auth()->user()->load('department.documentTypes');
 
+<<<<<<< Updated upstream
         $documents = Document::with([
                 'type',
                 'creator',
@@ -39,6 +40,34 @@ class DocumentController extends Controller
             })
             ->orderBy('id', 'desc')
             ->get();
+=======
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('tag')) {
+            $tagIds = $request->input('tag'); 
+            $query->whereHas('tags', function ($q) use ($tagIds) {
+                $q->whereIn('id', $tagIds);
+            });
+        }
+
+        $user = Auth::user();
+
+        if ($user->isAdmin() || $user->isManager()) {
+            $documents = $query->get();
+        } else {
+            $documents = $query->where('status', 'approved')->get();
+        }
+
+        $tags = Tag::select('id', 'name')->get();
+        $documentTypes = DocumentType::select('id', 'name')->get();
+
+>>>>>>> Stashed changes
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
