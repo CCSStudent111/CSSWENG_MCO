@@ -15,6 +15,11 @@ use App\Models\DocumentType;
 use App\Services\TrashService;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Models\Tag;
+
+
+
 
 class DocumentController extends Controller
 {
@@ -23,24 +28,10 @@ class DocumentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user()->load('department.documentTypes');
+        $query = Document::with(['tags', 'type', 'creator']);
 
-<<<<<<< Updated upstream
-        $documents = Document::with([
-                'type',
-                'creator',
-                'tags',
-                'pages'
-            ])
-            ->where('status', 'approved')
-            ->whereHas('type.departments', function ($query) use ($user) {
-                $query->where('departments.id', $user->department_id);
-            })
-            ->orderBy('id', 'desc')
-            ->get();
-=======
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -56,22 +47,17 @@ class DocumentController extends Controller
             });
         }
 
-        $user = Auth::user();
 
-        if ($user->isAdmin() || $user->isManager()) {
-            $documents = $query->get();
-        } else {
-            $documents = $query->where('status', 'approved')->get();
-        }
-
+        $documents = $query->with(['tags', 'type', 'creator'])->get();
         $tags = Tag::select('id', 'name')->get();
         $documentTypes = DocumentType::select('id', 'name')->get();
 
->>>>>>> Stashed changes
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
-            'documentTypes' => $user->department->documentTypes->values(),
+            'filters' => $request->only(['search', 'tag']),
+            'tags' => $tags,
+            'documentTypes' => $documentTypes,
         ]);
     }
 
@@ -83,7 +69,7 @@ class DocumentController extends Controller
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes->values();
         $users = User::select('id', 'first_name', 'last_name')->get();
-        $clients = Client::select('id', 'name')->get();
+        $clients = Client::select('id', 'name', 'branch')->get();
 
         return Inertia::render('Documents/Create', [
             'documentTypes' => $documentTypes,
@@ -104,10 +90,6 @@ class DocumentController extends Controller
 
         $document = $this->documentService->create($validated);
 
-        if ($validated['target_type'] === 'Employee' && $validated['user_id']) {
-            $document->employees()->syncWithoutDetaching([$validated['user_id']]);
-        }
-
         if ($validated['target_type'] === 'Client' && $validated['user_id']) {
             $document->clients()->syncWithoutDetaching([$validated['user_id']]);
         }
@@ -120,7 +102,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        $document->load(['type', 'tags', 'creator', 'pages', 'approver']);
+        $document->load(['type', 'tags', 'creator', 'pages', 'approver', 'clients']);
 
         return Inertia::render('Documents/Show', [
             'document' => $document
@@ -134,12 +116,13 @@ class DocumentController extends Controller
     {
         $user = auth()->user()->load('department.documentTypes');
         $documentTypes = $user->department->documentTypes()->get()->values();
-
-        $document->load(['type', 'tags', 'creator', 'pages']);
+        $clients = Client::select('id', 'name', 'branch')->get();
+        $document->load(['type', 'tags', 'creator', 'pages', 'clients']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $document,
-            'documentTypes' => $documentTypes
+            'documentTypes' => $documentTypes,
+            'clients' => $clients
         ]);
     }
 
@@ -148,7 +131,17 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
-        $this->documentService->update($document, $request->validated());
+        $validated = $request->validated();
+
+        $this->documentService->update($document, $validated);
+
+        // Sync client if target_type is Client
+        if ($validated['target_type'] === 'Client' && $validated['user_id']) {
+            $document->clients()->sync([$validated['user_id']]);
+        } else {
+            // Detach all clients if target is not Client
+            $document->clients()->detach();
+        }
 
         return redirect()->route('documents.show', $document->id);
     }
@@ -162,34 +155,55 @@ class DocumentController extends Controller
         return redirect()->route('documents.index');
     }
 
-    public function logs() // change to view user associated document types, add pagination to logs view
+    public function logs() 
     {
-        $logs = Activity::where('subject_type', Document::class)
-            ->with([
-                'causer',
-                'subject' => function ($query) {
-                    $query->withTrashed();
-                }
-            ])
-            ->latest()
-            ->get()
-            ->map(function ($activity) {
-                $subject = $activity->subject;
+        $user = Auth::user()->load('department.documentTypes');
 
-                return [
-                    'description' => $activity->description,
-                    'changes' => $activity->properties->toArray(),
-                    'causer' => $activity->causer,
-                    'document' => [
-                        'id' => $subject->id ?? null,
-                        'name' => $subject->name
-                            ?? $activity->properties['old']['name']
-                            ?? $activity->properties['attributes']['name']
-                            ?? 'N/A',
-                    ],
-                    'date' => $activity->created_at,
-                ];
-            });
+        $documentTypeIds = $user->department->documentTypes->pluck('id');
+
+        $documentIds = Document::withTrashed()
+            ->whereIn('document_type_id', $documentTypeIds)
+            ->pluck('id');
+
+        $logs = Activity::where('subject_type', Document::class)
+                ->whereIn('subject_id', $documentIds)
+                ->with([
+                    'causer',
+                    'subject' => function ($query) {
+                        $query->withTrashed();
+                    }
+                ])
+                ->latest()
+                ->paginate(10)
+                ->map(function ($activity) {
+                    $subject = $activity->subject;
+                    $properties = $activity->properties->toArray();
+
+                    // Replace document_type_id with name (New changes)
+                    if (isset($properties['attributes']['document_type_id']) && $subject?->type) {
+                        $properties['attributes']['document_type'] = $subject->type->name;
+                        unset($properties['attributes']['document_type_id']);
+                    }
+
+                    if (isset($properties['old']['document_type_id']) && $subject?->type) {
+                        $properties['old']['document_type'] = $subject->type->name;
+                        unset($properties['old']['document_type_id']);
+                    }
+
+                    return [
+                        'description' => $activity->description,
+                        'changes' => $properties,
+                        'causer' => $activity->causer,
+                        'document' => [
+                            'id' => $subject->id ?? null,
+                            'name' => $subject->name
+                                ?? $properties['old']['name']
+                                ?? $properties['attributes']['name']
+                                ?? 'N/A',
+                        ],
+                        'date' => $activity->created_at,
+                    ];
+                });
 
         return Inertia::render('Documents/AllLogs', [
             'logs' => $logs,
@@ -198,21 +212,46 @@ class DocumentController extends Controller
 
     public function documentLogs(Document $document)
     {
-        $document->load(['activities' => function ($query) {
-            $query->latest();
-        }, 'activities.causer']);
+        $document->load([
+            'type',
+        ]);
 
+        $logs = $document->activities()
+            ->with('causer')
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($activity) use ($document) {
+                $properties = $activity->properties->toArray();
+
+                if (isset($properties['attributes']['document_type_id']) && $document?->type) {
+                    $properties['attributes']['document_type'] = $document->type->name;
+                    unset($properties['attributes']['document_type_id']);
+                }
+
+                if (isset($properties['old']['document_type_id']) && $document?->type) {
+                    $properties['old']['document_type'] = $document->type->name;
+                    unset($properties['old']['document_type_id']);
+                }
+
+                return [
+                    'description' => $activity->description,
+                    'changes' => $properties,
+                    'causer' => $activity->causer,
+                    'document' => [
+                        'id' => $document->id,
+                        'name' => $document->name
+                            ?? $properties['old']['name']
+                            ?? $properties['attributes']['name']
+                            ?? 'N/A',
+                    ],
+                    'date' => $activity->created_at,
+                ];
+            });
 
         return Inertia::render('Documents/Logs', [
             'document' => $document,
-            'logs' => $document->activities->map(function ($activity) {
-                return [
-                    'description' => $activity->description,
-                    'changes' => $activity->properties->toArray(),
-                    'causer' => $activity->causer,
-                    'date' => $activity->created_at,
-                ];
-            }),
+            'logs' => $logs,
         ]);
     }
 
@@ -246,15 +285,13 @@ class DocumentController extends Controller
 
     public function pending()
     {
-        $manager = auth()->user()->load('department');
+        if (!in_array(strtolower(auth()->user()->role ?? ''), ['manager'])) {
+            abort(403, 'Access denied. Admin or Manager privileges required.');
+        }
 
-        $documents = Document::with(['type', 'tags', 'creator'])
+        $documents = Document::with(['type', 'creator', 'tags'])
             ->where('status', 'pending')
-            ->get()
-            ->filter(function ($document) use ($manager) {
-                return $manager->can('viewPending', $document); 
-            })
-            ->values();
+            ->get();
 
         return Inertia::render('Documents/Pending', [
             'documents' => $documents,
@@ -264,8 +301,9 @@ class DocumentController extends Controller
     public function approve(Document $document)
     {
         $document->load('type', 'creator');
-
         $this->authorize('approve', $document); 
+
+
         $manager = auth()->user();
 
         $document->update([
