@@ -70,9 +70,9 @@
                     variant="tonal"
                   >
                     <v-icon left size="16">
-                      {{ user.is_admin ? 'mdi-shield-crown' : (user.role ? 'mdi-account-tie' : 'mdi-account') }}
+                      {{ user.is_admin ? 'mdi-shield-crown' : user.role }}
                     </v-icon>
-                    {{ user.is_admin ? 'Administrator' : (user.role ? 'Manager' : 'Employee') }}
+                    {{ user.is_admin ? 'Administrator' : user.role }}
                   </v-chip>
                 </v-col>
                 
