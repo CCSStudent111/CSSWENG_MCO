@@ -30,13 +30,18 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Document::with(['tags', 'type', 'creator']);
+        $user = auth()->user()->load('department.documentTypes');
+        $documentTypeIds = $user->department->documentTypes->pluck('id');
+
+        $query = Document::with(['tags', 'type', 'creator'])
+            ->whereIn('document_type_id', $documentTypeIds)
+            ->where('status', 'approved');
 
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -47,14 +52,10 @@ class DocumentController extends Controller
             });
         }
 
+        $documents = $query->get();
 
-        $documents = $query
-            ->with(['tags', 'type', 'creator'])
-            ->where('status', 'approved')
-            ->get();
         $tags = Tag::select('id', 'name')->get();
-        $documentTypes = DocumentType::select('id', 'name')->get();
-
+        $documentTypes = $user->department->documentTypes->values(); // only accessible types
 
         return Inertia::render('Documents/Index', [
             'documents' => $documents,
