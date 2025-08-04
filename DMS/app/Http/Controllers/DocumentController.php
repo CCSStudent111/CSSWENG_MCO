@@ -48,7 +48,10 @@ class DocumentController extends Controller
         }
 
 
-        $documents = $query->with(['tags', 'type', 'creator'])->get();
+        $documents = $query
+            ->with(['tags', 'type', 'creator'])
+            ->where('status', 'approved')
+            ->get();
         $tags = Tag::select('id', 'name')->get();
         $documentTypes = DocumentType::select('id', 'name')->get();
 
